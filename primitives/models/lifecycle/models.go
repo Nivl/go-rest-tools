@@ -4,7 +4,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/ml-tv/tv-api/src/core/primitives/models"
+	"github.com/Nivl/go-rest-tools/primitives/models"
 )
 
 var _models = &savedModels{

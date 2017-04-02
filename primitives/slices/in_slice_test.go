@@ -5,7 +5,7 @@ import (
 
 	"fmt"
 
-	"github.com/ml-tv/tv-api/src/core/primitives/slices"
+	"github.com/Nivl/go-rest-tools/primitives/slices"
 	"github.com/stretchr/testify/assert"
 )
 
