@@ -198,6 +198,9 @@ func NewRequest(t *testing.T, info *RequestInfo) *httptest.ResponseRecorder {
 
 	// If no router is provided we assume that we want to execute a regular endpoint
 	if info.Router == nil {
+		if DefaultRouter == nil {
+			t.Fatalf("no router provided and DefaultRouter not set")
+		}
 		info.Router = DefaultRouter
 	}
 
