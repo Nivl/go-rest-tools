@@ -7,10 +7,11 @@ import (
 	"github.com/Nivl/go-rest-tools/primitives/models/lifecycle"
 	"github.com/Nivl/go-rest-tools/security/auth"
 	"github.com/dchest/uniuri"
+	"github.com/jmoiron/sqlx"
 )
 
 // NewUser creates a new user with "fake" as password
-func NewUser(t *testing.T, u *auth.User) *auth.User {
+func NewUser(t *testing.T, q *sqlx.DB, u *auth.User) *auth.User {
 	if u == nil {
 		u = &auth.User{}
 	}
@@ -31,7 +32,7 @@ func NewUser(t *testing.T, u *auth.User) *auth.User {
 		}
 	}
 
-	if err := u.Create(); err != nil {
+	if err := u.Create(q); err != nil {
 		t.Fatalf("failed to create user: %s", err)
 	}
 

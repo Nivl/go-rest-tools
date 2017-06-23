@@ -10,7 +10,7 @@ import (
 
 // NewAuth creates a new user and their session
 func NewAuth(t *testing.T, q *sqlx.DB) (*auth.User, *auth.Session) {
-	user := NewUser(t, nil)
+	user := NewUser(t, q, nil)
 	session := &auth.Session{
 		UserID: user.ID,
 	}
@@ -25,7 +25,7 @@ func NewAuth(t *testing.T, q *sqlx.DB) (*auth.User, *auth.Session) {
 
 // NewAdminAuth creates a new admin and their session
 func NewAdminAuth(t *testing.T, q *sqlx.DB) (*auth.User, *auth.Session) {
-	user := NewUser(t, &auth.User{IsAdmin: true})
+	user := NewUser(t, q, &auth.User{IsAdmin: true})
 	session := &auth.Session{
 		UserID: user.ID,
 	}
