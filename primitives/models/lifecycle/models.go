@@ -19,7 +19,7 @@ type savedModels struct {
 }
 
 // Push adds a new model to the list
-func (sm *savedModels) Push(t testing.TB, obj models.FullyDeletable) {
+func (sm *savedModels) Push(t testing.TB, obj models.Deletable) {
 	_models.Lock()
 	defer _models.Unlock()
 
@@ -41,12 +41,12 @@ func (sm *savedModels) Purge(t testing.TB) {
 	}
 
 	for obj := range list {
-		deletable, ok := obj.(models.FullyDeletable)
+		deletable, ok := obj.(models.Deletable)
 		if !ok {
 			t.Fatalf("could not delete saved object")
 		}
 
-		if err := deletable.FullyDelete(); err != nil {
+		if err := deletable.Delete(); err != nil {
 			t.Fatalf("could not delete saved object: %s", err)
 		}
 	}
@@ -55,7 +55,7 @@ func (sm *savedModels) Purge(t testing.TB) {
 }
 
 // SaveModels saves a list of models that can be purged using PurgeModels()
-func SaveModels(t testing.TB, models ...models.FullyDeletable) {
+func SaveModels(t testing.TB, models ...models.Deletable) {
 	for _, model := range models {
 		_models.Push(t, model)
 	}

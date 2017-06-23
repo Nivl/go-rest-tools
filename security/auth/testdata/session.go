@@ -5,16 +5,17 @@ import (
 
 	"github.com/Nivl/go-rest-tools/primitives/models/lifecycle"
 	"github.com/Nivl/go-rest-tools/security/auth"
+	"github.com/jmoiron/sqlx"
 )
 
 // NewAuth creates a new user and their session
-func NewAuth(t *testing.T) (*auth.User, *auth.Session) {
+func NewAuth(t *testing.T, q *sqlx.DB) (*auth.User, *auth.Session) {
 	user := NewUser(t, nil)
 	session := &auth.Session{
 		UserID: user.ID,
 	}
 
-	if err := session.Create(); err != nil {
+	if err := session.Create(q); err != nil {
 		t.Fatal(err)
 	}
 
@@ -23,13 +24,13 @@ func NewAuth(t *testing.T) (*auth.User, *auth.Session) {
 }
 
 // NewAdminAuth creates a new admin and their session
-func NewAdminAuth(t *testing.T) (*auth.User, *auth.Session) {
+func NewAdminAuth(t *testing.T, q *sqlx.DB) (*auth.User, *auth.Session) {
 	user := NewUser(t, &auth.User{IsAdmin: true})
 	session := &auth.Session{
 		UserID: user.ID,
 	}
 
-	if err := session.Create(); err != nil {
+	if err := session.Create(q); err != nil {
 		t.Fatal(err)
 	}
 
