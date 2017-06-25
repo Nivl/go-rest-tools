@@ -16,6 +16,5 @@ type Endpoint struct {
 	// Handler is the handler to call
 	Handler RouteHandler
 
-	// Params represents a list of params the endpoint needs
-	Params interface{}
+	Guard *Guard
 }

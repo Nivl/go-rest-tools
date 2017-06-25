@@ -2,13 +2,11 @@ package router
 
 import (
 	"net/http"
-	"reflect"
 
 	"github.com/Nivl/go-rest-tools/dependencies"
 	"github.com/Nivl/go-rest-tools/logger"
 	"github.com/Nivl/go-rest-tools/network/http/basicauth"
 	"github.com/Nivl/go-rest-tools/network/http/httperr"
-	"github.com/Nivl/go-rest-tools/router/params"
 	"github.com/Nivl/go-rest-tools/security/auth"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
@@ -50,10 +48,7 @@ func Handler(e *Endpoint, deps *Dependencies) http.Handler {
 		request.res.Header().Set("X-Request-Id", request.id)
 
 		// We Parse the request params
-		if e.Params != nil {
-			// We give request.Params the same type as e.Params
-			request.params = reflect.New(reflect.TypeOf(e.Params).Elem()).Interface()
-
+		if e.Guard != nil && e.Guard.ParamStruct != nil {
 			// Get the list of all http params provided by the client
 			sources, err := request.httpParamsBySource()
 			if err != nil {
@@ -61,8 +56,7 @@ func Handler(e *Endpoint, deps *Dependencies) http.Handler {
 				return
 			}
 
-			// parses all params
-			err = params.NewParams(request.params).Parse(sources)
+			request.params, err = e.Guard.ParseParams(sources)
 			if err != nil {
 				request.res.Error(err, request)
 				return
