@@ -1,5 +1,7 @@
 package router
 
+import "github.com/Nivl/go-rest-tools/router/guard"
+
 // RouteHandler is the function signature we nee
 type RouteHandler func(*Request, *Dependencies) error
 
@@ -13,5 +15,6 @@ type Endpoint struct {
 	// Handler is the handler to call
 	Handler RouteHandler
 
-	Guard *Guard
+	// Guard is the security system of an endpoint
+	Guard *guard.Guard
 }
