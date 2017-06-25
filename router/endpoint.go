@@ -10,9 +10,6 @@ type Endpoint struct {
 	// Path is the path for the current component
 	Path string
 
-	// Auth is used to add a auth middleware
-	Auth RouteAuth
-
 	// Handler is the handler to call
 	Handler RouteHandler
 

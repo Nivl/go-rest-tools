@@ -92,9 +92,8 @@ func Handler(e *Endpoint, deps *Dependencies) http.Handler {
 			}
 		}
 
-		accessGranted := e.Auth == nil || e.Auth(request)
-		if !accessGranted {
-			request.res.Error(httperr.NewUnauthorized(), request)
+		if allowed, err := e.Guard.HasAccess(request.user); !allowed {
+			request.res.Error(err, request)
 			return
 		}
 
