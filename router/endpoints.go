@@ -8,6 +8,7 @@ import (
 	"github.com/Nivl/go-rest-tools/logger"
 	"github.com/Nivl/go-rest-tools/network/http/basicauth"
 	"github.com/Nivl/go-rest-tools/network/http/httperr"
+	"github.com/Nivl/go-rest-tools/router/params"
 	"github.com/Nivl/go-rest-tools/security/auth"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
@@ -32,28 +33,38 @@ func (endpoints Endpoints) Activate(router *mux.Router) {
 func Handler(e *Endpoint, deps *Dependencies) http.Handler {
 	HTTPHandler := func(resWriter http.ResponseWriter, req *http.Request) {
 		request := &Request{
-			ID:       uuid.NewV4().String()[:8],
-			Request:  req,
-			Response: resWriter,
-			deps:     deps,
+			id:   uuid.NewV4().String()[:8],
+			http: req,
+			res:  NewResponse(resWriter, deps),
+			deps: deps,
 		}
 		defer request.handlePanic()
 
 		if dependencies.Logentries != nil {
-			request.Logger = logger.NewLogEntries(dependencies.Logentries)
+			request.logger = logger.NewLogEntries(dependencies.Logentries)
 		} else {
-			request.Logger = logger.NewBasicLogger()
+			request.logger = logger.NewBasicLogger()
 		}
 
 		// We set some response data
-		request.Response.Header().Set("X-Request-Id", request.ID)
+		request.res.Header().Set("X-Request-Id", request.id)
 
 		// We Parse the request params
 		if e.Params != nil {
 			// We give request.Params the same type as e.Params
-			request.Params = reflect.New(reflect.TypeOf(e.Params).Elem()).Interface()
-			if err := request.ParseParams(); err != nil {
-				request.Error(err)
+			request.params = reflect.New(reflect.TypeOf(e.Params).Elem()).Interface()
+
+			// Get the list of all http params provided by the client
+			sources, err := request.httpParamsBySource()
+			if err != nil {
+				request.res.Error(err, request)
+				return
+			}
+
+			// parses all params
+			err = params.NewParams(request.params).Parse(sources)
+			if err != nil {
+				request.res.Error(err, request)
 				return
 			}
 		}
@@ -67,21 +78,21 @@ func Handler(e *Endpoint, deps *Dependencies) http.Handler {
 			if session.ID != "" && session.UserID != "" {
 				exists, err := session.Exists(deps.DB)
 				if err != nil {
-					request.Error(err)
+					request.res.Error(err, request)
 					return
 				}
 				if !exists {
-					request.Error(httperr.NewBadRequest("invalid auth data"))
+					request.res.Error(httperr.NewBadRequest("invalid auth data"), request)
 					return
 				}
 				// we get the user and make sure it (still) exists
-				request.User, err = auth.GetUser(deps.DB, session.UserID)
+				request.user, err = auth.GetUser(deps.DB, session.UserID)
 				if err != nil {
-					request.Error(err)
+					request.res.Error(err, request)
 					return
 				}
-				if request.User == nil {
-					request.Error(httperr.NewBadRequest("user not found"))
+				if request.user == nil {
+					request.res.Error(httperr.NewBadRequest("user not found"), request)
 					return
 				}
 			}
@@ -89,14 +100,14 @@ func Handler(e *Endpoint, deps *Dependencies) http.Handler {
 
 		accessGranted := e.Auth == nil || e.Auth(request)
 		if !accessGranted {
-			request.Error(httperr.NewUnauthorized())
+			request.res.Error(httperr.NewUnauthorized(), request)
 			return
 		}
 
 		// Execute the actual route handler
 		err := e.Handler(request, deps)
 		if err != nil {
-			request.Error(err)
+			request.res.Error(err, request)
 		}
 	}
 
