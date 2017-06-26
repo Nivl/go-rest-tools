@@ -30,10 +30,6 @@ type ParamOptions struct {
 	// ValidateUUID means the field should contain a valid UUIDv4
 	// params:"uuid"
 	ValidateUUID bool
-
-	// ValidateOptionalBool means the field should either be empty or contain a bool
-	// params:"bool"
-	ValidateOptionalBool bool
 }
 
 // Validate checks the given value passes the options set
@@ -90,8 +86,6 @@ func NewParamOptions(tags *reflect.StructTag) *ParamOptions {
 			output.Trim = true
 		case "uuid":
 			output.ValidateUUID = true
-		case "bool":
-			output.ValidateOptionalBool = true
 		}
 	}
 
