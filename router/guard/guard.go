@@ -43,5 +43,5 @@ func (g *Guard) HasAccess(u *auth.User) (bool, error) {
 	}
 
 	err := g.Auth(u)
-	return err != nil, err
+	return err == nil, err
 }

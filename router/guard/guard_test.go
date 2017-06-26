@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/Nivl/go-rest-tools/router/guard"
+	"github.com/Nivl/go-rest-tools/security/auth"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -132,6 +133,52 @@ func TestNoParseParams(t *testing.T) {
 			data, err := tc.guard.ParseParams(map[string]url.Values{})
 			assert.Nil(t, err, "the parsing was not expected to fail")
 			assert.Nil(t, data, "no data were expected to be returned")
+		})
+	}
+}
+
+// TestAuth just tests that it globally works and that the returned data
+// are synced. It won't test all the RouteAuth functions as they already have
+// their own tests.
+func TestAuth(t *testing.T) {
+	// sugar to avoid hardcoding true/false in all tests
+	shouldFail := true
+
+	testCases := []struct {
+		description string
+		guard       *guard.Guard
+		user        *auth.User
+		shouldFail  bool
+	}{
+		{"no guards should work", nil, nil, !shouldFail},
+		{"no Auth should work", &guard.Guard{}, nil, !shouldFail},
+		{
+			"valid auth",
+			&guard.Guard{Auth: guard.LoggedUserAccess},
+			&auth.User{ID: "xxx"},
+			!shouldFail,
+		},
+		{
+			"invalid auth",
+			&guard.Guard{Auth: guard.LoggedUserAccess},
+			nil,
+			shouldFail,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+
+			success, err := tc.guard.HasAccess(tc.user)
+			if tc.shouldFail {
+				assert.False(t, success, "the access should have been denied")
+				assert.NotNil(t, err, "an error should have been returned")
+			} else {
+				assert.True(t, success, "the access should have been granted")
+				assert.Nil(t, err, "no error should have been returned")
+			}
 		})
 	}
 }
