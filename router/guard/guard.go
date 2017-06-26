@@ -29,7 +29,10 @@ func (g *Guard) ParseParams(sources map[string]url.Values) (interface{}, error) 
 	// We give p the same type as g.ParamStruct
 	p := reflect.New(reflect.TypeOf(g.ParamStruct).Elem()).Interface()
 	err := params.NewParams(p).Parse(sources)
-	return p, err
+	if err != nil {
+		return nil, err
+	}
+	return p, nil
 }
 
 // HasAccess check if a given user has access to the
