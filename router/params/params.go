@@ -61,7 +61,7 @@ func (p *Params) parseRecursive(paramList reflect.Value, sources map[string]url.
 			info:  &info,
 			tags:  &tags,
 		}
-		if err := param.setValue(&source); err != nil {
+		if err := param.SetValue(&source); err != nil {
 			return err
 		}
 	}

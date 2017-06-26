@@ -9,6 +9,7 @@ import (
 	"github.com/Nivl/go-rest-tools/network/http/httperr"
 )
 
+// Param represents a struct param
 type Param struct {
 	value  *reflect.Value
 	info   *reflect.StructField
@@ -16,7 +17,20 @@ type Param struct {
 	source *url.Values
 }
 
-func (p *Param) setValue(source *url.Values) error {
+// NewParamFromStructValue creates a param using a struct value
+func NewParamFromStructValue(paramList *reflect.Value, paramPos int) *Param {
+	value := paramList.Field(paramPos)
+	info := paramList.Type().Field(paramPos)
+	tags := info.Tag
+
+	return &Param{
+		value: &value,
+		info:  &info,
+		tags:  &tags,
+	}
+}
+
+func (p *Param) SetValue(source *url.Values) error {
 	// We parse the tag to get the options
 	opts := NewParamOptions(p.tags)
 	defaultValue := p.tags.Get("default")

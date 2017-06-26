@@ -2,7 +2,6 @@ package params
 
 import (
 	"reflect"
-	"strconv"
 	"strings"
 
 	"github.com/Nivl/go-rest-tools/network/http/httperr"
@@ -41,12 +40,6 @@ func (opts *ParamOptions) Validate(value string) error {
 	if value != "" {
 		if opts.ValidateUUID && !strngs.IsValidUUID(value) {
 			return httperr.NewBadRequest("not a valid uuid: %s - %s", opts.Name, value)
-		}
-
-		if opts.ValidateOptionalBool {
-			if _, err := strconv.ParseBool(value); err != nil {
-				return httperr.NewBadRequest("not a valid bool: %s - %s", opts.Name, value)
-			}
 		}
 	}
 
