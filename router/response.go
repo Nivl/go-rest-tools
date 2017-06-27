@@ -7,7 +7,6 @@ import (
 	"runtime/debug"
 
 	"github.com/Nivl/go-rest-tools/network/http/httperr"
-	"github.com/Nivl/go-rest-tools/network/http/httpres"
 )
 
 // HTTPResponse represents an http response
@@ -60,7 +59,7 @@ func (res *Response) Ok(obj interface{}) error {
 
 // renderJSON attaches a json object to the response
 func (res *Response) renderJSON(code int, obj interface{}) error {
-	httpres.SetJSON(res.writer, code)
+	res.setJSON(code)
 
 	if obj != nil {
 		return json.NewEncoder(res.writer).Encode(obj)
@@ -79,13 +78,13 @@ func (res *Response) Error(e error, req HTTPRequest) {
 
 	switch err.Code() {
 	case http.StatusInternalServerError:
-		httpres.ErrorJSON(res.writer, `{"error":"Something went wrong"}`, http.StatusInternalServerError)
+		res.errorJSON(`{"error":"Something went wrong"}`, http.StatusInternalServerError)
 	default:
 		// Some errors do not need a body
 		if err.Error() == "" {
 			res.writer.WriteHeader(err.Code())
 		} else {
-			httpres.ErrorJSON(res.writer, fmt.Sprintf(`{"error":"%s"}`, err.Error()), err.Code())
+			res.errorJSON(fmt.Sprintf(`{"error":"%s"}`, err.Error()), err.Code())
 		}
 	}
 
@@ -102,4 +101,18 @@ func (res *Response) Error(e error, req HTTPRequest) {
 
 		go sendEmail(debug.Stack())
 	}
+}
+
+// errorJSON set the request content to the specified error message and HTTP code.
+// The error message should be valid json.
+func (res *Response) errorJSON(err string, code int) {
+	res.setJSON(code)
+	fmt.Fprintln(res.writer, err)
+}
+
+// setJSON set the response to JSON and with the specify HTTP code.
+func (res *Response) setJSON(code int) {
+	res.writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+	res.writer.Header().Set("X-Content-Type-Options", "nosniff")
+	res.writer.WriteHeader(code)
 }
