@@ -87,7 +87,7 @@ func (ri *RequestInfo) parseParamsRecursive(params reflect.Value) {
 			param = param.Elem()
 		}
 
-		// Handle embeded struct
+		// Handle embedded struct
 		if param.Kind() == reflect.Struct && paramInfo.Anonymous {
 			ri.parseParamsRecursive(param)
 			continue
