@@ -3,7 +3,7 @@ package router
 import "github.com/Nivl/go-rest-tools/router/guard"
 
 // RouteHandler is the function signature we nee
-type RouteHandler func(*Request, *Dependencies) error
+type RouteHandler func(HTTPRequest, *Dependencies) error
 
 // Endpoint represents an HTTP endpoint
 type Endpoint struct {

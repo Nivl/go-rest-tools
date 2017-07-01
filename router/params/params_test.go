@@ -4,8 +4,12 @@ import (
 	"net/url"
 	"testing"
 
+	"strconv"
+
+	"github.com/Nivl/go-rest-tools/primitives/ptrs"
 	"github.com/Nivl/go-rest-tools/router/params"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValidStruct(t *testing.T) {
@@ -49,7 +53,7 @@ func TestValidStruct(t *testing.T) {
 	assert.Equal(t, 42, s.Default)
 }
 
-func TestinvalidStruct(t *testing.T) {
+func TestInvalidStruct(t *testing.T) {
 	type strct struct {
 		ID            string  `from:"url" json:"id" params:"uuid,required"`
 		Number        int     `from:"query" json:"number"`
@@ -97,4 +101,46 @@ func TestEmbeddedStruct(t *testing.T) {
 	assert.Equal(t, "1aa75114-6117-4908-b6ea-0d22ecdd4fc0", s.ID)
 	assert.Equal(t, 24, *s.Page)
 	assert.Nil(t, s.PerPage)
+}
+
+func TestExtraction(t *testing.T) {
+	s := struct {
+		String        string  `from:"url" json:"string"`
+		Number        int     `from:"query" json:"number"`
+		Bool          bool    `from:"form" json:"bool"`
+		PointerBool   *bool   `from:"form" json:"pointer_bool"`
+		PointerString *string `from:"form" json:"pointer_string"`
+		PointerNumber *int    `from:"form" json:"pointer_number"`
+		Nil           *int    `from:"form" json:"nil"`
+	}{
+		String:        "String value",
+		Number:        42,
+		Bool:          true,
+		PointerBool:   ptrs.NewBool(false),
+		PointerString: ptrs.NewString("string pointer"),
+		PointerNumber: ptrs.NewInt(24),
+		Nil:           nil,
+	}
+
+	p := params.NewParams(&s)
+	sources := p.Extract()
+
+	// Check url data
+	urlValue, found := sources["url"]
+	require.True(t, found, "url data should be present")
+	assert.Equal(t, urlValue.Get("string"), s.String)
+
+	// Check query data
+	queryValue, found := sources["query"]
+	require.True(t, found, "query data should be present")
+	assert.Equal(t, queryValue.Get("number"), strconv.Itoa(s.Number))
+
+	// Check form data
+	formValue, found := sources["form"]
+	require.True(t, found, "for data should be present")
+	assert.Equal(t, formValue.Get("bool"), strconv.FormatBool(s.Bool))
+	assert.Equal(t, formValue.Get("pointer_bool"), strconv.FormatBool(*s.PointerBool))
+	assert.Equal(t, formValue.Get("pointer_string"), *s.PointerString)
+	assert.Equal(t, formValue.Get("pointer_number"), strconv.Itoa(*s.PointerNumber))
+	assert.Empty(t, formValue.Get("nil"))
 }
