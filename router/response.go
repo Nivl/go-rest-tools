@@ -71,11 +71,7 @@ func (res *Response) renderJSON(code int, obj interface{}) error {
 // If the error is an instance of HTTPError, the returned code will
 // match HTTPError.Code(). It returns a 500 if no code has been set.
 func (res *Response) Error(e error, req HTTPRequest) {
-	err, casted := e.(*httperr.HTTPError)
-	if !casted {
-		err = httperr.NewServerError(e.Error()).(*httperr.HTTPError)
-	}
-
+	err := httperr.Convert(e)
 	switch err.Code() {
 	case http.StatusInternalServerError:
 		res.errorJSON(`{"error":"Something went wrong"}`, http.StatusInternalServerError)
