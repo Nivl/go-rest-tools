@@ -40,5 +40,5 @@ var Sendgrid *mailer.Sendgrid
 
 // InitSendgrid creates a mailer that uses Sendgrid
 func InitSendgrid(api, from, to, stacktraceUUID string) {
-	Sendgrid = mailer.NewSendgrid(api, from, to)
+	Sendgrid = mailer.NewSendgrid(api, from, to, stacktraceUUID)
 }
