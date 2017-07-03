@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Nivl/go-rest-tools/network/http/httperr"
 	"github.com/Nivl/go-rest-tools/primitives/ptrs"
 	"github.com/Nivl/go-rest-tools/router/guard"
 	"github.com/Nivl/go-rest-tools/security/auth"
@@ -43,8 +42,7 @@ func TestLoggedUserAccess(t *testing.T) {
 			if tc.expectedError == nil {
 				assert.Nil(t, err, "access should have not been denied: %s", err)
 			} else {
-				errCode := getHTTPError(err)
-				assert.Equal(t, *tc.expectedError, errCode, "the auth failed with the wrong error code")
+				assert.Equal(t, *tc.expectedError, err.Code(), "the auth failed with the wrong error code")
 			}
 		})
 	}
@@ -82,19 +80,8 @@ func TestAdminAccess(t *testing.T) {
 			if tc.expectedError == nil {
 				assert.Nil(t, err, "access should have not been denied: %s", err)
 			} else {
-				errCode := getHTTPError(err)
-				assert.Equal(t, *tc.expectedError, errCode, "the auth failed with the wrong error code")
+				assert.Equal(t, *tc.expectedError, err.Code(), "the auth failed with the wrong error code")
 			}
 		})
 	}
-}
-
-// Helpers
-
-func getHTTPError(e error) int {
-	err, casted := e.(*httperr.HTTPError)
-	if !casted {
-		return http.StatusInternalServerError
-	}
-	return err.Code()
 }
