@@ -41,7 +41,7 @@ func TestValidStruct(t *testing.T) {
 		"query": querySource,
 	}
 
-	if err := p.Parse(sources); err != nil {
+	if err := p.Parse(sources, nil); err != nil {
 		t.Fatal(err)
 	}
 
@@ -64,7 +64,7 @@ func TestInvalidStruct(t *testing.T) {
 	}
 
 	p := params.NewParams(&strct{})
-	err := p.Parse(map[string]url.Values{})
+	err := p.Parse(map[string]url.Values{}, nil)
 	assert.NotNil(t, err)
 }
 
@@ -94,7 +94,7 @@ func TestEmbeddedStruct(t *testing.T) {
 		"query": querySource,
 	}
 
-	if err := p.Parse(sources); err != nil {
+	if err := p.Parse(sources, nil); err != nil {
 		t.Fatal(err)
 	}
 

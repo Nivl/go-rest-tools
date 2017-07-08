@@ -1,14 +1,20 @@
 package params_test
 
 import (
+	"mime/multipart"
 	"reflect"
 	"testing"
 
+	"net/http"
 	"net/url"
 
 	"strconv"
 
+	"os"
+
 	"github.com/Nivl/go-rest-tools/primitives/ptrs"
+	"github.com/Nivl/go-rest-tools/router/formfile"
+	"github.com/Nivl/go-rest-tools/router/formfile/mockformfile"
 	"github.com/Nivl/go-rest-tools/router/params"
 	"github.com/stretchr/testify/assert"
 )
@@ -221,6 +227,123 @@ func TestBooleanParam(t *testing.T) {
 			} else {
 				assert.Nil(t, err, "Expected SetValue not to return an error")
 				assert.Equal(t, tc.expectedValue, tc.s.Boolean)
+			}
+		})
+	}
+}
+
+func TestFileParamValid(t *testing.T) {
+	type strct struct {
+		File *formfile.FormFile `from:"file" json:"file"`
+	}
+
+	// Use the LICENSE file to do the tests
+	licenseHeader := &multipart.FileHeader{
+		Filename: "LICENSE",
+	}
+	licenseFile, err := os.Open("../../LICENSE")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer licenseFile.Close()
+
+	testCases := []struct {
+		description string
+		s           strct
+		sendNil     bool
+	}{
+		{"Nil pointer should work", strct{}, true},
+		{"Pointers should work", strct{}, false},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+
+			fileHolder := new(mockformfile.FileHolder)
+			onFormFile := fileHolder.On("FormFile", "file")
+
+			if tc.sendNil {
+				onFormFile.Return(nil, nil, http.ErrMissingFile)
+			} else {
+				onFormFile.Return(licenseFile, licenseHeader, nil)
+			}
+
+			paramList := reflect.ValueOf(&tc.s).Elem()
+			p := params.NewParamFromStructValue(&paramList, 0)
+
+			err := p.SetFile(fileHolder)
+			assert.Nil(t, err, "Expected SetFile not to return an error")
+
+			if tc.sendNil {
+				assert.Nil(t, tc.s.File, "Expected File to be nil")
+			} else {
+				if assert.NotNil(t, tc.s.File, "Expected File NOT to be nil") {
+					assert.NotNil(t, tc.s.File.File, "Expected File.File NOT to be nil")
+					assert.NotNil(t, tc.s.File.Header, "Expected File.Header NOT to be nil")
+					assert.Equal(t, licenseHeader.Filename, tc.s.File.Header.Filename)
+				}
+			}
+		})
+	}
+}
+
+func TestFileParamRequired(t *testing.T) {
+	type strct struct {
+		File *formfile.FormFile `from:"file" json:"file" params:"required"`
+	}
+
+	// Use the LICENSE file to do the tests
+	licenseHeader := &multipart.FileHeader{
+		Filename: "LICENSE",
+	}
+	licenseFile, err := os.Open("../../LICENSE")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer licenseFile.Close()
+
+	testCases := []struct {
+		description string
+		s           strct
+		sendNil     bool
+		shouldFail  bool
+	}{
+		{"Nil pointer should work", strct{}, true, true},
+		{"Pointers should work", strct{}, false, false},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+
+			fileHolder := new(mockformfile.FileHolder)
+			onFormFile := fileHolder.On("FormFile", "file")
+
+			if tc.sendNil {
+				onFormFile.Return(nil, nil, http.ErrMissingFile)
+			} else {
+				onFormFile.Return(licenseFile, licenseHeader, nil)
+			}
+
+			paramList := reflect.ValueOf(&tc.s).Elem()
+			p := params.NewParamFromStructValue(&paramList, 0)
+
+			err := p.SetFile(fileHolder)
+
+			if tc.sendNil {
+				assert.Error(t, err, "Expected SetFile to return an error")
+
+			} else {
+				assert.NoError(t, err, "Expected SetFile not to return an error")
+
+				if assert.NotNil(t, tc.s.File, "Expected File NOT to be nil") {
+					assert.NotNil(t, tc.s.File.File, "Expected File.File NOT to be nil")
+					assert.NotNil(t, tc.s.File.Header, "Expected File.Header NOT to be nil")
+					assert.Equal(t, licenseHeader.Filename, tc.s.File.Header.Filename)
+				}
 			}
 		})
 	}
