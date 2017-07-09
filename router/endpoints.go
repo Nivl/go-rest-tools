@@ -55,7 +55,7 @@ func Handler(e *Endpoint, deps *Dependencies) http.Handler {
 				return
 			}
 
-			request.params, err = e.Guard.ParseParams(sources)
+			request.params, err = e.Guard.ParseParams(sources, request.http)
 			if err != nil {
 				request.res.Error(err, request)
 				return
