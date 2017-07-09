@@ -46,13 +46,29 @@ func InitSendgrid(api, from, to, stacktraceUUID string) {
 // GCP represents the configuration of Google Cloud
 type GCP struct {
 	APIKey      string
-	projectName string
+	ProjectName string
+	Bucket      string
 }
 
 // GoogleCloud contains the Google Cloud configuration
 var GoogleCloud *GCP
 
-// InitGCP creates a mailer that uses Sendgrid
+// InitGCP setups Google Cloud Platform
 func InitGCP(config *GCP) {
 	GoogleCloud = config
+}
+
+// CloudinaryParams represents the configuration of Cloudinary
+type CloudinaryParams struct {
+	APIKey string
+	Secret string
+	Bucket string
+}
+
+// Cloudinary contains Cloudinary's configuration
+var Cloudinary *CloudinaryParams
+
+// InitCloudinary setups Cloudinary
+func InitCloudinary(config *CloudinaryParams) {
+	Cloudinary = config
 }
