@@ -84,3 +84,36 @@ func storageHappyPathTest(t *testing.T, storage filestorage.FileStorage, dontTes
 		})
 	}
 }
+
+// storageUnexistingReadTest tests that
+func storageUnexistingReadTest(t *testing.T, storage filestorage.FileStorage) {
+	testCases := []struct {
+		description string
+		filename    string
+	}{
+		{
+			"Subfolder should work",
+			"subfolder/file-does-not-exist",
+		},
+		{
+			"No subfolder should work",
+			"file-does-not-exist",
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+
+			// Read the uploaded file
+			r, err := storage.Read(tc.filename)
+			if err == nil {
+				r.Close()
+			}
+
+			assert.Error(t, err, "expected Read() to fail")
+			assert.True(t, os.IsNotExist(err), "expected Read() to fail with a Not Found error")
+		})
+	}
+}

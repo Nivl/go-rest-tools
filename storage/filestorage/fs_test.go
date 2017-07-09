@@ -12,16 +12,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFSHappyPath(t *testing.T) {
-	var err error
-	var fs filestorage.FileStorage // we make sure NewFSStorage implements FileStorage
-
-	fs, err = filestorage.NewFSStorage()
+func TestFSStorage(t *testing.T) {
+	storage, err := filestorage.NewFSStorage()
 	if err != nil {
 		t.Fatal(err)
 	}
-	fs.SetBucket("unit-test")
+	storage.SetBucket("unit-test")
 
+	fsHappyPath(t, storage)
+	storageUnexistingReadTest(t, storage)
+}
+
+func fsHappyPath(t *testing.T, fs filestorage.FileStorage) {
 	testCases := []struct {
 		description string
 		outputName  string
@@ -53,7 +55,7 @@ func TestFSHappyPath(t *testing.T) {
 
 			// check the file exist on the disk
 			url, _ := fs.URL(tc.outputName)
-			_, err = os.Stat(url)
+			_, err := os.Stat(url)
 			if err != nil {
 				if os.IsNotExist(err) {
 					assert.FailNow(t, "Expected the following file to exists: "+url)

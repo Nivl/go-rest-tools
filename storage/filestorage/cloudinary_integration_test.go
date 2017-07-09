@@ -7,7 +7,7 @@ import (
 	"github.com/Nivl/go-rest-tools/storage/filestorage"
 )
 
-func TestCloudinaryUploadHappyPath(t *testing.T) {
+func TestCloudinary(t *testing.T) {
 	if os.Getenv("TEST_CLOUDINARY") != "true" {
 		t.Skip("Not testing cloudinary")
 	}
@@ -18,5 +18,7 @@ func TestCloudinaryUploadHappyPath(t *testing.T) {
 
 	storage := filestorage.NewCloudinary(apiKey, secret)
 	storage.SetBucket(bucket)
+
 	storageHappyPathTest(t, storage, true)
+	storageUnexistingReadTest(t, storage)
 }
