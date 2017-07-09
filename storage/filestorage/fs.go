@@ -75,7 +75,7 @@ func (s *FSStorage) Write(src io.Reader, destPath string) error {
 
 // Delete removes a file
 func (s *FSStorage) Delete(filepath string) error {
-	err := os.Remove(s.URL(filepath))
+	err := os.Remove(s.fullPath(filepath))
 	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
@@ -83,8 +83,8 @@ func (s *FSStorage) Delete(filepath string) error {
 }
 
 // URL returns the URL of the file
-func (s *FSStorage) URL(filepath string) string {
-	return s.fullPath(filepath)
+func (s *FSStorage) URL(filepath string) (string, error) {
+	return s.fullPath(filepath), nil
 }
 
 // SetAttributes sets the attributes of the file

@@ -13,16 +13,17 @@ type FileStorage interface {
 	SetBucket(bucket string) error
 
 	// Read fetches a file a returns a reader
+	// Returns os.ErrNotExist if the file does not exists
 	Read(filepath string) (io.ReadCloser, error)
 
 	// Write copy the provided os.File to dest
 	Write(src io.Reader, destPath string) error
 
-	// Delete removes a file, ignore file that does not exist
+	// Delete removes a file, ignores files that do not exist
 	Delete(filepath string) error
 
 	// URL returns the URL of the file
-	URL(filepath string) string
+	URL(filepath string) (string, error)
 
 	// SetAttributes sets the attributes of the file
 	SetAttributes(filepath string, attrs *UpdatableFileAttributes) (*FileAttributes, error)

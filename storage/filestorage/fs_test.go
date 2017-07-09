@@ -52,10 +52,11 @@ func TestFSHappyPath(t *testing.T) {
 			}
 
 			// check the file exist on the disk
-			_, err = os.Stat(fs.URL(tc.outputName))
+			url, _ := fs.URL(tc.outputName)
+			_, err = os.Stat(url)
 			if err != nil {
 				if os.IsNotExist(err) {
-					assert.FailNow(t, "Expected the following file to exists: "+fs.URL(tc.outputName))
+					assert.FailNow(t, "Expected the following file to exists: "+url)
 				}
 				t.Fatal(err)
 			}
@@ -75,7 +76,7 @@ func TestFSHappyPath(t *testing.T) {
 			assert.NoError(t, err, "the deletion should have succeed")
 
 			// We make sure the file has been deleted
-			_, err = os.Stat(fs.URL(tc.outputName))
+			_, err = os.Stat(url)
 			assert.True(t, os.IsNotExist(err), "expect the file not to exist")
 		})
 	}
