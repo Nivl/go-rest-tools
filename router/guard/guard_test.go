@@ -104,7 +104,7 @@ func TestParseParams(t *testing.T) {
 				ParamStruct: &BasicParamStruct{},
 			}
 
-			data, err := g.ParseParams(tc.sources)
+			data, err := g.ParseParams(tc.sources, nil)
 			if tc.shouldFail {
 				assert.NotNil(t, err, "the parsing was expected to fail")
 				assert.Nil(t, data, "no data were expected to be returned")
@@ -130,7 +130,7 @@ func TestNoParseParams(t *testing.T) {
 		t.Run(tc.description, func(t *testing.T) {
 			t.Parallel()
 
-			data, err := tc.guard.ParseParams(map[string]url.Values{})
+			data, err := tc.guard.ParseParams(map[string]url.Values{}, nil)
 			assert.Nil(t, err, "the parsing was not expected to fail")
 			assert.Nil(t, data, "no data were expected to be returned")
 		})
