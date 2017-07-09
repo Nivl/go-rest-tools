@@ -2,3 +2,10 @@ language: go
 
 go:
   - master
+
+notifications:
+  email:
+    recipients:
+      secure: "toF1AjYU5W/90ZH5xwwsKlXQgmGDOpZ9mVHSjBuBd+SWdBO/BAwrSTt3J0eNVgpeLlFQsDPPDsi2j4Yrt3UsduZ6yj0ALS5O2MT+Zy+hTPzJgeTvbiZJm7Or5RVXQaDF1WFUEJaWvLxsO3g39+0tCCLN1wU1NFU5nB8Hb4e1yMxVcBk6xfYVIA8mSF+LjLGXzwSMm+vOer+v1HuXtu38hBcDVjvhGkglFaJxri5ELY3WZMI7sKXFfMDGZ1Og/LAh9t8m7RSZb+b3l4M3Fl91Y/ecmTp9ZzfYcs8i6KhHnKxWApSYrcGgbGmtJi0/Vb8ksiwQBXS1vZCiVVc7hMjCgPJcjQ+p535I5bJMmifJoaP9cOoU+Eq0PeJFL7WInGzJM0aNXxqXyrfLSEx6MXizq74Poo9L0ZdRtQPigHaSwZIaeBO/fZAwXe254zEDqK7kNZkdF0abudn9px8rnZZah+yxMjc5p92MYZePTATzvjak8d5ysiNk7ICsjQQV1yN8MuhHegcIVuCQYBJynhOcaDMeaD9TPzJXwmgLraZ7AptDDgpe1F9yCB1eXXwbDamZf634/+eFBBkCEV7BY9hTlPjpTEFlvbWDdM/XueB+Qohim0XhtTaMnj7MAFPx1HiH7BGMzMmKSZU6+TZx+cnLNhvqXUg9Rk827HzCyx5JZZo="
+    on_success: change
+    on_failure: always
