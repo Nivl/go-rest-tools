@@ -42,3 +42,17 @@ var Sendgrid *mailer.Sendgrid
 func InitSendgrid(api, from, to, stacktraceUUID string) {
 	Sendgrid = mailer.NewSendgrid(api, from, to, stacktraceUUID)
 }
+
+// GCP represents the configuration of Google Cloud
+type GCP struct {
+	APIKey      string
+	projectName string
+}
+
+// GoogleCloud contains the Google Cloud configuration
+var GoogleCloud *GCP
+
+// InitGCP creates a mailer that uses Sendgrid
+func InitGCP(config *GCP) {
+	GoogleCloud = config
+}
