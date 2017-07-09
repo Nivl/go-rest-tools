@@ -29,6 +29,8 @@ func TestBasicParam(t *testing.T) {
 		Required string `from:"url" json:"required" params:"required"`
 		Trim     string `from:"url" json:"trim" params:"trim"`
 		Default  string `from:"url" json:"default" default:"default value"`
+		Url      string `from:"url" json:"url" params:"url"`
+		Email    string `from:"url" json:"email" params:"email"`
 	}
 
 	testCases := []struct {
@@ -82,6 +84,30 @@ func TestBasicParam(t *testing.T) {
 			"", "default value",
 			!shouldFail,
 		},
+		{
+			"Valid URL should work",
+			strct{}, 5, "url",
+			"http://google.com", "http://google.com",
+			!shouldFail,
+		},
+		{
+			"invalid URL should fail",
+			strct{}, 5, "url",
+			"ftp://google.com", "",
+			shouldFail,
+		},
+		{
+			"Valid email should work",
+			strct{}, 6, "email",
+			"email@domain.tld", "email@domain.tld",
+			!shouldFail,
+		},
+		{
+			"invalid email should fail",
+			strct{}, 6, "email",
+			"not-an-email", "",
+			shouldFail,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -98,10 +124,10 @@ func TestBasicParam(t *testing.T) {
 			newValue := paramList.Field(tc.fieldIndex).String()
 
 			if tc.shouldFail {
-				assert.NotNil(t, err, "Expected SetValue to be failing with an error")
+				assert.Error(t, err, "Expected SetValue to be failing with an error")
 				assert.Empty(t, newValue, "Expected no value to be set")
 			} else {
-				assert.Nil(t, err, "Expected SetValue not to return an error")
+				assert.NoError(t, err, "Expected SetValue not to return an error")
 				assert.Equal(t, tc.expected, newValue)
 			}
 		})
