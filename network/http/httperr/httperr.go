@@ -68,9 +68,7 @@ func NewFromSQL(err error) error {
 	if pqErr, ok := err.(*pq.Error); ok {
 		switch pqErr.Code {
 		case db.ErrDup:
-			httpErr := NewConflict("%s already exists")
-			httpErr.ErrorField = pqErr.Column
-			return httpErr
+			return NewConflict(pqErr.Column)
 		default:
 			return err
 		}
