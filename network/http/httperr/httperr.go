@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"regexp"
 
 	"github.com/Nivl/go-rest-tools/storage/db"
 	"github.com/lib/pq"
@@ -68,7 +69,16 @@ func NewFromSQL(err error) error {
 	if pqErr, ok := err.(*pq.Error); ok {
 		switch pqErr.Code {
 		case db.ErrDup:
-			return NewConflict(pqErr.Column)
+			// because it's a constraint issue, the column name won't be stored in
+			// pqErr.Column. Fortunately we can find it in detail.
+			// Example of detail: "Key (name)=(Google) already exists."
+			r := regexp.MustCompile(`^Key \(([a-z_]+)\).*\.$`)
+			matches := r.FindStringSubmatch(pqErr.Detail)
+			fieldName := "unknown"
+			if len(matches) > 1 {
+				fieldName = matches[1]
+			}
+			return NewConflict(fieldName)
 		default:
 			return err
 		}
@@ -95,7 +105,7 @@ func NewBadRequest(field string, message string, args ...interface{}) *HTTPError
 // NewConflict returns an error caused by a conflict with the current state
 // of the app. Example: A duplicate slug
 func NewConflict(field string) *HTTPError {
-	return NewError(http.StatusConflict, field, "%s already exists", field)
+	return NewError(http.StatusConflict, field, "already exists")
 }
 
 // NewConflictR returns an error caused by a conflict with the current state

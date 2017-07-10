@@ -88,7 +88,12 @@ func (res *Response) Error(e error, req HTTPRequest) {
 		}
 	}
 
-	req.Logger().Errorf(`code: "%d", message: "%s", %s`, err.Code(), err.Error(), req)
+	// if the error has a field attached we log it
+	field := ""
+	if err.Field() != "" {
+		field = fmt.Sprintf(`, field: "%s"`, err.Field())
+	}
+	req.Logger().Errorf(`code: "%d"%s, message: "%s", %s`, err.Code(), field, err.Error(), req)
 
 	// We send an email for all server error
 	if err.Code() == http.StatusInternalServerError {
