@@ -42,20 +42,20 @@ type ParamOptions struct {
 // Validate checks the given value passes the options set
 func (opts *ParamOptions) Validate(value string) error {
 	if value == "" && opts.Required {
-		return httperr.NewBadRequest("parameter missing: %s", opts.Name)
+		return httperr.NewBadRequest(opts.Name, "parameter missing")
 	}
 
 	if value != "" {
 		if opts.ValidateUUID && !strngs.IsValidUUID(value) {
-			return httperr.NewBadRequest("not a valid uuid: %s - %s", opts.Name, value)
+			return httperr.NewBadRequest(opts.Name, "not a valid uuid")
 		}
 
 		if opts.ValidateURL && !strngs.IsValidURL(value) {
-			return httperr.NewBadRequest("not a valid url: %s - %s", opts.Name, value)
+			return httperr.NewBadRequest(opts.Name, "not a valid url")
 		}
 
 		if opts.ValidateEmail && !strngs.IsValidEmail(value) {
-			return httperr.NewBadRequest("not a valid email: %s - %s", opts.Name, value)
+			return httperr.NewBadRequest(opts.Name, "not a valid email")
 		}
 	}
 

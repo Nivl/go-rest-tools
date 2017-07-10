@@ -79,7 +79,12 @@ func (res *Response) Error(e error, req HTTPRequest) {
 		if err.Error() == "" {
 			res.writer.WriteHeader(err.Code())
 		} else {
-			res.errorJSON(fmt.Sprintf(`{"error":"%s"}`, err.Error()), err.Code())
+			// if the error has a param attached we return it
+			field := ""
+			if err.Field() != "" {
+				field = fmt.Sprintf(`, "field":"%s"`, err.Field())
+			}
+			res.errorJSON(fmt.Sprintf(`{"error":"%s"%s}`, err.Error(), field), err.Code())
 		}
 	}
 

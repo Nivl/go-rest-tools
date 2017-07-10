@@ -51,7 +51,7 @@ func (p *Param) SetFile(source formfile.FileHolder) error {
 		// if the file is missing it's ok as long as it's not required
 		if err == http.ErrMissingFile {
 			if opts.Required {
-				return httperr.NewBadRequest("parameter missing: %s", opts.Name)
+				return httperr.NewBadRequest(opts.Name, "parameter missing")
 			}
 			return nil
 		}
@@ -98,8 +98,6 @@ func (p *Param) SetValue(source *url.Values) error {
 
 	// We now set the value in the struct
 	if value != "" {
-		var errorMsg = fmt.Sprintf("value [%s] for parameter [%s] is invalid", value, opts.Name)
-
 		if p.value.Kind() == reflect.Ptr {
 			val := reflect.New(p.value.Type().Elem())
 			p.value.Set(val)
@@ -110,7 +108,7 @@ func (p *Param) SetValue(source *url.Values) error {
 		case reflect.Bool:
 			v, err := strconv.ParseBool(value)
 			if err != nil {
-				return httperr.NewBadRequest(errorMsg)
+				return httperr.NewBadRequest(opts.Name, "invalid boolean")
 			}
 			field.SetBool(v)
 		case reflect.String:
@@ -118,7 +116,7 @@ func (p *Param) SetValue(source *url.Values) error {
 		case reflect.Int:
 			v, err := strconv.ParseInt(value, 10, 64)
 			if err != nil {
-				return httperr.NewBadRequest(errorMsg)
+				return httperr.NewBadRequest(opts.Name, "invalid integer")
 			}
 			field.SetInt(v)
 		}
