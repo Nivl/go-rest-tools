@@ -12,6 +12,8 @@ import (
 
 	"os"
 
+	"path"
+
 	"github.com/Nivl/go-rest-tools/primitives/ptrs"
 	"github.com/Nivl/go-rest-tools/router/formfile"
 	"github.com/Nivl/go-rest-tools/router/formfile/mockformfile"
@@ -263,16 +265,6 @@ func TestFileParamValid(t *testing.T) {
 		File *formfile.FormFile `from:"file" json:"file"`
 	}
 
-	// Use the LICENSE file to do the tests
-	licenseHeader := &multipart.FileHeader{
-		Filename: "LICENSE",
-	}
-	licenseFile, err := os.Open("../../LICENSE")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer licenseFile.Close()
-
 	testCases := []struct {
 		description string
 		s           strct
@@ -286,7 +278,20 @@ func TestFileParamValid(t *testing.T) {
 		tc := tc
 		t.Run(tc.description, func(t *testing.T) {
 			t.Parallel()
+			filename := "LICENSE"
 
+			// We create the Head and the file
+			licenseHeader := &multipart.FileHeader{
+				Filename: filename,
+			}
+			filePath := path.Join("fixtures", filename)
+			licenseFile, err := os.Open(filePath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer licenseFile.Close()
+
+			// Expectation
 			fileHolder := new(mockformfile.FileHolder)
 			onFormFile := fileHolder.On("FormFile", "file")
 
@@ -299,7 +304,8 @@ func TestFileParamValid(t *testing.T) {
 			paramList := reflect.ValueOf(&tc.s).Elem()
 			p := params.NewParamFromStructValue(&paramList, 0)
 
-			err := p.SetFile(fileHolder)
+			err = p.SetFile(fileHolder)
+			fileHolder.AssertExpectations(t)
 			assert.Nil(t, err, "Expected SetFile not to return an error")
 
 			if tc.sendNil {
@@ -320,16 +326,6 @@ func TestFileParamRequired(t *testing.T) {
 		File *formfile.FormFile `from:"file" json:"file" params:"required"`
 	}
 
-	// Use the LICENSE file to do the tests
-	licenseHeader := &multipart.FileHeader{
-		Filename: "LICENSE",
-	}
-	licenseFile, err := os.Open("../../LICENSE")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer licenseFile.Close()
-
 	testCases := []struct {
 		description string
 		s           strct
@@ -344,7 +340,20 @@ func TestFileParamRequired(t *testing.T) {
 		tc := tc
 		t.Run(tc.description, func(t *testing.T) {
 			t.Parallel()
+			filename := "LICENSE"
 
+			// We create the Head and the file
+			licenseHeader := &multipart.FileHeader{
+				Filename: filename,
+			}
+			filePath := path.Join("fixtures", filename)
+			licenseFile, err := os.Open(filePath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer licenseFile.Close()
+
+			// Expectations
 			fileHolder := new(mockformfile.FileHolder)
 			onFormFile := fileHolder.On("FormFile", "file")
 
@@ -357,7 +366,8 @@ func TestFileParamRequired(t *testing.T) {
 			paramList := reflect.ValueOf(&tc.s).Elem()
 			p := params.NewParamFromStructValue(&paramList, 0)
 
-			err := p.SetFile(fileHolder)
+			err = p.SetFile(fileHolder)
+			fileHolder.AssertExpectations(t)
 
 			if tc.sendNil {
 				assert.Error(t, err, "Expected SetFile to return an error")
@@ -371,6 +381,101 @@ func TestFileParamRequired(t *testing.T) {
 					assert.Equal(t, licenseHeader.Filename, tc.s.File.Header.Filename)
 				}
 			}
+		})
+	}
+}
+
+func TestFileParamValidImage(t *testing.T) {
+	type strct struct {
+		File *formfile.FormFile `from:"file" json:"file" params:"image"`
+	}
+
+	testCases := []struct {
+		description  string
+		s            strct
+		filename     string
+		expectedMime string
+	}{
+		{"Valid PNG", strct{}, "black_pixel.png", "image/png"},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+
+			// We create the Head and the file
+			licenseHeader := &multipart.FileHeader{
+				Filename: tc.filename,
+			}
+			filePath := path.Join("fixtures", tc.filename)
+			licenseFile, err := os.Open(filePath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer licenseFile.Close()
+
+			// Set the expectations
+			fileHolder := new(mockformfile.FileHolder)
+			fileHolder.On("FormFile", "file").Return(licenseFile, licenseHeader, nil)
+
+			// Call the function to test
+			paramList := reflect.ValueOf(&tc.s).Elem()
+			p := params.NewParamFromStructValue(&paramList, 0)
+			err = p.SetFile(fileHolder)
+
+			// assert
+			fileHolder.AssertExpectations(t)
+			assert.NoError(t, err, "Expected SetFile to return an error")
+			assert.Equal(t, tc.expectedMime, tc.s.File.Mime, "Wrong mime type")
+		})
+	}
+}
+
+func TestFileParamInvalidImage(t *testing.T) {
+	type strct struct {
+		File *formfile.FormFile `from:"file" json:"file" params:"image"`
+	}
+
+	testCases := []struct {
+		description string
+		s           strct
+		filename    string
+	}{
+		{"Invalid magic", strct{}, "invalid_magic.png"},
+		{"Invalid content", strct{}, "invalid_content.png"},
+		{"Not an image", strct{}, "LICENSE"},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+
+			// We create the Head and the file
+			licenseHeader := &multipart.FileHeader{
+				Filename: tc.filename,
+			}
+			filePath := path.Join("fixtures", tc.filename)
+			licenseFile, err := os.Open(filePath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer licenseFile.Close()
+
+			// Set the expectations
+			fileHolder := new(mockformfile.FileHolder)
+			fileHolder.On("FormFile", "file").Return(licenseFile, licenseHeader, nil)
+
+			// Call the function to test
+			paramList := reflect.ValueOf(&tc.s).Elem()
+			p := params.NewParamFromStructValue(&paramList, 0)
+			err = p.SetFile(fileHolder)
+
+			// Assert
+			fileHolder.AssertExpectations(t)
+			assert.Error(t, err, "Expected SetFile to return an error")
+			assert.Equal(t, "not a valid image", err.Error())
 		})
 	}
 }
