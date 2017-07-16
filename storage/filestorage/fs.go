@@ -122,3 +122,14 @@ func (s *FSStorage) Attributes(filepath string) (*FileAttributes, error) {
 func (s *FSStorage) fullPath(filepath string) string {
 	return path.Join(s.path, s.bucket, filepath)
 }
+
+// WriteIfNotExist copies the provided io.Reader to dest if the file does
+// not already exist
+// Returns:
+//   - A boolean specifying if the file got uploaded (true) or if already
+//     existed (false).
+//   - A URL to the uploaded file
+//   - An error if something went wrong
+func (s *FSStorage) WriteIfNotExist(src io.Reader, destPath string) (new bool, url string, err error) {
+	return writeIfNotExist(s, src, destPath)
+}

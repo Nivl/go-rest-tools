@@ -16,7 +16,7 @@ type FileStorage interface {
 	// Returns os.ErrNotExist if the file does not exists
 	Read(filepath string) (io.ReadCloser, error)
 
-	// Write copy the provided os.File to dest
+	// Write copies the provided io.Reader to dest
 	Write(src io.Reader, destPath string) error
 
 	// Delete removes a file, ignores files that do not exist
@@ -33,6 +33,15 @@ type FileStorage interface {
 
 	// Exists check if a file exists
 	Exists(filepath string) (bool, error)
+
+	// WriteIfNotExist copies the provided io.Reader to dest if the file does
+	// not already exist
+	// Returns:
+	//   - A boolean specifying if the file got uploaded (true) or if already
+	//     existed (false).
+	//   - A URL to the uploaded file
+	//   - An error if something went wrong
+	WriteIfNotExist(src io.Reader, destPath string) (wrote bool, url string, err error)
 }
 
 // FileAttributes represents the attributes a file can have

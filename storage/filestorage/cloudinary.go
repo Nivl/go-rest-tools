@@ -322,3 +322,14 @@ func (s *Cloudinary) SetAttributes(filepath string, attrs *UpdatableFileAttribut
 func (s *Cloudinary) Attributes(filepath string) (*FileAttributes, error) {
 	return &FileAttributes{}, nil
 }
+
+// WriteIfNotExist copies the provided io.Reader to dest if the file does
+// not already exist
+// Returns:
+//   - A boolean specifying if the file got uploaded (true) or if already
+//     existed (false).
+//   - A URL to the uploaded file
+//   - An error if something went wrong
+func (s *Cloudinary) WriteIfNotExist(src io.Reader, destPath string) (new bool, url string, err error) {
+	return writeIfNotExist(s, src, destPath)
+}

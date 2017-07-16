@@ -133,3 +133,14 @@ func (s *GCStorage) URL(filepath string) (string, error) {
 func (s *GCStorage) Delete(filepath string) error {
 	return s.bucket.Object(filepath).Delete(s.ctx)
 }
+
+// WriteIfNotExist copies the provided io.Reader to dest if the file does
+// not already exist
+// Returns:
+//   - A boolean specifying if the file got uploaded (true) or if already
+//     existed (false).
+//   - A URL to the uploaded file
+//   - An error if something went wrong
+func (s *GCStorage) WriteIfNotExist(src io.Reader, destPath string) (new bool, url string, err error) {
+	return writeIfNotExist(s, src, destPath)
+}

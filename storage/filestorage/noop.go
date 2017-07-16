@@ -50,7 +50,7 @@ func (s *Noop) Attributes(filepath string) (*FileAttributes, error) {
 
 // URL returns the URL of the file
 func (s *Noop) URL(filepath string) (string, error) {
-	return "", errors.New("noop cannot generate a URL")
+	return "http://localhost/noop/" + filepath, nil
 }
 
 // Exists check if a file exists
@@ -61,4 +61,16 @@ func (s *Noop) Exists(filepath string) (bool, error) {
 // Delete removes a file, ignores files that do not exist
 func (s *Noop) Delete(filepath string) error {
 	return nil
+}
+
+// WriteIfNotExist copies the provided io.Reader to dest if the file does
+// not already exist
+// Returns:
+//   - A boolean specifying if the file got uploaded (true) or if already
+//     existed (false).
+//   - A URL to the uploaded file
+//   - An error if something went wrong
+func (s *Noop) WriteIfNotExist(src io.Reader, destPath string) (new bool, url string, err error) {
+	url, _ = s.URL(destPath)
+	return true, url, nil
 }
