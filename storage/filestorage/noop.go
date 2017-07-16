@@ -27,7 +27,7 @@ func (s *Noop) Read(filepath string) (io.ReadCloser, error) {
 
 // Write copy the provided os.File to dest
 func (s *Noop) Write(src io.Reader, destPath string) error {
-	return errors.New("noop cannot write")
+	return nil
 }
 
 // SetAttributes sets the attributes of the file
@@ -53,7 +53,12 @@ func (s *Noop) URL(filepath string) (string, error) {
 	return "", errors.New("noop cannot generate a URL")
 }
 
+// Exists check if a file exists
+func (s *Noop) Exists(filepath string) (bool, error) {
+	return true, nil
+}
+
 // Delete removes a file, ignores files that do not exist
 func (s *Noop) Delete(filepath string) error {
-	return errors.New("noop cannot read")
+	return nil
 }

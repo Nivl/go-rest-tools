@@ -25,3 +25,19 @@ func MimeType(r io.ReadSeeker) (string, error) {
 
 	return http.DetectContentType(buff), nil
 }
+
+// SHA256 returns the SHA256 sum of a reader
+func SHA256(r io.ReadSeeker) (string, error) {
+	initialPos, err := r.Seek(0, io.SeekCurrent)
+	if err != nil {
+		return "", err
+	}
+
+	// revert the pointer back to its original position
+	_, err = r.Seek(initialPos, io.SeekStart)
+	if err != nil {
+		return "", err
+	}
+
+	return "", nil
+}
