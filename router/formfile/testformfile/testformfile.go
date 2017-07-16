@@ -5,6 +5,9 @@ import (
 	"os"
 	"path"
 	"testing"
+
+	"github.com/Nivl/go-rest-tools/primitives/filetype"
+	"github.com/Nivl/go-rest-tools/router/formfile"
 )
 
 // NewMultipartData is a helper to generate multipart data that can be returned
@@ -21,5 +24,20 @@ func NewMultipartData(t *testing.T, cwd string, filename string) (*multipart.Fil
 	}
 
 	return licenseHeader, licenseFile
-	//defer licenseFile.Close()
+}
+
+// NewFormFile is a helper to create a formfile that can be used in a param struct
+func NewFormFile(t *testing.T, cwd string, filename string) *formfile.FormFile {
+	header, f := NewMultipartData(t, cwd, filename)
+
+	mime, err := filetype.MimeType(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return &formfile.FormFile{
+		File:   f,
+		Header: header,
+		Mime:   mime,
+	}
 }

@@ -389,12 +389,12 @@ func TestFileParamValidImage(t *testing.T) {
 
 			// create the multipart data
 			cwd, _ := os.Getwd()
-			licenseHeader, licenseFile := testformfile.NewMultipartData(t, cwd, tc.filename)
-			defer licenseFile.Close()
+			imageHeader, imageFile := testformfile.NewMultipartData(t, cwd, tc.filename)
+			defer imageFile.Close()
 
 			// Set the expectations
 			fileHolder := new(mockformfile.FileHolder)
-			fileHolder.On("FormFile", "file").Return(licenseFile, licenseHeader, nil)
+			fileHolder.On("FormFile", "file").Return(imageFile, imageHeader, nil)
 
 			// Call the function to test
 			paramList := reflect.ValueOf(&tc.s).Elem()
@@ -431,12 +431,12 @@ func TestFileParamInvalidImage(t *testing.T) {
 
 			// create the multipart data
 			cwd, _ := os.Getwd()
-			licenseHeader, licenseFile := testformfile.NewMultipartData(t, cwd, tc.filename)
-			defer licenseFile.Close()
+			imageHeader, imageFile := testformfile.NewMultipartData(t, cwd, tc.filename)
+			defer imageFile.Close()
 
 			// Set the expectations
 			fileHolder := new(mockformfile.FileHolder)
-			fileHolder.On("FormFile", "file").Return(licenseFile, licenseHeader, nil)
+			fileHolder.On("FormFile", "file").Return(imageFile, imageHeader, nil)
 
 			// Call the function to test
 			paramList := reflect.ValueOf(&tc.s).Elem()
