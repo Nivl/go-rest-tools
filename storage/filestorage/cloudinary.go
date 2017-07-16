@@ -159,6 +159,19 @@ func (s *Cloudinary) read(url string) (io.ReadCloser, error) {
 	return resp.Body, nil
 }
 
+// Exists check if a file exists
+func (s *Cloudinary) Exists(filepath string) (bool, error) {
+	r, err := s.Read(filepath)
+	if err == nil {
+		r.Close()
+		return true, nil
+	}
+	if err == os.ErrNotExist {
+		return false, nil
+	}
+	return false, err
+}
+
 // Delete removes a file
 // Because Cloudinary forces to have the file type in the URL, this
 // method brutforces on all the possible types

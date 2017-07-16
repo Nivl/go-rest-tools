@@ -112,6 +112,18 @@ func (s *GCStorage) Attributes(filepath string) (*FileAttributes, error) {
 	return NewAttributesFromGCStorage(gcsAttrs), nil
 }
 
+// Exists check if a file exists
+func (s *GCStorage) Exists(filepath string) (bool, error) {
+	_, err := s.Attributes(filepath)
+	if err == nil {
+		return true, nil
+	}
+	if err == storage.ErrObjectNotExist {
+		return false, nil
+	}
+	return false, err
+}
+
 // URL returns the URL of the file
 func (s *GCStorage) URL(filepath string) (string, error) {
 	return fmt.Sprintf("https://%s.storage.googleapis.com/%s", s.bucketName, filepath), nil

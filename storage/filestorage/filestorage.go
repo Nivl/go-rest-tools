@@ -30,6 +30,9 @@ type FileStorage interface {
 
 	// Attributes returns the attributes of the file
 	Attributes(filepath string) (*FileAttributes, error)
+
+	// Exists check if a file exists
+	Exists(filepath string) (bool, error)
 }
 
 // FileAttributes represents the attributes a file can have

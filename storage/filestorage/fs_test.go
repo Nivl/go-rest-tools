@@ -2,7 +2,6 @@ package filestorage_test
 
 import (
 	"bytes"
-	"os"
 	"testing"
 
 	"strconv"
@@ -54,14 +53,11 @@ func fsHappyPath(t *testing.T, fs filestorage.FileStorage) {
 			}
 
 			// check the file exist on the disk
-			url, _ := fs.URL(tc.outputName)
-			_, err := os.Stat(url)
+			exists, err := fs.Exists(tc.outputName)
 			if err != nil {
-				if os.IsNotExist(err) {
-					assert.FailNow(t, "Expected the following file to exists: "+url)
-				}
-				t.Fatal(err)
+				assert.FailNow(t, err.Error(), "expected Exists() to succeed")
 			}
+			assert.True(t, exists, "expected the file to exist")
 
 			// Read the uploaded file
 			r, err := fs.Read(tc.outputName)
@@ -78,8 +74,9 @@ func fsHappyPath(t *testing.T, fs filestorage.FileStorage) {
 			assert.NoError(t, err, "the deletion should have succeed")
 
 			// We make sure the file has been deleted
-			_, err = os.Stat(url)
-			assert.True(t, os.IsNotExist(err), "expect the file not to exist")
+			exists, err = fs.Exists(tc.outputName)
+			assert.NoError(t, err, "expect Exists() to succeed for unexisting file")
+			assert.False(t, exists, "expect the file not to exist")
 		})
 	}
 }

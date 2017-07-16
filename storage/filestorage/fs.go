@@ -49,6 +49,20 @@ func (s *FSStorage) Read(filepath string) (io.ReadCloser, error) {
 	return os.Open(s.fullPath(filepath))
 }
 
+// Exists checks if a file exists
+func (s *FSStorage) Exists(filepath string) (bool, error) {
+	_, err := os.Stat(s.fullPath(filepath))
+
+	if err == nil {
+		return true, err
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+
+	return false, err
+}
+
 // Write copy the provided os.File to dest
 func (s *FSStorage) Write(src io.Reader, destPath string) error {
 	fullPath := s.fullPath(destPath)

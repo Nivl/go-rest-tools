@@ -46,6 +46,13 @@ func storageHappyPathTest(t *testing.T, storage filestorage.FileStorage, dontTes
 				assert.FailNow(t, err.Error(), "expected Write() to succeed")
 			}
 
+			// Make sure the file exists
+			exists, err := storage.Exists(tc.outputName)
+			if err != nil {
+				assert.FailNow(t, err.Error(), "expected Exists() to succeed")
+			}
+			assert.True(t, exists, "expected the file to exist")
+
 			// Read the uploaded file
 			r, err := storage.Read(tc.outputName)
 			if err != nil {
