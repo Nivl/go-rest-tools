@@ -19,6 +19,11 @@ func TestCloudinary(t *testing.T) {
 	storage := filestorage.NewCloudinary(apiKey, secret)
 	storage.SetBucket(bucket)
 
-	storageHappyPathTest(t, storage, true)
+	// we skip StillExistsAfterDeletion because Cloudinary doesn't remove the
+	// files right away, so this test will always fail
+	cbs := &storageHappyPathTestCallbacks{
+		StillExistsAfterDeletion: func(_ *testing.T, _ string) {},
+	}
+	storageHappyPathTest(t, storage, cbs)
 	storageUnexistingReadTest(t, storage)
 }

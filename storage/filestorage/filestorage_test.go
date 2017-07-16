@@ -12,11 +12,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// storageHappyPathTestCallbacks is a structure to overide/skip certain test
+// It's usefull when a specific provider react differently than the expected
+// behavior (like deleted file on Cloudinary that are still available for
+// a few hours)
+type storageHappyPathTestCallbacks struct {
+	ValidateURL              func(*testing.T, string)
+	StillExistsAfterDeletion func(*testing.T, string)
+}
+
 // storageHappyPathTest is a helper to test the happy path of FileStorage
-// if dontTestIfRemoved is set to true, the function won't check if the
-// uploaded is still accessible after the deletion. This is useful for
-// providers like Cloudinary that can take an hour to delete a file
-func storageHappyPathTest(t *testing.T, storage filestorage.FileStorage, dontTestIfRemoved bool) {
+func storageHappyPathTest(t *testing.T, storage filestorage.FileStorage, callbacks *storageHappyPathTestCallbacks) {
+	if callbacks == nil {
+		callbacks = &storageHappyPathTestCallbacks{}
+	}
+
 	testCases := []struct {
 		description string
 		outputName  string
@@ -64,29 +74,32 @@ func storageHappyPathTest(t *testing.T, storage filestorage.FileStorage, dontTes
 			assert.Equal(t, tc.fileContent, buf.Bytes(), "the file content shouldn't have changed")
 
 			// Make sure a URL is valid
-			url, err := storage.URL(tc.outputName)
-			if err != nil {
-				assert.FailNow(t, err.Error(), "couldn't find the URL of a file")
+			if callbacks.ValidateURL != nil {
+				callbacks.ValidateURL(t, tc.outputName)
+			} else {
+				url, err := storage.URL(tc.outputName)
+				if err != nil {
+					assert.FailNow(t, err.Error(), "couldn't find the URL of a file")
+				}
+				resp, err := http.Get(url)
+				if err != nil {
+					assert.FailNow(t, err.Error(), "couldn't GET the URL of a file")
+				}
+				resp.Body.Close()
+				assert.Equal(t, http.StatusOK, resp.StatusCode)
 			}
-			resp, err := http.Get(url)
-			if err != nil {
-				assert.FailNow(t, err.Error(), "couldn't GET the URL of a file")
-			}
-			resp.Body.Close()
-			assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 			// Delete the file
 			err = storage.Delete(tc.outputName)
 			assert.NoError(t, err, "the deletion should have succeed")
 
-			if !dontTestIfRemoved {
-				//Make sure the file is deleted
-				r, err = storage.Read(tc.outputName)
-				assert.Error(t, err, "Read should have fail")
-				if err == nil {
-					r.Close()
-				}
-				assert.Equal(t, os.ErrNotExist, err, "it should have failed because the file no longer exist")
+			// Make sure the file is deleted
+			if callbacks.StillExistsAfterDeletion != nil {
+				callbacks.StillExistsAfterDeletion(t, tc.outputName)
+			} else {
+				exists, err = storage.Exists(tc.outputName)
+				assert.NoError(t, err, "expect Exists() to succeed for unexisting file")
+				assert.False(t, exists, "expect the file not to exist")
 			}
 		})
 	}

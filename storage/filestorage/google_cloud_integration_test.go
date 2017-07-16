@@ -22,6 +22,6 @@ func TestGCStorageUploadHappyPath(t *testing.T) {
 		t.Fatal(err)
 	}
 	storage.SetBucket(bucket)
-	storageHappyPathTest(t, storage, true)
+	storageHappyPathTest(t, storage, nil)
 	storageUnexistingReadTest(t, storage)
 }
