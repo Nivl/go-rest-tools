@@ -41,7 +41,7 @@ type FileStorage interface {
 	//     existed (false).
 	//   - A URL to the uploaded file
 	//   - An error if something went wrong
-	WriteIfNotExist(src io.Reader, destPath string) (wrote bool, url string, err error)
+	WriteIfNotExist(src io.Reader, destPath string) (new bool, url string, err error)
 }
 
 // FileAttributes represents the attributes a file can have
