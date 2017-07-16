@@ -1,6 +1,8 @@
 package filetype
 
 import (
+	"crypto/sha256"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -26,18 +28,22 @@ func MimeType(r io.ReadSeeker) (string, error) {
 	return http.DetectContentType(buff), nil
 }
 
-// SHA256 returns the SHA256 sum of a reader
-func SHA256(r io.ReadSeeker) (string, error) {
+// SHA256Sum returns the SHA256 sum of a reader
+func SHA256Sum(r io.ReadSeeker) (string, error) {
 	initialPos, err := r.Seek(0, io.SeekCurrent)
 	if err != nil {
 		return "", err
 	}
-
 	// revert the pointer back to its original position
-	_, err = r.Seek(initialPos, io.SeekStart)
-	if err != nil {
+	defer r.Seek(initialPos, io.SeekStart)
+
+	// copy the file to read it's content
+	h := sha256.New()
+	if _, err := io.Copy(h, r); err != nil {
 		return "", err
 	}
 
-	return "", nil
+	// cast the hash and return it
+	hash := fmt.Sprintf("%x", h.Sum(nil))
+	return hash, nil
 }
