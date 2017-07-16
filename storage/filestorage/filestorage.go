@@ -54,6 +54,18 @@ type FileAttributes struct {
 	Metadata           map[string]string
 }
 
+// NewFileAttributesFromUpdatable returns a FileAttributes from a UpdatableFileAttributes
+func NewFileAttributesFromUpdatable(attrs *UpdatableFileAttributes) *FileAttributes {
+	return &FileAttributes{
+		ContentType:        attrs.ContentType.(string),
+		ContentDisposition: attrs.ContentDisposition.(string),
+		ContentLanguage:    attrs.ContentLanguage.(string),
+		ContentEncoding:    attrs.ContentEncoding.(string),
+		CacheControl:       attrs.CacheControl.(string),
+		Metadata:           attrs.Metadata,
+	}
+}
+
 // UpdatableFileAttributes represents the updatable attributes a file can have
 type UpdatableFileAttributes struct {
 	ContentType        interface{}

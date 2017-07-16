@@ -14,16 +14,16 @@ import (
 // by FileHolder.FormFile()
 func NewMultipartData(t *testing.T, cwd string, filename string) (*multipart.FileHeader, *os.File) {
 	// We create the Head and the file
-	licenseHeader := &multipart.FileHeader{
+	header := &multipart.FileHeader{
 		Filename: filename,
 	}
 	filePath := path.Join(cwd, "fixtures", filename)
-	licenseFile, err := os.Open(filePath)
+	file, err := os.Open(filePath)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	return licenseHeader, licenseFile
+	return header, file
 }
 
 // NewFormFile is a helper to create a formfile that can be used in a param struct
