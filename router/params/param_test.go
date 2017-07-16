@@ -1,7 +1,6 @@
 package params_test
 
 import (
-	"mime/multipart"
 	"reflect"
 	"testing"
 
@@ -12,11 +11,10 @@ import (
 
 	"os"
 
-	"path"
-
 	"github.com/Nivl/go-rest-tools/primitives/ptrs"
 	"github.com/Nivl/go-rest-tools/router/formfile"
 	"github.com/Nivl/go-rest-tools/router/formfile/mockformfile"
+	"github.com/Nivl/go-rest-tools/router/formfile/testformfile"
 	"github.com/Nivl/go-rest-tools/router/params"
 	"github.com/stretchr/testify/assert"
 )
@@ -278,17 +276,9 @@ func TestFileParamValid(t *testing.T) {
 		tc := tc
 		t.Run(tc.description, func(t *testing.T) {
 			t.Parallel()
-			filename := "LICENSE"
-
-			// We create the Head and the file
-			licenseHeader := &multipart.FileHeader{
-				Filename: filename,
-			}
-			filePath := path.Join("fixtures", filename)
-			licenseFile, err := os.Open(filePath)
-			if err != nil {
-				t.Fatal(err)
-			}
+			// create the multipart data
+			cwd, _ := os.Getwd()
+			licenseHeader, licenseFile := testformfile.NewMultipartData(t, cwd, "LICENSE")
 			defer licenseFile.Close()
 
 			// Expectation
@@ -304,7 +294,7 @@ func TestFileParamValid(t *testing.T) {
 			paramList := reflect.ValueOf(&tc.s).Elem()
 			p := params.NewParamFromStructValue(&paramList, 0)
 
-			err = p.SetFile(fileHolder)
+			err := p.SetFile(fileHolder)
 			fileHolder.AssertExpectations(t)
 			assert.Nil(t, err, "Expected SetFile not to return an error")
 
@@ -340,17 +330,10 @@ func TestFileParamRequired(t *testing.T) {
 		tc := tc
 		t.Run(tc.description, func(t *testing.T) {
 			t.Parallel()
-			filename := "LICENSE"
 
-			// We create the Head and the file
-			licenseHeader := &multipart.FileHeader{
-				Filename: filename,
-			}
-			filePath := path.Join("fixtures", filename)
-			licenseFile, err := os.Open(filePath)
-			if err != nil {
-				t.Fatal(err)
-			}
+			// create the multipart data
+			cwd, _ := os.Getwd()
+			licenseHeader, licenseFile := testformfile.NewMultipartData(t, cwd, "LICENSE")
 			defer licenseFile.Close()
 
 			// Expectations
@@ -366,7 +349,7 @@ func TestFileParamRequired(t *testing.T) {
 			paramList := reflect.ValueOf(&tc.s).Elem()
 			p := params.NewParamFromStructValue(&paramList, 0)
 
-			err = p.SetFile(fileHolder)
+			err := p.SetFile(fileHolder)
 			fileHolder.AssertExpectations(t)
 
 			if tc.sendNil {
@@ -404,15 +387,9 @@ func TestFileParamValidImage(t *testing.T) {
 		t.Run(tc.description, func(t *testing.T) {
 			t.Parallel()
 
-			// We create the Head and the file
-			licenseHeader := &multipart.FileHeader{
-				Filename: tc.filename,
-			}
-			filePath := path.Join("fixtures", tc.filename)
-			licenseFile, err := os.Open(filePath)
-			if err != nil {
-				t.Fatal(err)
-			}
+			// create the multipart data
+			cwd, _ := os.Getwd()
+			licenseHeader, licenseFile := testformfile.NewMultipartData(t, cwd, tc.filename)
 			defer licenseFile.Close()
 
 			// Set the expectations
@@ -422,7 +399,7 @@ func TestFileParamValidImage(t *testing.T) {
 			// Call the function to test
 			paramList := reflect.ValueOf(&tc.s).Elem()
 			p := params.NewParamFromStructValue(&paramList, 0)
-			err = p.SetFile(fileHolder)
+			err := p.SetFile(fileHolder)
 
 			// assert
 			fileHolder.AssertExpectations(t)
@@ -452,15 +429,9 @@ func TestFileParamInvalidImage(t *testing.T) {
 		t.Run(tc.description, func(t *testing.T) {
 			t.Parallel()
 
-			// We create the Head and the file
-			licenseHeader := &multipart.FileHeader{
-				Filename: tc.filename,
-			}
-			filePath := path.Join("fixtures", tc.filename)
-			licenseFile, err := os.Open(filePath)
-			if err != nil {
-				t.Fatal(err)
-			}
+			// create the multipart data
+			cwd, _ := os.Getwd()
+			licenseHeader, licenseFile := testformfile.NewMultipartData(t, cwd, tc.filename)
 			defer licenseFile.Close()
 
 			// Set the expectations
@@ -470,7 +441,7 @@ func TestFileParamInvalidImage(t *testing.T) {
 			// Call the function to test
 			paramList := reflect.ValueOf(&tc.s).Elem()
 			p := params.NewParamFromStructValue(&paramList, 0)
-			err = p.SetFile(fileHolder)
+			err := p.SetFile(fileHolder)
 
 			// Assert
 			fileHolder.AssertExpectations(t)
