@@ -2,11 +2,14 @@ package params_test
 
 import (
 	"net/url"
+	"os"
 	"testing"
 
 	"strconv"
 
 	"github.com/Nivl/go-rest-tools/primitives/ptrs"
+	"github.com/Nivl/go-rest-tools/router/formfile"
+	"github.com/Nivl/go-rest-tools/router/formfile/testformfile"
 	"github.com/Nivl/go-rest-tools/router/params"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -104,14 +107,17 @@ func TestEmbeddedStruct(t *testing.T) {
 }
 
 func TestExtraction(t *testing.T) {
+	cwd, _ := os.Getwd()
+
 	s := struct {
-		String        string  `from:"url" json:"string"`
-		Number        int     `from:"query" json:"number"`
-		Bool          bool    `from:"form" json:"bool"`
-		PointerBool   *bool   `from:"form" json:"pointer_bool"`
-		PointerString *string `from:"form" json:"pointer_string"`
-		PointerNumber *int    `from:"form" json:"pointer_number"`
-		Nil           *int    `from:"form" json:"nil"`
+		String        string             `from:"url" json:"string"`
+		Number        int                `from:"query" json:"number"`
+		Bool          bool               `from:"form" json:"bool"`
+		PointerBool   *bool              `from:"form" json:"pointer_bool"`
+		PointerString *string            `from:"form" json:"pointer_string"`
+		PointerNumber *int               `from:"form" json:"pointer_number"`
+		Nil           *int               `from:"form" json:"nil"`
+		File          *formfile.FormFile `from:"file" json:"file"`
 	}{
 		String:        "String value",
 		Number:        42,
@@ -120,10 +126,19 @@ func TestExtraction(t *testing.T) {
 		PointerString: ptrs.NewString("string pointer"),
 		PointerNumber: ptrs.NewInt(24),
 		Nil:           nil,
+		File:          testformfile.NewFormFile(t, cwd, "black_pixel.png"),
 	}
 
 	p := params.NewParams(&s)
-	sources := p.Extract()
+	sources, files := p.Extract()
+
+	// Check file data
+	fileData, found := files["file"]
+	require.True(t, found, "file should be present")
+	assert.NotNil(t, fileData, "fileData should not be nil")
+	assert.NotNil(t, fileData.File, "fileData.File should not be nil")
+	assert.NotNil(t, fileData.Header, "fileData.header should not be nil")
+	assert.Equal(t, "image/png", fileData.Mime)
 
 	// Check url data
 	urlValue, found := sources["url"]
