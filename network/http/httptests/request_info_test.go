@@ -32,7 +32,7 @@ func TestInfoURLParams(t *testing.T) {
 	ri := &httptests.RequestInfo{
 		Endpoint: &router.Endpoint{
 			Verb: "GET",
-			Path: "/item/",
+			Path: "/item/{item_id}/subitem/{id}",
 		},
 		Params: p,
 	}
