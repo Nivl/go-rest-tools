@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+
+	"github.com/Nivl/go-rest-tools/storage/fs"
 )
 
 // NewFSStorage returns a new instance of a File System Storage
@@ -51,16 +53,7 @@ func (s *FSStorage) Read(filepath string) (io.ReadCloser, error) {
 
 // Exists checks if a file exists
 func (s *FSStorage) Exists(filepath string) (bool, error) {
-	_, err := os.Stat(s.fullPath(filepath))
-
-	if err == nil {
-		return true, err
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-
-	return false, err
+	return fs.FileExists(s.fullPath(filepath))
 }
 
 // Write copy the provided os.File to dest
