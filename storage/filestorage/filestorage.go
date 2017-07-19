@@ -56,14 +56,25 @@ type FileAttributes struct {
 
 // NewFileAttributesFromUpdatable returns a FileAttributes from a UpdatableFileAttributes
 func NewFileAttributesFromUpdatable(attrs *UpdatableFileAttributes) *FileAttributes {
-	return &FileAttributes{
-		ContentType:        attrs.ContentType.(string),
-		ContentDisposition: attrs.ContentDisposition.(string),
-		ContentLanguage:    attrs.ContentLanguage.(string),
-		ContentEncoding:    attrs.ContentEncoding.(string),
-		CacheControl:       attrs.CacheControl.(string),
-		Metadata:           attrs.Metadata,
+	fa := &FileAttributes{
+		Metadata: attrs.Metadata,
 	}
+	if val, ok := attrs.ContentType.(string); ok {
+		fa.ContentType = val
+	}
+	if val, ok := attrs.ContentDisposition.(string); ok {
+		fa.ContentDisposition = val
+	}
+	if val, ok := attrs.ContentLanguage.(string); ok {
+		fa.ContentLanguage = val
+	}
+	if val, ok := attrs.ContentEncoding.(string); ok {
+		fa.ContentEncoding = val
+	}
+	if val, ok := attrs.CacheControl.(string); ok {
+		fa.CacheControl = val
+	}
+	return fa
 }
 
 // UpdatableFileAttributes represents the updatable attributes a file can have

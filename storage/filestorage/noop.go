@@ -32,14 +32,7 @@ func (s *Noop) Write(src io.Reader, destPath string) error {
 
 // SetAttributes sets the attributes of the file
 func (s *Noop) SetAttributes(filepath string, attrs *UpdatableFileAttributes) (*FileAttributes, error) {
-	return &FileAttributes{
-		ContentType:        attrs.ContentType.(string),
-		ContentDisposition: attrs.ContentDisposition.(string),
-		ContentLanguage:    attrs.ContentLanguage.(string),
-		ContentEncoding:    attrs.ContentEncoding.(string),
-		CacheControl:       attrs.CacheControl.(string),
-		Metadata:           attrs.Metadata,
-	}, nil
+	return NewFileAttributesFromUpdatable(attrs), nil
 }
 
 // Attributes returns the attributes of the file
