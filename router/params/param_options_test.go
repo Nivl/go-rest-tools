@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/Nivl/go-rest-tools/primitives/ptrs"
 	"github.com/Nivl/go-rest-tools/router/params"
 	"github.com/stretchr/testify/assert"
 )
@@ -35,11 +36,11 @@ func TestUUIDOption(t *testing.T) {
 		t.Run(tc.description, func(t *testing.T) {
 			t.Parallel()
 
-			err := po.Validate(tc.value)
+			err := po.Validate(tc.value, true)
 			if tc.shouldFail {
-				assert.NotNil(t, err, "the validation should have failed")
+				assert.Error(t, err, "the validation should have failed")
 			} else {
-				assert.Nil(t, err, "the validation should have succeed")
+				assert.NoError(t, err, "the validation should have succeed")
 			}
 		})
 	}
@@ -71,11 +72,91 @@ func TestRequiredOption(t *testing.T) {
 		t.Run(tc.description, func(t *testing.T) {
 			t.Parallel()
 
-			err := po.Validate(tc.value)
+			err := po.Validate(tc.value, true)
 			if tc.shouldFail {
-				assert.NotNil(t, err, "the validation should have failed")
+				assert.Error(t, err, "the validation should have failed")
 			} else {
-				assert.Nil(t, err, "the validation should have succeed")
+				assert.NoError(t, err, "the validation should have succeed")
+			}
+		})
+	}
+}
+
+func TestNoEmptyOptionOnString(t *testing.T) {
+	// sugar to avoid writing true/false
+	shouldFail := true
+
+	s := struct {
+		ID string `from:"url" json:"id" params:"noempty"`
+	}{}
+
+	po := getParamOptions(s)
+	assert.True(t, po.NoEmpty, "ID should be checked as noempty")
+	assert.Equal(t, po.Name, "id")
+
+	testCases := []struct {
+		description string
+		value       string
+		shouldFail  bool
+	}{
+		{"Missing ID should NOT pass the validation", "", shouldFail},
+		{"Valid ID should pass the validation", "xxx", !shouldFail},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+
+			err := po.Validate(tc.value, true)
+			if tc.shouldFail {
+				assert.Error(t, err, "the validation should have failed")
+			} else {
+				assert.NoError(t, err, "the validation should have succeed")
+			}
+		})
+	}
+}
+
+func TestNoEmptyOptionOnPointer(t *testing.T) {
+	// sugar to avoid writing true/false
+	shouldFail := true
+
+	s := struct {
+		ID *string `from:"url" json:"id" params:"noempty"`
+	}{}
+
+	po := getParamOptions(s)
+	assert.True(t, po.NoEmpty, "ID should be checked as noempty")
+	assert.Equal(t, po.Name, "id")
+
+	testCases := []struct {
+		description string
+		value       *string
+		shouldFail  bool
+	}{
+		{"Nil pointer are accepted", nil, !shouldFail},
+		{"Empty value should fail", ptrs.NewString(""), shouldFail},
+		{"Any value should work", ptrs.NewString("value"), !shouldFail},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+
+			value := ""
+			provided := false
+			if tc.value != nil {
+				provided = true
+				value = *tc.value
+			}
+
+			err := po.Validate(value, provided)
+			if tc.shouldFail {
+				assert.Error(t, err, "the validation should have failed")
+			} else {
+				assert.NoError(t, err, "the validation should have succeed")
 			}
 		})
 	}

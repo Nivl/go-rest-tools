@@ -96,13 +96,13 @@ func (p *Param) SetValue(source url.Values) error {
 		value = defaultValue
 	}
 
-	if err := opts.Validate(value); err != nil {
+	_, valueProvided := source[opts.Name]
+	if err := opts.Validate(value, valueProvided); err != nil {
 		return err
 	}
 
-	_, valueProvided := source[opts.Name]
 	// We now set the value in the struct
-	if valueProvided {
+	if valueProvided || value != "" {
 		if p.value.Kind() == reflect.Ptr {
 			val := reflect.New(p.value.Type().Elem())
 			p.value.Set(val)
