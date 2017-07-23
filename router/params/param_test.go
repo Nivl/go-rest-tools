@@ -17,6 +17,7 @@ import (
 	"github.com/Nivl/go-rest-tools/router/formfile/testformfile"
 	"github.com/Nivl/go-rest-tools/router/params"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBasicParam(t *testing.T) {
@@ -116,7 +117,7 @@ func TestBasicParam(t *testing.T) {
 			t.Parallel()
 			paramList := reflect.ValueOf(&tc.s).Elem()
 			p := params.NewParamFromStructValue(&paramList, tc.fieldIndex)
-			sources := &url.Values{
+			sources := url.Values{
 				tc.fieldName: []string{tc.value},
 			}
 
@@ -161,7 +162,7 @@ func TestIntParam(t *testing.T) {
 			paramList := reflect.ValueOf(&tc.s).Elem()
 			p := params.NewParamFromStructValue(&paramList, 0)
 
-			source := &url.Values{}
+			source := url.Values{}
 			source.Set("number", tc.value)
 
 			err := p.SetValue(source)
@@ -197,7 +198,7 @@ func TestIntPointerParam(t *testing.T) {
 			paramList := reflect.ValueOf(&tc.s).Elem()
 			p := params.NewParamFromStructValue(&paramList, 0)
 
-			sources := &url.Values{}
+			sources := url.Values{}
 			if tc.value != nil {
 				sources.Set("pointer", strconv.Itoa(*tc.value))
 			}
@@ -208,7 +209,48 @@ func TestIntPointerParam(t *testing.T) {
 			if tc.value == nil {
 				assert.Nil(t, tc.s.Pointer, "Expected Pointer to be nil")
 			} else {
-				assert.Equal(t, *tc.value, *tc.s.Pointer)
+				require.NotNil(t, tc.s.Pointer, "the pointer should not be nil")
+				assert.Equal(t, *tc.value, *tc.s.Pointer, "the value should not have changed")
+			}
+		})
+	}
+}
+
+func TestStringPointerParam(t *testing.T) {
+	type strct struct {
+		Pointer *string `from:"url" json:"pointer"`
+	}
+
+	testCases := []struct {
+		description string
+		s           strct
+		value       *string
+	}{
+		{"Nil pointer should work", strct{}, nil},
+		{"A value should work", strct{}, ptrs.NewString("something")},
+		{"Empty value should work", strct{}, ptrs.NewString("")},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+			paramList := reflect.ValueOf(&tc.s).Elem()
+			p := params.NewParamFromStructValue(&paramList, 0)
+
+			sources := url.Values{}
+			if tc.value != nil {
+				sources.Set("pointer", *tc.value)
+			}
+
+			err := p.SetValue(sources)
+			assert.Nil(t, err, "Expected SetValue not to return an error")
+
+			if tc.value == nil {
+				assert.Nil(t, tc.s.Pointer, "Expected Pointer to be nil")
+			} else {
+				require.NotNil(t, tc.s.Pointer, "the pointer should not be nil")
+				assert.Equal(t, *tc.value, *tc.s.Pointer, "the value should not have changed")
 			}
 		})
 	}
@@ -243,7 +285,7 @@ func TestBooleanParam(t *testing.T) {
 			paramList := reflect.ValueOf(&tc.s).Elem()
 			p := params.NewParamFromStructValue(&paramList, 0)
 
-			source := &url.Values{}
+			source := url.Values{}
 			source.Set("boolean", tc.value)
 
 			err := p.SetValue(source)

@@ -63,7 +63,7 @@ func TestInfoQueryParams(t *testing.T) {
 	ri.ParseParams()
 
 	qs := url.Values{}
-	ri.PopulateQuery(&qs)
+	ri.PopulateQuery(qs)
 
 	assert.Equal(t, strconv.Itoa(p.Page), qs.Get("page"))
 	assert.Equal(t, strconv.Itoa(p.PerPage), qs.Get("per_page"))
