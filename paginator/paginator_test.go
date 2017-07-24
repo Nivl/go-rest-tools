@@ -1,46 +1,17 @@
 package paginator_test
 
 import (
+	"net/http"
+	"net/url"
+	"strings"
 	"testing"
 
+	"github.com/Nivl/go-rest-tools/network/http/httperr"
 	"github.com/Nivl/go-rest-tools/paginator"
-	"github.com/Nivl/go-rest-tools/primitives/ptrs"
+	"github.com/Nivl/go-rest-tools/router/params"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-func TestHandlerParams(t *testing.T) {
-	testCases := []struct {
-		description         string
-		params              *paginator.HandlerParams
-		expectedCurrentPage int
-		expectedPerPage     int
-	}{
-		{
-			"Page 1, default PerPage",
-			&paginator.HandlerParams{Page: ptrs.NewInt(1)},
-			1,
-			100,
-		},
-		{
-			"Page 4, PerPage 50",
-			&paginator.HandlerParams{Page: ptrs.NewInt(4), PerPage: ptrs.NewInt(50)},
-			4,
-			50,
-		},
-	}
-
-	for _, tc := range testCases {
-		tc := tc
-		t.Run(tc.description, func(t *testing.T) {
-			t.Parallel()
-			pginator := tc.params.Paginator(100)
-
-			assert.Equal(t, tc.expectedCurrentPage, pginator.CurrentPage())
-			assert.Equal(t, tc.expectedPerPage, pginator.PerPage())
-		})
-	}
-}
 
 func TestPaginator(t *testing.T) {
 	testCases := []struct {
@@ -91,6 +62,115 @@ func TestPaginator(t *testing.T) {
 			if tc.shouldBeValid {
 				assert.Equal(t, tc.expectedLimit, tc.p.Limit())
 				assert.Equal(t, tc.expectedOffset, tc.p.Offset())
+			}
+		})
+	}
+}
+
+func TestHandlerParams(t *testing.T) {
+	// sugar
+	shouldFail := true
+
+	type strct struct {
+		paginator.HandlerParams
+	}
+
+	testCases := []struct {
+		description         string
+		params              url.Values
+		shouldFail          bool
+		expectedErrorField  string
+		expectedErrorMsg    string
+		expectedCurrentPage int
+		expectedPerPage     int
+	}{
+		{
+			"Default values",
+			url.Values{},
+			!shouldFail,
+			"", "",
+			1, 100,
+		},
+		{
+			"Page 4, PerPage 50",
+			url.Values{
+				"page":     []string{"4"},
+				"per_page": []string{"50"},
+			},
+			!shouldFail,
+			"", "",
+			4, 50,
+		},
+		{
+			"PerPage 8",
+			url.Values{
+				"per_page": []string{"8"},
+			},
+			!shouldFail,
+			"", "",
+			1, 8,
+		},
+		{
+			"Page 40",
+			url.Values{
+				"page": []string{"40"},
+			},
+			!shouldFail,
+			"", "",
+			40, 100,
+		},
+		{
+			"page set to 0 should fail",
+			url.Values{
+				"page": []string{"0"},
+			},
+			shouldFail,
+			"page", "cannot be <= 0",
+			0, 0,
+		},
+		{
+			"per_page set to 0 should fail",
+			url.Values{
+				"per_page": []string{"0"},
+			},
+			shouldFail,
+			"per_page", "cannot be <= 0",
+			0, 0,
+		},
+		{
+			"per_page above 100 should fail",
+			url.Values{
+				"per_page": []string{"101"},
+			},
+			shouldFail,
+			"per_page", "cannot be > 100",
+			0, 0,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+			s := &strct{}
+			p := params.NewParams(s)
+			sources := map[string]url.Values{
+				"query": tc.params,
+			}
+
+			err := p.Parse(sources, nil)
+			if tc.shouldFail {
+				require.Error(t, err, "Parse() should have failed")
+
+				e := httperr.Convert(err)
+				assert.Equal(t, http.StatusBadRequest, e.Code(), "It should have failed with a 400")
+				assert.Equal(t, tc.expectedErrorField, e.Field(), "Failed on the wrong field")
+				assert.True(t, strings.Contains(err.Error(), tc.expectedErrorMsg),
+					"the error \"%s\" should contain the string \"%s\"", err.Error(), tc.expectedErrorMsg)
+			} else {
+				assert.NoError(t, err, "Parse() should have succeed")
+				assert.Equal(t, tc.expectedCurrentPage, s.Page)
+				assert.Equal(t, tc.expectedPerPage, s.PerPage)
 			}
 		})
 	}
