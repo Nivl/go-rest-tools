@@ -1,6 +1,7 @@
 package params_test
 
 import (
+	"errors"
 	"net/url"
 	"os"
 	"testing"
@@ -14,6 +15,18 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+type StructWithValidator struct {
+	String     string `from:"query" json:"string" default:"default value"`
+	TrueToFail bool   `from:"query" json:"true_to_fail" default:"false"`
+}
+
+func (p *StructWithValidator) IsValid() (isValid bool, fieldName string, err error) {
+	if !p.TrueToFail {
+		return true, "", nil
+	}
+	return false, "true_to_fail", errors.New("cannot be set to true")
+}
 
 func TestValidStruct(t *testing.T) {
 	type strct struct {
@@ -104,6 +117,102 @@ func TestEmbeddedStruct(t *testing.T) {
 	assert.Equal(t, "1aa75114-6117-4908-b6ea-0d22ecdd4fc0", s.ID)
 	assert.Equal(t, 24, *s.Page)
 	assert.Nil(t, s.PerPage)
+}
+
+func TestEmbeddedStructWithCustomValidation(t *testing.T) {
+	// sugar
+	shouldFail := true
+
+	type strct struct {
+		StructWithValidator
+	}
+
+	testCases := []struct {
+		description string
+		params      url.Values
+		shouldFail  bool
+	}{
+		{
+			"Trigger a failure",
+			url.Values{
+				"string":       []string{"value"},
+				"true_to_fail": []string{"true"},
+			},
+			shouldFail,
+		},
+		{
+			"Valid params should work",
+			url.Values{
+				"string": []string{"value"},
+			},
+			!shouldFail,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+			s := &strct{}
+			p := params.NewParams(s)
+			sources := map[string]url.Values{
+				"query": tc.params,
+			}
+
+			err := p.Parse(sources, nil)
+			if tc.shouldFail {
+				assert.Error(t, err, "Parse() should have failed")
+			} else {
+				assert.NoError(t, err, "Parse() should have succeed")
+			}
+		})
+	}
+}
+
+func TestCustomValidation(t *testing.T) {
+	// sugar
+	shouldFail := true
+
+	testCases := []struct {
+		description string
+		params      url.Values
+		shouldFail  bool
+	}{
+		{
+			"Trigger a failure",
+			url.Values{
+				"string":       []string{"value"},
+				"true_to_fail": []string{"true"},
+			},
+			shouldFail,
+		},
+		{
+			"Valid params should work",
+			url.Values{
+				"string": []string{"value"},
+			},
+			!shouldFail,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+			s := &StructWithValidator{}
+			p := params.NewParams(s)
+			sources := map[string]url.Values{
+				"query": tc.params,
+			}
+
+			err := p.Parse(sources, nil)
+			if tc.shouldFail {
+				assert.Error(t, err, "Parse() should have failed")
+			} else {
+				assert.NoError(t, err, "Parse() should have succeed")
+			}
+		})
+	}
 }
 
 func TestExtraction(t *testing.T) {

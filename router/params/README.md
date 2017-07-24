@@ -37,6 +37,9 @@
 
 Use `default:"my_value"` to set a default value. The default value will be use if nothing is found in the payload or if the provided value is an empty string.
 
+## Custom Validator
+
+You can add a custom validator by implementing `params.CustomValidation`.
 
 ## Examples
 
