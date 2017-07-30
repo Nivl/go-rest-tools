@@ -8,12 +8,6 @@
   version = "v0.10.0"
 
 [[projects]]
-  name = "github.com/DATA-DOG/go-sqlmock"
-  packages = ["."]
-  revision = "b983233bc0bbea4dc6e8ec8c8c923d935765ffec"
-  version = "v1.2.0"
-
-[[projects]]
   branch = "master"
   name = "github.com/bsphere/le_go"
   packages = ["."]
@@ -154,6 +148,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ff46936de812c6b237b9063e46bad2a16df34ee7ecbc13c07212ac7711c09114"
+  inputs-digest = "21820e11d17c9ef183fb5e28f726a5592008ba28b418f8075d2291cb110ac085"
   solver-name = "gps-cdcl"
   solver-version = 1
