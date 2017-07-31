@@ -28,3 +28,21 @@ func Unwrap(i interface{}) interface{} {
 	// we return the value of the pointer
 	return source.Elem().Interface()
 }
+
+// UnwrapString takes a pointer and return it's value.
+// If the pointer is nil, an empty string is returned
+func UnwrapString(val *string) string {
+	if val == nil {
+		return ""
+	}
+	return *val
+}
+
+// UnwrapInt takes a pointer and return it's value.
+// If the pointer is nil, 0 is returned
+func UnwrapInt(val *int) int {
+	if val == nil {
+		return 0
+	}
+	return *val
+}
