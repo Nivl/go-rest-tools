@@ -4,9 +4,9 @@ package auth
 
 import (
 	"errors"
-	
 
-	"github.com/Nivl/go-rest-tools/network/http/httperr"
+
+	"github.com/Nivl/go-rest-tools/primitives/apierror"
 	"github.com/Nivl/go-rest-tools/storage/db"
 	uuid "github.com/satori/go.uuid"
 )
@@ -36,7 +36,7 @@ func (s *Session) doCreate(q db.DB) error {
 	stmt := "INSERT INTO sessions (id, created_at, updated_at, deleted_at, user_id) VALUES (:id, :created_at, :updated_at, :deleted_at, :user_id)"
 	_, err := q.NamedExec(stmt, s)
 
-  return httperr.NewFromSQL(err)
+  return apierror.NewFromSQL(err)
 }
 
 

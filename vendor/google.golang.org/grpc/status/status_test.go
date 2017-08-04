@@ -75,7 +75,7 @@ func TestError(t *testing.T) {
 	}
 	s, _ := FromError(err)
 	if got, want := s.Code(), codes.Internal; got != want {
-		t.Fatalf("err.Code() = %s; want %s", got, want)
+		t.Fatalf("err.HTTPStatus() = %s; want %s", got, want)
 	}
 	if got, want := s.Message(), "test description"; got != want {
 		t.Fatalf("err.Message() = %s; want %s", got, want)

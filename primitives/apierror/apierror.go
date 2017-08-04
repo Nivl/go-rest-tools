@@ -1,4 +1,4 @@
-package httperr
+package apierror
 
 import (
 	"errors"
@@ -14,8 +14,8 @@ import (
 type Error interface {
 	error
 
-	// Code return the HTTP code of the error
-	Code() int
+	// HTTPStatus return the HTTP code of the error
+	HTTPStatus() int
 
 	// Field returns the http/sql/etc. field associated to the error
 	Field() string
@@ -24,9 +24,9 @@ type Error interface {
 	Origin() error
 }
 
-// Convert takes an error an turns it into an HTTPError
-func Convert(e error) *HTTPError {
-	err, casted := e.(*HTTPError)
+// Convert takes an error an turns it into an APIError
+func Convert(e error) *APIError {
+	err, casted := e.(*APIError)
 	if !casted {
 		err = NewServerError(e.Error())
 		err.ErrorOrigin = e
@@ -35,30 +35,30 @@ func Convert(e error) *HTTPError {
 	return err
 }
 
-// HTTPError represents an error with an HTTP code
-type HTTPError struct {
+// APIError represents an error with an HTTP code
+type APIError struct {
 	error
-	ErrorCode   int
+	ErrorStatus int
 	ErrorField  string
 	ErrorOrigin error
 }
 
-// Code returns the HTTP code associated to the error
-func (err *HTTPError) Code() int {
+// HTTPStatus returns the HTTP code associated to the error
+func (err *APIError) HTTPStatus() int {
 	if err == nil {
 		return http.StatusInternalServerError
 	}
 
-	return err.ErrorCode
+	return err.ErrorStatus
 }
 
 // Field returns the HTTP param associated to the error
-func (err *HTTPError) Field() string {
+func (err *APIError) Field() string {
 	return err.ErrorField
 }
 
 // Origin returns the original error
-func (err *HTTPError) Origin() error {
+func (err *APIError) Origin() error {
 	return err.ErrorOrigin
 }
 
@@ -87,71 +87,71 @@ func NewFromSQL(err error) error {
 }
 
 // NewError returns an error with an associated code
-func NewError(code int, field string, message string, args ...interface{}) *HTTPError {
+func NewError(code int, field string, message string, args ...interface{}) *APIError {
 	fullMessage := fmt.Sprintf(message, args...)
-	return &HTTPError{errors.New(fullMessage), code, field, nil}
+	return &APIError{errors.New(fullMessage), code, field, nil}
 }
 
 // NewServerError returns an Internal Error.
-func NewServerError(message string, args ...interface{}) *HTTPError {
+func NewServerError(message string, args ...interface{}) *APIError {
 	return NewError(http.StatusInternalServerError, "", message, args...)
 }
 
 // NewBadRequest returns an error caused by a user. Example: A missing param
-func NewBadRequest(field string, message string, args ...interface{}) *HTTPError {
+func NewBadRequest(field string, message string, args ...interface{}) *APIError {
 	return NewError(http.StatusBadRequest, field, message, args...)
 }
 
 // NewConflict returns an error caused by a conflict with the current state
 // of the app. Example: A duplicate slug
-func NewConflict(field string) *HTTPError {
+func NewConflict(field string) *APIError {
 	return NewError(http.StatusConflict, field, "already exists")
 }
 
 // NewConflictR returns an error caused by a conflict with the current state
 // of the app. A reason is sent back to the user.
-func NewConflictR(field string, message string, args ...interface{}) *HTTPError {
+func NewConflictR(field string, message string, args ...interface{}) *APIError {
 	return NewError(http.StatusConflict, field, message, args...)
 }
 
 // NewUnauthorized returns an error caused by a anonymous user trying to access
 // a protected resource
-func NewUnauthorized() *HTTPError {
+func NewUnauthorized() *APIError {
 	return NewUnauthorizedR(http.StatusText(http.StatusUnauthorized))
 }
 
 // NewUnauthorizedR returns an error caused by a anonymous user trying to access
 // a protected resource. A reason is sent back to the user.
-func NewUnauthorizedR(reason string) *HTTPError {
+func NewUnauthorizedR(reason string) *APIError {
 	return NewError(http.StatusUnauthorized, "", reason)
 }
 
 // NewForbidden returns an error caused by a user trying to access
 // a protected resource.
-func NewForbidden() *HTTPError {
+func NewForbidden() *APIError {
 	return NewForbiddenR(http.StatusText(http.StatusForbidden))
 }
 
 // NewForbiddenR returns an error caused by a user trying to access
 // a protected resource. A reason is sent back to the user.
-func NewForbiddenR(reason string) *HTTPError {
+func NewForbiddenR(reason string) *APIError {
 	return NewError(http.StatusForbidden, "", reason)
 }
 
 // NewNotFound returns an error caused by a user trying to access
 // a resource that does not exists
-func NewNotFound() *HTTPError {
+func NewNotFound() *APIError {
 	return NewNotFoundR(http.StatusText(http.StatusNotFound))
 }
 
 // NewNotFoundR returns an error caused by a user trying to access
 // a resource that does not exists. A reason is sent back to the user.
-func NewNotFoundR(reason string) *HTTPError {
+func NewNotFoundR(reason string) *APIError {
 	return NewError(http.StatusNotFound, "", reason)
 }
 
 // NewNotFoundField returns an error caused by a user trying to access
 // a resource that does not exists. A reason is sent back to the user.
-func NewNotFoundField(field string, reason string) *HTTPError {
+func NewNotFoundField(field string, reason string) *APIError {
 	return NewError(http.StatusNotFound, field, reason)
 }

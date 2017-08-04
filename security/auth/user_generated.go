@@ -4,9 +4,9 @@ package auth
 
 import (
 	"errors"
-	
 
-	"github.com/Nivl/go-rest-tools/network/http/httperr"
+
+	"github.com/Nivl/go-rest-tools/primitives/apierror"
 	"github.com/Nivl/go-rest-tools/storage/db"
 	uuid "github.com/satori/go.uuid"
 )
@@ -57,7 +57,7 @@ func (u *User) doCreate(q db.DB) error {
 	stmt := "INSERT INTO users (id, created_at, updated_at, deleted_at, name, email, password, is_admin) VALUES (:id, :created_at, :updated_at, :deleted_at, :name, :email, :password, :is_admin)"
 	_, err := q.NamedExec(stmt, u)
 
-  return httperr.NewFromSQL(err)
+  return apierror.NewFromSQL(err)
 }
 
 // Update updates most of the fields of a persisted user using a transaction
@@ -81,7 +81,7 @@ func (u *User) doUpdate(q db.DB) error {
 	stmt := "UPDATE users SET id=:id, created_at=:created_at, updated_at=:updated_at, deleted_at=:deleted_at, name=:name, email=:email, password=:password, is_admin=:is_admin WHERE id=:id"
 	_, err := q.NamedExec(stmt, u)
 
-	return httperr.NewFromSQL(err)
+	return apierror.NewFromSQL(err)
 }
 
 // Delete removes a user from the database using a transaction

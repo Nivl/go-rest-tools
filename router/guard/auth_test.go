@@ -42,7 +42,7 @@ func TestLoggedUserAccess(t *testing.T) {
 			if tc.expectedError == nil {
 				assert.Nil(t, err, "access should have not been denied: %s", err)
 			} else {
-				assert.Equal(t, *tc.expectedError, err.Code(), "the auth failed with the wrong error code")
+				assert.Equal(t, *tc.expectedError, err.HTTPStatus(), "the auth failed with the wrong error code")
 			}
 		})
 	}
@@ -80,7 +80,7 @@ func TestAdminAccess(t *testing.T) {
 			if tc.expectedError == nil {
 				assert.Nil(t, err, "access should have not been denied: %s", err)
 			} else {
-				assert.Equal(t, *tc.expectedError, err.Code(), "the auth failed with the wrong error code")
+				assert.Equal(t, *tc.expectedError, err.HTTPStatus(), "the auth failed with the wrong error code")
 			}
 		})
 	}

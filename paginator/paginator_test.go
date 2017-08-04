@@ -6,8 +6,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Nivl/go-rest-tools/network/http/httperr"
 	"github.com/Nivl/go-rest-tools/paginator"
+	"github.com/Nivl/go-rest-tools/primitives/apierror"
 	"github.com/Nivl/go-rest-tools/router/params"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -162,8 +162,8 @@ func TestHandlerParams(t *testing.T) {
 			if tc.shouldFail {
 				require.Error(t, err, "Parse() should have failed")
 
-				e := httperr.Convert(err)
-				assert.Equal(t, http.StatusBadRequest, e.Code(), "It should have failed with a 400")
+				e := apierror.Convert(err)
+				assert.Equal(t, http.StatusBadRequest, e.HTTPStatus(), "It should have failed with a 400")
 				assert.Equal(t, tc.expectedErrorField, e.Field(), "Failed on the wrong field")
 				assert.True(t, strings.Contains(err.Error(), tc.expectedErrorMsg),
 					"the error \"%s\" should contain the string \"%s\"", err.Error(), tc.expectedErrorMsg)
