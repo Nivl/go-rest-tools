@@ -3,7 +3,7 @@ package ptrs_test
 import (
 	"testing"
 
-	"github.com/Nivl/go-rest-tools/primitives/ptrs"
+	"github.com/Nivl/go-rest-tools/types/ptrs"
 	"github.com/stretchr/testify/assert"
 )
 

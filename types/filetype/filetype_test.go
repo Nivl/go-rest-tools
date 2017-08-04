@@ -7,7 +7,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/Nivl/go-rest-tools/primitives/filetype"
+	"github.com/Nivl/go-rest-tools/types/filetype"
 	"github.com/stretchr/testify/assert"
 )
 

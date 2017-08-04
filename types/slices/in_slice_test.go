@@ -5,7 +5,7 @@ import (
 
 	"fmt"
 
-	"github.com/Nivl/go-rest-tools/primitives/slices"
+	"github.com/Nivl/go-rest-tools/types/slices"
 	"github.com/stretchr/testify/assert"
 )
 

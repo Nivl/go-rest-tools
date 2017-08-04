@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/Nivl/go-rest-tools/paginator"
-	"github.com/Nivl/go-rest-tools/primitives/apierror"
+	"github.com/Nivl/go-rest-tools/types/apierror"
 	"github.com/Nivl/go-rest-tools/router/params"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

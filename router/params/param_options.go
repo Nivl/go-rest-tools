@@ -6,9 +6,9 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/Nivl/go-rest-tools/primitives/apierror"
-	"github.com/Nivl/go-rest-tools/primitives/filetype"
-	"github.com/Nivl/go-rest-tools/primitives/strngs"
+	"github.com/Nivl/go-rest-tools/types/apierror"
+	"github.com/Nivl/go-rest-tools/types/filetype"
+	"github.com/Nivl/go-rest-tools/types/strngs"
 )
 
 const (

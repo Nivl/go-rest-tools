@@ -5,7 +5,7 @@ import (
 
 	"github.com/Nivl/go-rest-tools/dependencies"
 	"github.com/Nivl/go-rest-tools/network/http/basicauth"
-	"github.com/Nivl/go-rest-tools/primitives/apierror"
+	"github.com/Nivl/go-rest-tools/types/apierror"
 	"github.com/Nivl/go-rest-tools/security/auth"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"

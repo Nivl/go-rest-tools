@@ -3,7 +3,7 @@ package strngs_test
 import (
 	"testing"
 
-	"github.com/Nivl/go-rest-tools/primitives/strngs"
+	"github.com/Nivl/go-rest-tools/types/strngs"
 	"github.com/stretchr/testify/assert"
 )
 

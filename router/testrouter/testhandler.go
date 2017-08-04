@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/Nivl/go-rest-tools/primitives/apierror"
+	"github.com/Nivl/go-rest-tools/types/apierror"
 	"github.com/Nivl/go-rest-tools/router"
 	"github.com/Nivl/go-rest-tools/router/mockrouter"
 	"github.com/Nivl/go-rest-tools/storage/db"

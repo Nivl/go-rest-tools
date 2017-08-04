@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/Nivl/go-rest-tools/primitives/apierror"
+	"github.com/Nivl/go-rest-tools/types/apierror"
 )
 
 // ResponseError represents the data sent the client when an error occurs

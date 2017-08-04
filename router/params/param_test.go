@@ -11,7 +11,7 @@ import (
 
 	"os"
 
-	"github.com/Nivl/go-rest-tools/primitives/ptrs"
+	"github.com/Nivl/go-rest-tools/types/ptrs"
 	"github.com/Nivl/go-rest-tools/router/formfile"
 	"github.com/Nivl/go-rest-tools/router/formfile/mockformfile"
 	"github.com/Nivl/go-rest-tools/router/formfile/testformfile"

@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/Nivl/go-rest-tools/primitives/apierror"
+	"github.com/Nivl/go-rest-tools/types/apierror"
 	"github.com/Nivl/go-rest-tools/router/formfile"
 )
 
