@@ -5,8 +5,8 @@ import (
 
 	"github.com/Nivl/go-rest-tools/dependencies"
 	"github.com/Nivl/go-rest-tools/network/http/basicauth"
-	"github.com/Nivl/go-rest-tools/types/apierror"
 	"github.com/Nivl/go-rest-tools/security/auth"
+	"github.com/Nivl/go-rest-tools/types/apierror"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 )
@@ -72,13 +72,12 @@ func Handler(e *Endpoint) http.Handler {
 				}
 				request.session = session
 				// we get the user and make sure it (still) exists
-				request.user, err = auth.GetUser(deps.DB, session.UserID)
+				request.user, err = auth.GetUserByID(deps.DB, session.UserID)
 				if err != nil {
+					if apierror.IsNotFound(err) {
+						err = apierror.NewNotFoundField("Authorization", "session not found")
+					}
 					request.res.Error(err, request)
-					return
-				}
-				if request.user == nil {
-					request.res.Error(apierror.NewNotFoundField("Authorization", "session not found"), request)
 					return
 				}
 			}
