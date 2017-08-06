@@ -11,11 +11,12 @@ import (
 
 	"os"
 
-	"github.com/Nivl/go-rest-tools/types/ptrs"
 	"github.com/Nivl/go-rest-tools/router/formfile"
 	"github.com/Nivl/go-rest-tools/router/formfile/mockformfile"
 	"github.com/Nivl/go-rest-tools/router/formfile/testformfile"
 	"github.com/Nivl/go-rest-tools/router/params"
+	"github.com/Nivl/go-rest-tools/storage/db"
+	"github.com/Nivl/go-rest-tools/types/ptrs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -489,6 +490,47 @@ func TestFileParamInvalidImage(t *testing.T) {
 			fileHolder.AssertExpectations(t)
 			assert.Error(t, err, "Expected SetFile to return an error")
 			assert.Equal(t, "not a valid image", err.Error())
+		})
+	}
+}
+
+func TestDateParam(t *testing.T) {
+	// sugar
+	shouldFail := true
+
+	type strct struct {
+		Date *db.Date `from:"form" json:"date"`
+	}
+
+	testCases := []struct {
+		description    string
+		s              strct
+		value          string
+		shouldFail     bool
+		expectedResult string
+	}{
+		{"2016-01 should work", strct{}, "2016-01", !shouldFail, "2016-01-01"},
+		{"16-01 should fail (year should be 4 numbers)", strct{}, "16-01", shouldFail, ""},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			paramList := reflect.ValueOf(&tc.s).Elem()
+			p := params.NewParamFromStructValue(&paramList, 0)
+
+			sources := url.Values{}
+			if tc.value != "" {
+				sources.Set("date", tc.value)
+			}
+
+			err := p.SetValue(sources)
+			if tc.shouldFail {
+				assert.Error(t, err, "Expected SetValue to fail")
+			} else {
+				assert.NoError(t, err, "Expected SetValue not to return an error")
+				assert.Equal(t, tc.expectedResult, tc.s.Date.String())
+			}
 		})
 	}
 }
