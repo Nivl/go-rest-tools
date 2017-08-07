@@ -37,6 +37,10 @@
 
 Use `default:"my_value"` to set a default value. The default value will be use if nothing is found in the payload or if the provided value is an empty string.
 
+## Maxlen of a string
+
+Use `maxlen:"255"` to make sure the len of a string is not bigger than 255 char. Any invalid values (including `0`) will be ignored
+
 ## Custom Validator
 
 You can add a custom validator by implementing `params.CustomValidation`.

@@ -4,8 +4,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/Nivl/go-rest-tools/types/ptrs"
 	"github.com/Nivl/go-rest-tools/router/params"
+	"github.com/Nivl/go-rest-tools/types/ptrs"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -201,6 +201,44 @@ func TestTrimOption(t *testing.T) {
 
 			output := po.ApplyTransformations(tc.input)
 			assert.Equal(t, tc.expectedOutput, output)
+		})
+	}
+}
+
+func TestMaxlenOption(t *testing.T) {
+	// sugar to avoid writing true/false
+	shouldFail := true
+
+	s := struct {
+		ID string `from:"url" json:"id" maxlen:"10"`
+	}{}
+
+	po := getParamOptions(s)
+	assert.Equal(t, 10, po.MaxLen, "MaxLen should be set to 10")
+	assert.Equal(t, po.Name, "id")
+
+	testCases := []struct {
+		description string
+		value       string
+		shouldFail  bool
+	}{
+		{"empty value should work", "", !shouldFail},
+		{"5 chars should work", "12345", !shouldFail},
+		{"10 chars should work", "1234567890", !shouldFail},
+		{"11 chars should fail", "1234567890a", shouldFail},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+
+			err := po.Validate(tc.value, true)
+			if tc.shouldFail {
+				assert.Error(t, err, "the validation should have failed")
+			} else {
+				assert.NoError(t, err, "the validation should have succeed")
+			}
 		})
 	}
 }

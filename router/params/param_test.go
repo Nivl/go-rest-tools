@@ -33,6 +33,7 @@ func TestBasicParam(t *testing.T) {
 		Default  string `from:"url" json:"default" default:"default value"`
 		Url      string `from:"url" json:"url" params:"url"`
 		Email    string `from:"url" json:"email" params:"email"`
+		Maxlen   string `from:"url" json:"maxlen" maxlen:"5"`
 	}
 
 	testCases := []struct {
@@ -108,6 +109,18 @@ func TestBasicParam(t *testing.T) {
 			"invalid email should fail",
 			strct{}, 6, "email",
 			"not-an-email", "",
+			shouldFail,
+		},
+		{
+			"5 chars should work",
+			strct{}, 7, "maxlen",
+			"12345", "12345",
+			!shouldFail,
+		},
+		{
+			"6 chars should fail",
+			strct{}, 7, "maxlen",
+			"123456", "",
 			shouldFail,
 		},
 	}
