@@ -3,7 +3,8 @@ language: go
 go:
   - master
 
-script: go test -v ./... -race -coverprofile=coverage.txt -covermode=atomic
+script:
+  - ./go.test.sh
 
 after_success:
   - include_cov=coverage.txt bash <(curl -s https://codecov.io/bash)
