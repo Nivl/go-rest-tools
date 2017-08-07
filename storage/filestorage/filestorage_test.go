@@ -13,7 +13,7 @@ import (
 )
 
 // storageHappyPathTestCallbacks is a structure to overide/skip certain test
-// It's usefull when a specific provider react differently than the expected
+// It's useful when a specific provider react differently than the expected
 // behavior (like deleted file on Cloudinary that are still available for
 // a few hours)
 type storageHappyPathTestCallbacks struct {
