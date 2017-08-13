@@ -1,5 +1,8 @@
 package params_test
 
+// this file makes sure the options are set correctly and the
+// validation works as intended.
+
 import (
 	"reflect"
 	"testing"
@@ -226,6 +229,44 @@ func TestMaxlenOption(t *testing.T) {
 		{"5 chars should work", "12345", !shouldFail},
 		{"10 chars should work", "1234567890", !shouldFail},
 		{"11 chars should fail", "1234567890a", shouldFail},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+
+			err := po.Validate(tc.value, true)
+			if tc.shouldFail {
+				assert.Error(t, err, "the validation should have failed")
+			} else {
+				assert.NoError(t, err, "the validation should have succeed")
+			}
+		})
+	}
+}
+
+func TestEnumOption(t *testing.T) {
+	// sugar to avoid writing true/false
+	shouldFail := true
+
+	s := struct {
+		ID string `from:"url" json:"id" enum:"or,and"`
+	}{}
+
+	po := getParamOptions(s)
+	assert.Equal(t, []string{"or", "and"}, po.AuthorizedValues, "AuthorizedValues doesn not contains the right value(s)")
+	assert.Equal(t, po.Name, "id")
+
+	testCases := []struct {
+		description string
+		value       string
+		shouldFail  bool
+	}{
+		{"empty values are allowed", "", !shouldFail},
+		{"'something' is not allowed", "something", shouldFail},
+		{"'and' is allowed", "and", !shouldFail},
+		{"'or' is allowed", "or", !shouldFail},
 	}
 
 	for _, tc := range testCases {

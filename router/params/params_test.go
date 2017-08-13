@@ -1,5 +1,8 @@
 package params_test
 
+// This file mainly tests that a struct of params get all its fields filled with
+// the right data.
+
 import (
 	"errors"
 	"net/url"
@@ -37,6 +40,7 @@ func TestValidStruct(t *testing.T) {
 		PointerBool   *bool   `from:"form" json:"pointer_bool"`
 		PointerString *string `from:"form" json:"pointer_string" params:"trim"`
 		Default       int     `from:"form" json:"default" default:"42"`
+		Emum          int     `from:"form" json:"enum" enum:"21,42"`
 	}
 
 	s := &strct{}
@@ -51,6 +55,7 @@ func TestValidStruct(t *testing.T) {
 	formSource := url.Values{}
 	formSource.Set("required_bool", "true")
 	formSource.Set("pointer_string", "     pointer value      ")
+	formSource.Set("enum", "42")
 
 	sources := map[string]url.Values{
 		"url":   urlSource,
@@ -82,7 +87,7 @@ func TestInvalidStruct(t *testing.T) {
 
 	p := params.NewParams(&strct{})
 	err := p.Parse(map[string]url.Values{}, nil)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 func TestEmbeddedStruct(t *testing.T) {

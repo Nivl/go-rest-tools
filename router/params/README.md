@@ -35,7 +35,13 @@
 
 ## Default value
 
-Use `default:"my_value"` to set a default value. The default value will be use if nothing is found in the payload or if the provided value is an empty string.
+Use `default:"my_value"` to set a default value. The default value will be used
+if nothing is found in the payload or if the provided value is an empty string.
+
+## Enum values
+
+You can set a comma separated list of valid values using
+`enum:"value1,value2,value3"`. Empty and nil values are accepted.
 
 ## Maxlen of a string
 

@@ -1,5 +1,7 @@
 package params_test
 
+// This file makes sure a single param gets parsed the right way
+
 import (
 	"reflect"
 	"testing"
@@ -34,6 +36,7 @@ func TestBasicParam(t *testing.T) {
 		Url      string `from:"url" json:"url" params:"url"`
 		Email    string `from:"url" json:"email" params:"email"`
 		Maxlen   string `from:"url" json:"maxlen" maxlen:"5"`
+		Enum     string `from:"url" json:"enum" enum:"and,or" default:"and"`
 	}
 
 	testCases := []struct {
@@ -121,6 +124,24 @@ func TestBasicParam(t *testing.T) {
 			"6 chars should fail",
 			strct{}, 7, "maxlen",
 			"123456", "",
+			shouldFail,
+		},
+		{
+			"'or' should work",
+			strct{}, 8, "enum",
+			"or", "or",
+			!shouldFail,
+		},
+		{
+			"empty should work",
+			strct{}, 8, "enum",
+			"", "and",
+			!shouldFail,
+		},
+		{
+			"'invalid' should fail",
+			strct{}, 8, "enum",
+			"invalid", "",
 			shouldFail,
 		},
 	}
