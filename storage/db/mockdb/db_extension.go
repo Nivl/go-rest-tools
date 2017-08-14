@@ -60,8 +60,8 @@ func (mdb *DB) ExpectInsert(typ string) *mock.Call {
 }
 
 // ExpectInsertError is a helper that expects an insert to fail
-func (mdb *DB) ExpectInsertError() *mock.Call {
-	return mdb.On("NamedExec", StringType, StringType).Return(nil, serverError)
+func (mdb *DB) ExpectInsertError(typ string) *mock.Call {
+	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(nil, serverError)
 }
 
 // ExpectInsertConflict is a helper that expects a conflict on an insertion
@@ -82,6 +82,6 @@ func (mdb *DB) ExpectUpdateConflict(typ string, fieldName string) *mock.Call {
 }
 
 // ExpectUpdateError is a helper that expects an update to fail
-func (mdb *DB) ExpectUpdateError() *mock.Call {
-	return mdb.On("NamedExec", StringType, StringType).Return(nil, serverError)
+func (mdb *DB) ExpectUpdateError(typ string) *mock.Call {
+	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(nil, serverError)
 }
