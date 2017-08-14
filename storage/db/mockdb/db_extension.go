@@ -10,8 +10,12 @@ import (
 )
 
 var (
-	// StringType represent a string argument
-	StringType  = mock.AnythingOfType("string")
+	// StringType represents a string argument
+	StringType = mock.AnythingOfType("string")
+	// InType represents an int argument
+	InType = mock.AnythingOfType("int")
+
+	// serverError represents a database connection error
 	serverError = &pq.Error{
 		Code:    "08006",
 		Message: "error: connection failure",
@@ -41,6 +45,20 @@ func (mdb *DB) ExpectGet(typ string, runnable func(args mock.Arguments)) *mock.C
 func (mdb *DB) ExpectGetNotFound(typ string) *mock.Call {
 	getCall := mdb.On("Get", mock.AnythingOfType(typ), StringType, StringType)
 	getCall.Return(sql.ErrNoRows)
+	return getCall
+}
+
+// ExpectGetError is a helper that expects a connection error on a Get
+func (mdb *DB) ExpectGetError(typ string) *mock.Call {
+	getCall := mdb.On("Get", mock.AnythingOfType(typ), StringType, StringType)
+	getCall.Return(serverError)
+	return getCall
+}
+
+// ExpectSelectError is an helper that expects a connection error on a Select
+func (mdb *DB) ExpectSelectError(typ string) *mock.Call {
+	getCall := mdb.On("Select", mock.AnythingOfType(typ), StringType, InType, InType)
+	getCall.Return(serverError)
 	return getCall
 }
 
