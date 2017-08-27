@@ -35,7 +35,7 @@ func (db *Queryable) Get(dest interface{}, query string, args ...interface{}) er
 }
 
 // NamedGet is a Get() that accepts named params (ex where id=:user_id)
-func (db *Queryable) NamedGet(dest interface{}, query string, args ...interface{}) error {
+func (db *Queryable) NamedGet(dest interface{}, query string, args interface{}) error {
 	namedStmt, err := db.con.PrepareNamed(query)
 	if err != nil {
 		return err
@@ -58,7 +58,7 @@ func (db *Queryable) NamedSelect(dest interface{}, query string, args interface{
 }
 
 // Exec executes a SQL query and returns the number of rows affected
-func (db *Queryable) Exec(query string, arg interface{}) (rowsAffected int64, err error) {
+func (db *Queryable) Exec(query string, arg ...interface{}) (rowsAffected int64, err error) {
 	res, err := db.con.Exec(query, arg)
 	if err != nil {
 		return 0, err

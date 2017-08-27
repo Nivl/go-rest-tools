@@ -9,19 +9,22 @@ type Queryable struct {
 }
 
 // Exec provides a mock function with given fields: query, arg
-func (_m *Queryable) Exec(query string, arg interface{}) (int64, error) {
-	ret := _m.Called(query, arg)
+func (_m *Queryable) Exec(query string, arg ...interface{}) (int64, error) {
+	var _ca []interface{}
+	_ca = append(_ca, query)
+	_ca = append(_ca, arg...)
+	ret := _m.Called(_ca...)
 
 	var r0 int64
-	if rf, ok := ret.Get(0).(func(string, interface{}) int64); ok {
-		r0 = rf(query, arg)
+	if rf, ok := ret.Get(0).(func(string, ...interface{}) int64); ok {
+		r0 = rf(query, arg...)
 	} else {
 		r0 = ret.Get(0).(int64)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string, interface{}) error); ok {
-		r1 = rf(query, arg)
+	if rf, ok := ret.Get(1).(func(string, ...interface{}) error); ok {
+		r1 = rf(query, arg...)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -68,15 +71,12 @@ func (_m *Queryable) NamedExec(query string, arg interface{}) (int64, error) {
 }
 
 // NamedGet provides a mock function with given fields: dest, query, args
-func (_m *Queryable) NamedGet(dest interface{}, query string, args ...interface{}) error {
-	var _ca []interface{}
-	_ca = append(_ca, dest, query)
-	_ca = append(_ca, args...)
-	ret := _m.Called(_ca...)
+func (_m *Queryable) NamedGet(dest interface{}, query string, args interface{}) error {
+	ret := _m.Called(dest, query, args)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(interface{}, string, ...interface{}) error); ok {
-		r0 = rf(dest, query, args...)
+	if rf, ok := ret.Get(0).(func(interface{}, string, interface{}) error); ok {
+		r0 = rf(dest, query, args)
 	} else {
 		r0 = ret.Error(0)
 	}

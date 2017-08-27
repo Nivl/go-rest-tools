@@ -18,7 +18,7 @@ type Queryable interface {
 	Get(dest interface{}, query string, args ...interface{}) error
 
 	// NamedGet is a Get that accepts named params (ex where id=:user_id)
-	NamedGet(dest interface{}, query string, args ...interface{}) error
+	NamedGet(dest interface{}, query string, args interface{}) error
 
 	// Select is used to retrieve multiple rows
 	Select(dest interface{}, query string, args ...interface{}) error
@@ -27,7 +27,7 @@ type Queryable interface {
 	NamedSelect(dest interface{}, query string, args interface{}) error
 
 	// Exec executes a SQL query and returns the number of rows affected
-	Exec(query string, arg interface{}) (rowsAffected int64, err error)
+	Exec(query string, arg ...interface{}) (rowsAffected int64, err error)
 
 	// NamedExec is an Exec that accepts named params (ex where id=:user_id)
 	NamedExec(query string, arg interface{}) (rowAffected int64, err error)
