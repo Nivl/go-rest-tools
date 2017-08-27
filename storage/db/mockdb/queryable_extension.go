@@ -74,42 +74,42 @@ func (mdb *Queryable) ExpectSelectError(typ string) *mock.Call {
 
 // ExpectDeletion is a helper that expects a deletion
 func (mdb *Queryable) ExpectDeletion() *mock.Call {
-	return mdb.On("Exec", StringType, StringType).Return(1, nil)
+	return mdb.On("Exec", StringType, StringType).Return(int64(1), nil)
 }
 
 // ExpectDeletionError is a helper that expects a deletion to fail
 func (mdb *Queryable) ExpectDeletionError() *mock.Call {
-	return mdb.On("Exec", StringType, StringType).Return(0, serverError)
+	return mdb.On("Exec", StringType, StringType).Return(int64(0), serverError)
 }
 
 // ExpectInsert is a helper that expects an insertion
 func (mdb *Queryable) ExpectInsert(typ string) *mock.Call {
-	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(1, nil)
+	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(int64(1), nil)
 }
 
 // ExpectInsertError is a helper that expects an insert to fail
 func (mdb *Queryable) ExpectInsertError(typ string) *mock.Call {
-	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(1, serverError)
+	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(int64(1), serverError)
 }
 
 // ExpectInsertConflict is a helper that expects a conflict on an insertion
 func (mdb *Queryable) ExpectInsertConflict(typ string, fieldName string) *mock.Call {
 	conflictError := newConflictError(fieldName)
-	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(0, conflictError)
+	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(int64(0), conflictError)
 }
 
 // ExpectUpdate is a helper that expects an update
 func (mdb *Queryable) ExpectUpdate(typ string) *mock.Call {
-	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(1, nil)
+	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(int64(1), nil)
 }
 
 // ExpectUpdateConflict is a helper that expects a conflict on an update
 func (mdb *Queryable) ExpectUpdateConflict(typ string, fieldName string) *mock.Call {
 	conflictError := newConflictError(fieldName)
-	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(0, conflictError)
+	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(int64(0), conflictError)
 }
 
 // ExpectUpdateError is a helper that expects an update to fail
 func (mdb *Queryable) ExpectUpdateError(typ string) *mock.Call {
-	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(0, serverError)
+	return mdb.On("NamedExec", StringType, mock.AnythingOfType(typ)).Return(int64(0), serverError)
 }
