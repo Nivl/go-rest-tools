@@ -31,7 +31,7 @@ type Queryable struct {
 // Get is used to retrieve a single row
 // An error (sql.ErrNoRows) is returned if the result set is empty.
 func (db *Queryable) Get(dest interface{}, query string, args ...interface{}) error {
-	return db.con.Get(dest, query, args)
+	return db.con.Get(dest, query, args...)
 }
 
 // NamedGet is a Get() that accepts named params (ex where id=:user_id)
@@ -45,7 +45,7 @@ func (db *Queryable) NamedGet(dest interface{}, query string, args interface{}) 
 
 // Select is used to retrieve multiple rows
 func (db *Queryable) Select(dest interface{}, query string, args ...interface{}) error {
-	return db.con.Select(dest, query, args)
+	return db.con.Select(dest, query, args...)
 }
 
 // NamedSelect is a Select() that accepts named params (ex where id=:user_id)
@@ -58,8 +58,8 @@ func (db *Queryable) NamedSelect(dest interface{}, query string, args interface{
 }
 
 // Exec executes a SQL query and returns the number of rows affected
-func (db *Queryable) Exec(query string, arg ...interface{}) (rowsAffected int64, err error) {
-	res, err := db.con.Exec(query, arg)
+func (db *Queryable) Exec(query string, args ...interface{}) (rowsAffected int64, err error) {
+	res, err := db.con.Exec(query, args...)
 	if err != nil {
 		return 0, err
 	}
