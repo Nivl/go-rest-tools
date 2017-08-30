@@ -76,3 +76,23 @@ func TestUnwrapInt(t *testing.T) {
 		})
 	}
 }
+
+func TestUnwrapBool(t *testing.T) {
+	testCases := []struct {
+		description string
+		value       *bool
+		expected    bool
+	}{
+		{`int ptr true`, ptrs.NewBool(true), true},
+		{`int ptr nil`, nil, false},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.description, func(t *testing.T) {
+			t.Parallel()
+			ret := ptrs.UnwrapBool(tc.value)
+			assert.Equal(t, tc.expected, ret, "Unwrap didn't return the expected value")
+		})
+	}
+}
