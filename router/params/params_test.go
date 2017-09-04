@@ -14,7 +14,7 @@ import (
 	"github.com/Nivl/go-rest-tools/router/formfile"
 	"github.com/Nivl/go-rest-tools/router/formfile/testformfile"
 	"github.com/Nivl/go-rest-tools/router/params"
-	"github.com/Nivl/go-rest-tools/storage/db"
+	"github.com/Nivl/go-rest-tools/types/date"
 	"github.com/Nivl/go-rest-tools/types/ptrs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -233,7 +233,7 @@ func TestExtraction(t *testing.T) {
 		PointerNumber *int               `from:"form" json:"pointer_number"`
 		Nil           *int               `from:"form" json:"nil"`
 		File          *formfile.FormFile `from:"file" json:"file"`
-		Stringer      *db.Date           `from:"form" json:"stringer"`
+		Stringer      *date.Date         `from:"form" json:"stringer"`
 	}{
 		String:        "String value",
 		Number:        42,
@@ -243,7 +243,7 @@ func TestExtraction(t *testing.T) {
 		PointerNumber: ptrs.NewInt(24),
 		Nil:           nil,
 		File:          testformfile.NewFormFile(t, cwd, "black_pixel.png"),
-		Stringer:      db.Today(),
+		Stringer:      date.Today(),
 	}
 
 	p := params.NewParams(&s)
@@ -275,7 +275,7 @@ func TestExtraction(t *testing.T) {
 	assert.Equal(t, formValue.Get("pointer_string"), *s.PointerString)
 	assert.Equal(t, formValue.Get("pointer_number"), strconv.Itoa(*s.PointerNumber))
 	assert.Empty(t, formValue.Get("nil"))
-	d, err := db.NewDate(formValue.Get("stringer"))
+	d, err := date.New(formValue.Get("stringer"))
 	assert.NoError(t, err, "db.NewDate() should have succeed")
 	assert.True(t, s.Stringer.Equal(d), "The date changed from %s to %s", s.Stringer, d)
 }
