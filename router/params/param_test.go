@@ -17,7 +17,7 @@ import (
 	"github.com/Nivl/go-rest-tools/router/formfile/mockformfile"
 	"github.com/Nivl/go-rest-tools/router/formfile/testformfile"
 	"github.com/Nivl/go-rest-tools/router/params"
-	"github.com/Nivl/go-rest-tools/storage/db"
+	"github.com/Nivl/go-rest-tools/types/date"
 	"github.com/Nivl/go-rest-tools/types/ptrs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -533,7 +533,7 @@ func TestDateParam(t *testing.T) {
 	shouldFail := true
 
 	type strct struct {
-		Date *db.Date `from:"form" json:"date"`
+		Date *date.Date `from:"form" json:"date"`
 	}
 
 	testCases := []struct {
