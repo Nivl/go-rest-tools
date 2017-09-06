@@ -113,8 +113,8 @@ func (_m *Dependencies) SetDB(uri string) error {
 	return r0
 }
 
-// SetGPC provides a mock function with given fields: apiKey, projectName, bucket
-func (_m *Dependencies) SetGPC(apiKey string, projectName string, bucket string) error {
+// SetGCP provides a mock function with given fields: apiKey, projectName, bucket
+func (_m *Dependencies) SetGCP(apiKey string, projectName string, bucket string) error {
 	ret := _m.Called(apiKey, projectName, bucket)
 
 	var r0 error

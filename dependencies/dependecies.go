@@ -33,8 +33,8 @@ type Dependencies interface {
 	// Noop
 	Mailer() mailer.Mailer
 
-	// SetGPC sets up Google Cloud Platform
-	SetGPC(apiKey, projectName, bucket string) error
+	// SetGCP sets up Google Cloud Platform
+	SetGCP(apiKey, projectName, bucket string) error
 
 	// SetCloudinary setups Cloudinary as Storage provider
 	SetCloudinary(apiKey, secret, bucket string) error

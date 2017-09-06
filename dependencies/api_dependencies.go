@@ -79,8 +79,8 @@ func (deps *APIDependencies) Mailer() mailer.Mailer {
 	return deps.mailer
 }
 
-// SetGPC sets up Google Cloud Platform
-func (deps *APIDependencies) SetGPC(apiKey, projectName, bucket string) error {
+// SetGCP sets up Google Cloud Platform
+func (deps *APIDependencies) SetGCP(apiKey, projectName, bucket string) error {
 	deps.gcp = gcp.New(apiKey, projectName, bucket)
 	return nil
 }
