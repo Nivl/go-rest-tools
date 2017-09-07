@@ -9,6 +9,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/Nivl/go-types"
+  packages = ["date","datetime","filetype","ptrs","slices","strngs"]
+  revision = "9f5813ebf6f9d1cf3916385bc64a81f7b4cb292a"
+
+[[projects]]
+  branch = "master"
   name = "github.com/bsphere/le_go"
   packages = ["."]
   revision = "7a984a84b5492ae539b79b62fb4a10afc63c7bcf"
@@ -148,6 +154,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "21820e11d17c9ef183fb5e28f726a5592008ba28b418f8075d2291cb110ac085"
+  inputs-digest = "3ef5d8c52a67ab04e5fd6f9e21ca5a858e558578b26e94bc5f57593a2624ae58"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -59,6 +59,17 @@ func (t Date) String() string {
 	return t.Format(DATE)
 }
 
+// ScanString implements the go-params Scanner interface
+func (t *Date) ScanString(date string) error {
+	if strings.Count(date, "-") == 1 {
+		date += "-01"
+	}
+
+	var err error
+	t.Time, err = time.Parse(DATE, date)
+	return err
+}
+
 // MarshalJSON implements the json.Marshaler interface
 func (t Date) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + t.Format(DATE) + `"`), nil

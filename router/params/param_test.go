@@ -17,8 +17,8 @@ import (
 	"github.com/Nivl/go-rest-tools/router/formfile/mockformfile"
 	"github.com/Nivl/go-rest-tools/router/formfile/testformfile"
 	"github.com/Nivl/go-rest-tools/router/params"
-	"github.com/Nivl/go-rest-tools/types/date"
-	"github.com/Nivl/go-rest-tools/types/ptrs"
+	"github.com/Nivl/go-types/date"
+	"github.com/Nivl/go-types/ptrs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
