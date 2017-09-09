@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/Nivl/go-types"
   packages = ["date","datetime","filetype","ptrs","slices","strngs"]
-  revision = "9f5813ebf6f9d1cf3916385bc64a81f7b4cb292a"
+  revision = "8f7e511d896ebfa42712aefb378036b63d036e4d"
 
 [[projects]]
   branch = "master"
@@ -107,7 +107,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["bcrypt","blowfish"]
-  revision = "81e90905daefcd6fd217b62423c0908922eadb30"
+  revision = "9ba3862cf6a5452ae579de98f9364dd2e544844c"
 
 [[projects]]
   branch = "master"
@@ -131,7 +131,7 @@
   branch = "master"
   name = "google.golang.org/api"
   packages = ["gensupport","googleapi","googleapi/internal/uritemplates","googleapi/transport","internal","iterator","option","storage/v1","transport","transport/grpc","transport/http"]
-  revision = "38eaa396bab4275c0aedee767d0d674ef2b50994"
+  revision = "b6a02105ec5a446209e9d38557f0e1ac30cacf82"
 
 [[projects]]
   name = "google.golang.org/appengine"
