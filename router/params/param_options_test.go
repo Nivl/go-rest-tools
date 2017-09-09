@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/Nivl/go-rest-tools/router/params"
-	"github.com/Nivl/go-rest-tools/types/ptrs"
+	"github.com/Nivl/go-types/ptrs"
 	"github.com/stretchr/testify/assert"
 )
 

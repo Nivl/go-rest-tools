@@ -9,6 +9,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/Nivl/go-types"
+  packages = ["date","datetime","filetype","ptrs","slices","strngs"]
+  revision = "8f7e511d896ebfa42712aefb378036b63d036e4d"
+
+[[projects]]
+  branch = "master"
   name = "github.com/bsphere/le_go"
   packages = ["."]
   revision = "7a984a84b5492ae539b79b62fb4a10afc63c7bcf"
@@ -101,7 +107,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["bcrypt","blowfish"]
-  revision = "81e90905daefcd6fd217b62423c0908922eadb30"
+  revision = "9ba3862cf6a5452ae579de98f9364dd2e544844c"
 
 [[projects]]
   branch = "master"
@@ -125,7 +131,7 @@
   branch = "master"
   name = "google.golang.org/api"
   packages = ["gensupport","googleapi","googleapi/internal/uritemplates","googleapi/transport","internal","iterator","option","storage/v1","transport","transport/grpc","transport/http"]
-  revision = "38eaa396bab4275c0aedee767d0d674ef2b50994"
+  revision = "b6a02105ec5a446209e9d38557f0e1ac30cacf82"
 
 [[projects]]
   name = "google.golang.org/appengine"
@@ -148,6 +154,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "21820e11d17c9ef183fb5e28f726a5592008ba28b418f8075d2291cb110ac085"
+  inputs-digest = "3ef5d8c52a67ab04e5fd6f9e21ca5a858e558578b26e94bc5f57593a2624ae58"
   solver-name = "gps-cdcl"
   solver-version = 1

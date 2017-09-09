@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/Nivl/go-rest-tools/types/apierror"
-	"github.com/Nivl/go-rest-tools/types/filetype"
-	"github.com/Nivl/go-rest-tools/types/slices"
-	"github.com/Nivl/go-rest-tools/types/strngs"
+	"github.com/Nivl/go-types/filetype"
+	"github.com/Nivl/go-types/slices"
+	"github.com/Nivl/go-types/strngs"
 )
 
 const (

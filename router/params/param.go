@@ -9,7 +9,7 @@ import (
 
 	"github.com/Nivl/go-rest-tools/router/formfile"
 	"github.com/Nivl/go-rest-tools/types/apierror"
-	"github.com/Nivl/go-rest-tools/types/date"
+	"github.com/Nivl/go-types/date"
 )
 
 const (
