@@ -9,9 +9,15 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/Nivl/go-params"
+  packages = [".","formfile","formfile/testformfile","perror"]
+  revision = "3ddf35a4c334c958749c267606d6eb9b28cfd3cb"
+
+[[projects]]
+  branch = "master"
   name = "github.com/Nivl/go-types"
-  packages = ["date","datetime","filetype","ptrs","slices","strngs"]
-  revision = "8f7e511d896ebfa42712aefb378036b63d036e4d"
+  packages = ["datetime","filetype","ptrs","slices","strngs"]
+  revision = "d7885e3ee74696687bb44c738b2a117604b298e9"
 
 [[projects]]
   branch = "master"
@@ -154,6 +160,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3ef5d8c52a67ab04e5fd6f9e21ca5a858e558578b26e94bc5f57593a2624ae58"
+  inputs-digest = "94cef76a033caac928a26e2f8f21d7b6a28f7271903b5f757533f9b4cd4999ff"
   solver-name = "gps-cdcl"
   solver-version = 1

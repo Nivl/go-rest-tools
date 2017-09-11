@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Nivl/go-params"
 	"github.com/Nivl/go-rest-tools/paginator"
 	"github.com/Nivl/go-rest-tools/types/apierror"
-	"github.com/Nivl/go-rest-tools/router/params"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -153,12 +153,13 @@ func TestHandlerParams(t *testing.T) {
 		t.Run(tc.description, func(t *testing.T) {
 			t.Parallel()
 			s := &strct{}
-			p := params.NewParams(s)
+			p := params.New(s)
 			sources := map[string]url.Values{
 				"query": tc.params,
 			}
 
 			err := p.Parse(sources, nil)
+			err = apierror.NewFromError(err)
 			if tc.shouldFail {
 				require.Error(t, err, "Parse() should have failed")
 
