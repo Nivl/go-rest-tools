@@ -14,8 +14,8 @@ import (
 
 	"github.com/Nivl/go-rest-tools/network/http/httptests"
 	"github.com/Nivl/go-rest-tools/router"
-	"github.com/Nivl/go-rest-tools/router/formfile"
-	"github.com/Nivl/go-rest-tools/router/formfile/testformfile"
+	"github.com/Nivl/go-params/formfile"
+	"github.com/Nivl/go-params/formfile/testformfile"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
