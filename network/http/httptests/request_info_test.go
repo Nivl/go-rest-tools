@@ -12,10 +12,10 @@ import (
 
 	"mime/multipart"
 
-	"github.com/Nivl/go-rest-tools/network/http/httptests"
-	"github.com/Nivl/go-rest-tools/router"
 	"github.com/Nivl/go-params/formfile"
 	"github.com/Nivl/go-params/formfile/testformfile"
+	"github.com/Nivl/go-rest-tools/network/http/httptests"
+	"github.com/Nivl/go-rest-tools/router"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -89,7 +89,7 @@ func TestInfoJSONBody(t *testing.T) {
 	}
 
 	ri.ParseParams()
-	_, body, err := ri.BodyJSON()
+	_, body, err := ri.Body()
 	assert.NoError(t, err)
 	assert.NotNil(t, body)
 
@@ -125,7 +125,7 @@ func TestInfoMultipartBody(t *testing.T) {
 	}
 
 	ri.ParseParams()
-	contentType, body, err := ri.BodyMultipart()
+	contentType, body, err := ri.Body()
 
 	require.NoError(t, err)
 	assert.NotNil(t, body)
@@ -158,4 +158,18 @@ func TestInfoMultipartBody(t *testing.T) {
 	file, err := header.Open()
 	require.NoError(t, err)
 	file.Close()
+}
+
+func TestInfoNoParams(t *testing.T) {
+	expectedURL := "/resource"
+
+	ri := &httptests.RequestInfo{
+		Endpoint: &router.Endpoint{
+			Verb: "GET",
+			Path: expectedURL,
+		},
+	}
+
+	ri.ParseParams()
+	assert.Equal(t, expectedURL, ri.URL(), "Wrong url returned")
 }

@@ -52,6 +52,20 @@ func TestValidBasicAuthHeader(t *testing.T) {
 			expectedName: "user",
 			expectedPsw:  "password",
 		},
+		{
+			description:  "realm not found",
+			headers:      []string{`basic dXNlcjpwYXNzd29yZA== realm="myRealm"`},
+			realm:        "tofind",
+			expectedName: "",
+			expectedPsw:  "",
+		},
+		{
+			description:  "no real provided",
+			headers:      []string{`basic dXNlcjpwYXNzd29yZA==`},
+			realm:        "myRealm",
+			expectedName: "",
+			expectedPsw:  "",
+		},
 	}
 
 	for _, tc := range cases {
