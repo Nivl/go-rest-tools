@@ -29,8 +29,8 @@ func NewAdminAuth() (*auth.User, *auth.Session) {
 	return user, session
 }
 
-// NePersistedAdminAuth creates a new admin and their session
-func NePersistedAdminAuth(t *testing.T, q db.Queryable) (*auth.User, *auth.Session) {
+// NewPersistedAdminAuth creates a new admin and their session
+func NewPersistedAdminAuth(t *testing.T, q db.Queryable) (*auth.User, *auth.Session) {
 	user := NewPersistedUser(t, q, &auth.User{IsAdmin: true})
 	session := NewPersistedSession(t, q, user)
 	return user, session
