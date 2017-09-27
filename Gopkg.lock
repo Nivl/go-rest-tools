@@ -26,6 +26,12 @@
   revision = "7a984a84b5492ae539b79b62fb4a10afc63c7bcf"
 
 [[projects]]
+  name = "github.com/certifi/gocertifi"
+  packages = ["."]
+  revision = "3fd9e1adb12b72d2f3f82191d49be9b93c69f67c"
+  version = "2017.07.27"
+
+[[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
@@ -36,6 +42,12 @@
   name = "github.com/dchest/uniuri"
   packages = ["."]
   revision = "8902c56451e9b58ff940bbe5fec35d5f9c04584a"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/getsentry/raven-go"
+  packages = ["."]
+  revision = "1452f6376ddb15c546b6d7567e1d9518765391b5"
 
 [[projects]]
   branch = "master"
@@ -160,6 +172,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "94cef76a033caac928a26e2f8f21d7b6a28f7271903b5f757533f9b4cd4999ff"
+  inputs-digest = "f4cc1e3e0a0e68a25f20593b6572456d8d8e4f916d374d87a9205a24ddc6f53b"
   solver-name = "gps-cdcl"
   solver-version = 1
