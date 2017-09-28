@@ -59,6 +59,7 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 
 		// We setup all the basic tag in the reporter
 		request.Reporter().AddTag("Req ID", request.id)
+		request.Reporter().AddTag("Endpoint", e.Path)
 
 		// if we failed getting the dependencies, we return a 500
 		if storageErr != nil {

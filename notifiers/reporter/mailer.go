@@ -64,7 +64,7 @@ func (r *Mailer) AddTags(tags map[string]string) {
 }
 
 // CaptureError sends a report with this specific error
-func (r *Mailer) CaptureError(err error) {
+func (r *Mailer) ReportError(err error) {
 	// We copy the tags so we can add more data without affecting the source
 	finalTags := map[string]string{}
 	if r.user != nil {
@@ -80,4 +80,20 @@ func (r *Mailer) CaptureError(err error) {
 		r.client.SendStackTrace(stacktrace, err.Error(), finalTags)
 	}
 	go sendEmail(debug.Stack())
+}
+
+// ReportErrorAndWait sends a report with this specific error
+func (r *Mailer) ReportErrorAndWait(err error) {
+	// We copy the tags so we can add more data without affecting the source
+	finalTags := map[string]string{}
+	if r.user != nil {
+		finalTags["User ID"] = r.user.ID
+		finalTags["User email"] = r.user.Email
+		finalTags["User name"] = r.user.Name
+	}
+	for k, v := range r.tags {
+		finalTags[k] = v
+	}
+
+	r.client.SendStackTrace(debug.Stack(), err.Error(), finalTags)
 }

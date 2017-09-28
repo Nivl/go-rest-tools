@@ -70,7 +70,13 @@ func (r *Sentry) AddTags(tags map[string]string) {
 	}
 }
 
-// CaptureError sends a report with this specific error
-func (r *Sentry) CaptureError(err error) {
+// ReportError sends a report with the specified error
+func (r *Sentry) ReportError(err error) {
 	r.client.CaptureError(err, r.tags)
+}
+
+// ReportErrorAndWait sends a report with the specified error, and wait for
+// the reports to be sent
+func (r *Sentry) ReportErrorAndWait(err error) {
+	r.client.CaptureErrorAndWait(err, r.tags)
 }

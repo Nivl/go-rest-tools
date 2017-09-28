@@ -42,5 +42,8 @@ func (r *Noop) AddTag(key, value string) {}
 // AddTags does nothing
 func (r *Noop) AddTags(tags map[string]string) {}
 
-// CaptureError does nothing
-func (r *Noop) CaptureError(err error) {}
+// ReportError does nothing
+func (r *Noop) ReportError(err error) {}
+
+// CaptureErrorAndWait does nothing
+func (r *Noop) ReportErrorAndWait(err error) {}

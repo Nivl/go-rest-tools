@@ -12,5 +12,6 @@ type Reporter interface {
 	SetUser(u *auth.User)
 	AddTag(key, value string)
 	AddTags(tags map[string]string)
-	CaptureError(err error)
+	ReportError(err error)
+	ReportErrorAndWait(err error)
 }
