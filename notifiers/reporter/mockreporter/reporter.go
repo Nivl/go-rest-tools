@@ -19,8 +19,13 @@ func (_m *Reporter) AddTags(tags map[string]string) {
 	_m.Called(tags)
 }
 
-// CaptureError provides a mock function with given fields: err
-func (_m *Reporter) CaptureError(err error) {
+// ReportError provides a mock function with given fields: err
+func (_m *Reporter) ReportError(err error) {
+	_m.Called(err)
+}
+
+// ReportErrorAndWait provides a mock function with given fields: err
+func (_m *Reporter) ReportErrorAndWait(err error) {
 	_m.Called(err)
 }
 

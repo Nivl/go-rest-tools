@@ -88,7 +88,7 @@ func (res *Response) Error(e error, req HTTPRequest) {
 	// We send a report for all server errors
 	if err.HTTPStatus() == http.StatusInternalServerError {
 		if req.Reporter() != nil {
-			req.Reporter().CaptureError(err)
+			req.Reporter().ReportError(err)
 		}
 	}
 }
