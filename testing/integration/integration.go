@@ -22,13 +22,19 @@ type Wrapper struct {
 // New creates a new Wrapper
 func New(deps dependencies.Dependencies, migrationFolder string) (*Wrapper, error) {
 	it := &Wrapper{
-		Deps:     deps,
+		Deps: deps,
+
+		// masterDB contains a DB connection to the default database.
+		// this is needed because postgres won't allow us to drop the
+		// current database, so we use the default one to drop the
+		// temporary one
 		masterDB: deps.DB(),
 
 		// for the new table name we use a uuid without "-"
 		tmpDBName: strings.Replace(uuid.NewV4().String(), "-", "", -1),
 	}
 
+	// We get the current database name
 	masterDbName := ""
 	if err := it.masterDB.Get(&masterDbName, "SELECT current_database();"); err != nil {
 		return nil, errors.Wrap(err, "failed getting master database name")
@@ -40,17 +46,13 @@ func New(deps dependencies.Dependencies, migrationFolder string) (*Wrapper, erro
 		return nil, errors.Wrap(err, "failed creating tmp database")
 	}
 
-	// set this new database as the new current one
+	// We set this new database as the new current one, to do that we
+	// get the DSN of the current connection and swap the table name by
+	// the new one
 	tmpDBDSN := strings.Replace(it.masterDB.DSN(), masterDbName, it.tmpDBName, -1)
 	if err := it.Deps.SetDB(tmpDBDSN); err != nil {
 		return nil, errors.Wrap(err, "could not connect to the tmp table")
 	}
-
-	// wd, err := os.Getwd()
-	// if err != nil {
-	// 	return nil, errors.Wrap(err, "could not get the working directory")
-	// }
-	// migrationsPath := path.Join(wd, "..", "..", "..", "..", "db", "migrations")
 
 	// We apply the migration to the newly created database
 	if err := goose.Up(it.Deps.DB().SQL(), migrationFolder); err != nil {
