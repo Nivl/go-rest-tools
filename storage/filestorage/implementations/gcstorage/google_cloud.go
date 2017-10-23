@@ -1,9 +1,10 @@
-package filestorage
+package gcstorage
 
 import (
 	"context"
 	"io"
 
+	"github.com/Nivl/go-rest-tools/storage/filestorage"
 	"google.golang.org/api/option"
 
 	"fmt"
@@ -11,8 +12,8 @@ import (
 	"cloud.google.com/go/storage"
 )
 
-// toGCStorage converts a *UpdatableFileAttributes into a *storage.ObjectAttrsToUpdate
-func (attrs *UpdatableFileAttributes) toGCStorage() *storage.ObjectAttrsToUpdate {
+// updatableAttrsToGCStorage converts a *UpdatableFileAttributes into a *storage.ObjectAttrsToUpdate
+func updatableAttrsToGCStorage(attrs *filestorage.UpdatableFileAttributes) *storage.ObjectAttrsToUpdate {
 	return &storage.ObjectAttrsToUpdate{
 		ContentType:        attrs.ContentType,
 		ContentDisposition: attrs.ContentDisposition,
@@ -23,9 +24,9 @@ func (attrs *UpdatableFileAttributes) toGCStorage() *storage.ObjectAttrsToUpdate
 	}
 }
 
-// NewAttributesFromGCStorage converts a *storage.ObjectAttrs to *FileAttributes
-func NewAttributesFromGCStorage(attrs *storage.ObjectAttrs) *FileAttributes {
-	return &FileAttributes{
+// NewAttributes converts a *storage.ObjectAttrs to *FileAttributes
+func NewAttributes(attrs *storage.ObjectAttrs) *filestorage.FileAttributes {
+	return &filestorage.FileAttributes{
 		ContentType:        attrs.ContentType,
 		ContentDisposition: attrs.ContentDisposition,
 		ContentLanguage:    attrs.ContentLanguage,
@@ -35,8 +36,8 @@ func NewAttributesFromGCStorage(attrs *storage.ObjectAttrs) *FileAttributes {
 	}
 }
 
-// NewGCStorage returns a new instance of a Google Cloud Storage
-func NewGCStorage(ctx context.Context, apiKey string) (*GCStorage, error) {
+// New returns a new instance of a Google Cloud Storage
+func New(ctx context.Context, apiKey string) (*GCStorage, error) {
 	client, err := storage.NewClient(ctx, option.WithAPIKey(apiKey))
 	if err != nil {
 		return nil, err
@@ -94,22 +95,22 @@ func (s *GCStorage) Write(src io.Reader, destPath string) error {
 }
 
 // SetAttributes sets the attributes of the file
-func (s *GCStorage) SetAttributes(filepath string, attrs *UpdatableFileAttributes) (*FileAttributes, error) {
-	gcsAttrs, err := s.bucket.Object(filepath).Update(s.ctx, *attrs.toGCStorage())
+func (s *GCStorage) SetAttributes(filepath string, attrs *filestorage.UpdatableFileAttributes) (*filestorage.FileAttributes, error) {
+	gcsAttrs, err := s.bucket.Object(filepath).Update(s.ctx, *updatableAttrsToGCStorage(attrs))
 	if err != nil {
 		return nil, err
 	}
 
-	return NewAttributesFromGCStorage(gcsAttrs), nil
+	return NewAttributes(gcsAttrs), nil
 }
 
 // Attributes returns the attributes of the file
-func (s *GCStorage) Attributes(filepath string) (*FileAttributes, error) {
+func (s *GCStorage) Attributes(filepath string) (*filestorage.FileAttributes, error) {
 	gcsAttrs, err := s.bucket.Object(filepath).Attrs(s.ctx)
 	if err != nil {
 		return nil, err
 	}
-	return NewAttributesFromGCStorage(gcsAttrs), nil
+	return NewAttributes(gcsAttrs), nil
 }
 
 // Exists check if a file exists
@@ -142,5 +143,5 @@ func (s *GCStorage) Delete(filepath string) error {
 //   - A URL to the uploaded file
 //   - An error if something went wrong
 func (s *GCStorage) WriteIfNotExist(src io.Reader, destPath string) (new bool, url string, err error) {
-	return writeIfNotExist(s, src, destPath)
+	return filestorage.WriteIfNotExist(s, src, destPath)
 }

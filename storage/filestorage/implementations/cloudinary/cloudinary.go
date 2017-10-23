@@ -1,4 +1,4 @@
-package filestorage
+package cloudinary
 
 import (
 	"bytes"
@@ -15,26 +15,28 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Nivl/go-rest-tools/storage/filestorage"
 )
 
-var cloudinaryFileTypes = []string{"image", "raw", "video"}
+var fileTypes = []string{"image", "raw", "video"}
 
-type cloudinaryErrorResponse struct {
+type ErrorResponse struct {
 	Error struct {
 		Message string `json:"message"`
 	} `json:"error"`
 }
 
-type cloudinaryResultResponse struct {
+type ResultResponse struct {
 	Result string `json:"result"`
 }
 
-type cloudinaryUploadSuccessResponse struct {
+type UploadSuccessResponse struct {
 	SecureURL string `json:"secure_url"`
 }
 
-// NewCloudinary returns a new instance of a Cloudinary Storage
-func NewCloudinary(apiKey, secret string) *Cloudinary {
+// New returns a new instance of a Cloudinary Storage
+func New(apiKey, secret string) *Cloudinary {
 	return &Cloudinary{
 		apiKey: apiKey,
 		secret: secret,
@@ -62,6 +64,8 @@ type Cloudinary struct {
 	secret    string
 	cloudName string // bucket
 }
+
+var _ filestorage.FileStorage = (*Cloudinary)(nil)
 
 // ID returns the unique identifier of the storage provider
 func (s *Cloudinary) ID() string {
@@ -95,7 +99,7 @@ func (s *Cloudinary) URL(filepath string) (string, error) {
 		return url, nil
 	}
 
-	for _, typ := range cloudinaryFileTypes {
+	for _, typ := range fileTypes {
 		url := fmt.Sprintf("%s/upload/%s", s.resBaseURL(typ), filepath)
 		resp, err := s.read(url)
 		if err == os.ErrNotExist {
@@ -118,7 +122,7 @@ func (s *Cloudinary) URL(filepath string) (string, error) {
 // Because Cloudinary forces to have the file type in the URL, this
 // method brutforces on all the possible types
 func (s *Cloudinary) Read(filepath string) (io.ReadCloser, error) {
-	for _, typ := range cloudinaryFileTypes {
+	for _, typ := range fileTypes {
 		url := fmt.Sprintf("%s/upload/%s", s.resBaseURL(typ), filepath)
 		resp, err := s.read(url)
 		if err == os.ErrNotExist {
@@ -149,7 +153,7 @@ func (s *Cloudinary) read(url string) (io.ReadCloser, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		defer resp.Body.Close()
-		var pld *cloudinaryErrorResponse
+		var pld *ErrorResponse
 		if err := json.NewDecoder(resp.Body).Decode(&pld); err != nil {
 			return nil, err
 		}
@@ -185,7 +189,7 @@ func (s *Cloudinary) Delete(filepath string) error {
 		"invalidate": []string{"true"},
 	}
 
-	for _, typ := range cloudinaryFileTypes {
+	for _, typ := range fileTypes {
 		endpointURL := fmt.Sprintf("%s/destroy", s.apiBaseURL(typ))
 		err := s.execDelete(endpointURL, strings.NewReader(form.Encode()))
 		if err == os.ErrNotExist {
@@ -220,7 +224,7 @@ func (s *Cloudinary) execDelete(endpointURL string, body io.Reader) error {
 
 	switch resp.StatusCode {
 	case http.StatusOK:
-		var pld *cloudinaryResultResponse
+		var pld *ResultResponse
 		if err := json.NewDecoder(resp.Body).Decode(&pld); err != nil {
 			return err
 		}
@@ -236,7 +240,7 @@ func (s *Cloudinary) execDelete(endpointURL string, body io.Reader) error {
 	case http.StatusNotFound:
 		return os.ErrNotExist
 	default:
-		var pld *cloudinaryErrorResponse
+		var pld *ErrorResponse
 		if err := json.NewDecoder(resp.Body).Decode(&pld); err != nil {
 			return err
 		}
@@ -291,14 +295,14 @@ func (s *Cloudinary) Write(src io.Reader, destPath string) error {
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		// Parse the error
-		var pld *cloudinaryErrorResponse
+		var pld *ErrorResponse
 		if err := json.NewDecoder(resp.Body).Decode(&pld); err != nil {
 			return err
 		}
 		return errors.New(pld.Error.Message)
 	}
 	// If the upload succeed we parse the response to cache the URL
-	var pld *cloudinaryUploadSuccessResponse
+	var pld *UploadSuccessResponse
 	if err := json.NewDecoder(resp.Body).Decode(&pld); err != nil {
 		return err
 	}
@@ -307,13 +311,13 @@ func (s *Cloudinary) Write(src io.Reader, destPath string) error {
 }
 
 // SetAttributes sets the attributes of the file
-func (s *Cloudinary) SetAttributes(filepath string, attrs *UpdatableFileAttributes) (*FileAttributes, error) {
-	return NewFileAttributesFromUpdatable(attrs), nil
+func (s *Cloudinary) SetAttributes(filepath string, attrs *filestorage.UpdatableFileAttributes) (*filestorage.FileAttributes, error) {
+	return filestorage.NewFileAttributesFromUpdatable(attrs), nil
 }
 
 // Attributes returns the attributes of the file
-func (s *Cloudinary) Attributes(filepath string) (*FileAttributes, error) {
-	return &FileAttributes{}, nil
+func (s *Cloudinary) Attributes(filepath string) (*filestorage.FileAttributes, error) {
+	return &filestorage.FileAttributes{}, nil
 }
 
 // WriteIfNotExist copies the provided io.Reader to dest if the file does
@@ -324,5 +328,5 @@ func (s *Cloudinary) Attributes(filepath string) (*FileAttributes, error) {
 //   - A URL to the uploaded file
 //   - An error if something went wrong
 func (s *Cloudinary) WriteIfNotExist(src io.Reader, destPath string) (new bool, url string, err error) {
-	return writeIfNotExist(s, src, destPath)
+	return filestorage.WriteIfNotExist(s, src, destPath)
 }

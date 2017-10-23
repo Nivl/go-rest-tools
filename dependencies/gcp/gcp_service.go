@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Nivl/go-rest-tools/storage/filestorage"
+	"github.com/Nivl/go-rest-tools/storage/filestorage/implementations/gcstorage"
 )
 
 var _ GCP = (*Service)(nil)
@@ -28,7 +29,7 @@ type Service struct {
 
 // Storage returns a new storage instance
 func (service *Service) Storage(ctx context.Context) (filestorage.FileStorage, error) {
-	storage, err := filestorage.NewGCStorage(ctx, service.apiKey)
+	storage, err := gcstorage.New(ctx, service.apiKey)
 	if err != nil {
 		return nil, err
 	}

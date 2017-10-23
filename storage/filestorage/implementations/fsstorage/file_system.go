@@ -1,4 +1,4 @@
-package filestorage
+package fsstorage
 
 import (
 	"io"
@@ -6,11 +6,12 @@ import (
 	"os"
 	"path"
 
+	"github.com/Nivl/go-rest-tools/storage/filestorage"
 	"github.com/Nivl/go-rest-tools/storage/fs"
 )
 
-// NewFSStorage returns a new instance of a File System Storage
-func NewFSStorage() (*FSStorage, error) {
+// New returns a new instance of a File System Storage
+func New() (*FSStorage, error) {
 	tmpDir, err := ioutil.TempDir("", "storage")
 	if err != nil {
 		return nil, err
@@ -21,9 +22,9 @@ func NewFSStorage() (*FSStorage, error) {
 	}, nil
 }
 
-// NewFSStorageWithDir returns a new instance of a File System Storage with
+// NewWithDir returns a new instance of a File System Storage with
 //
-func NewFSStorageWithDir(path string) *FSStorage {
+func NewWithDir(path string) *FSStorage {
 	return &FSStorage{
 		path: path,
 	}
@@ -95,14 +96,14 @@ func (s *FSStorage) URL(filepath string) (string, error) {
 }
 
 // SetAttributes sets the attributes of the file
-func (s *FSStorage) SetAttributes(filepath string, attrs *UpdatableFileAttributes) (*FileAttributes, error) {
-	return NewFileAttributesFromUpdatable(attrs), nil
+func (s *FSStorage) SetAttributes(filepath string, attrs *filestorage.UpdatableFileAttributes) (*filestorage.FileAttributes, error) {
+	return filestorage.NewFileAttributesFromUpdatable(attrs), nil
 }
 
 // Attributes returns the attributes of the file
 // Always returns an empty struct as no attributes are kept for this FS
-func (s *FSStorage) Attributes(filepath string) (*FileAttributes, error) {
-	return &FileAttributes{}, nil
+func (s *FSStorage) Attributes(filepath string) (*filestorage.FileAttributes, error) {
+	return &filestorage.FileAttributes{}, nil
 }
 
 func (s *FSStorage) fullPath(filepath string) string {
@@ -117,5 +118,5 @@ func (s *FSStorage) fullPath(filepath string) string {
 //   - A URL to the uploaded file
 //   - An error if something went wrong
 func (s *FSStorage) WriteIfNotExist(src io.Reader, destPath string) (new bool, url string, err error) {
-	return writeIfNotExist(s, src, destPath)
+	return filestorage.WriteIfNotExist(s, src, destPath)
 }

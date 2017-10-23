@@ -12,6 +12,8 @@ import (
 	"github.com/Nivl/go-rest-tools/storage/db"
 	"github.com/Nivl/go-rest-tools/storage/db/sqlx"
 	"github.com/Nivl/go-rest-tools/storage/filestorage"
+	"github.com/Nivl/go-rest-tools/storage/filestorage/implementations/cloudinary"
+	"github.com/Nivl/go-rest-tools/storage/filestorage/implementations/fsstorage"
 	"github.com/bsphere/le_go"
 )
 
@@ -114,7 +116,7 @@ func (deps *APIDependencies) SetCloudinary(apiKey, secret, bucket string) error 
 	deps.Lock()
 	defer deps.Unlock()
 
-	deps.cloudinary = filestorage.NewCloudinary(apiKey, secret)
+	deps.cloudinary = cloudinary.New(apiKey, secret)
 	deps.cloudinary.SetBucket(bucket)
 	return nil
 }
@@ -133,7 +135,7 @@ func (deps *APIDependencies) FileStorage(ctx context.Context) (filestorage.FileS
 	if deps.cloudinary != nil {
 		return deps.cloudinary, nil
 	}
-	return filestorage.NewFSStorage()
+	return fsstorage.New()
 }
 
 // SetSentry creates a reporter using Sentry

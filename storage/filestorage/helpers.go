@@ -2,9 +2,9 @@ package filestorage
 
 import "io"
 
-// writeIfNotExist is an helper to implements FileStorage.WriteIfNotExist
+// WriteIfNotExist is an helper to implements FileStorage.WriteIfNotExist
 // Since this function is the same for all provider, let's not rewrite it
-func writeIfNotExist(s FileStorage, src io.Reader, destPath string) (new bool, url string, err error) {
+func WriteIfNotExist(s FileStorage, src io.Reader, destPath string) (new bool, url string, err error) {
 	exists, err := s.Exists(destPath)
 	if err != nil {
 		return false, "", err
