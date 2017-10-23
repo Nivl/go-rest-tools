@@ -3,6 +3,8 @@ package filestorage
 import (
 	"errors"
 	"io"
+
+	"github.com/Nivl/go-rest-tools/storage/filestorage"
 )
 
 // Noop is an implementation of the FileStorage interface that does nothing
@@ -31,14 +33,14 @@ func (s *Noop) Write(src io.Reader, destPath string) error {
 }
 
 // SetAttributes sets the attributes of the file
-func (s *Noop) SetAttributes(filepath string, attrs *UpdatableFileAttributes) (*FileAttributes, error) {
-	return NewFileAttributesFromUpdatable(attrs), nil
+func (s *Noop) SetAttributes(filepath string, attrs *filestorage.UpdatableFileAttributes) (*filestorage.FileAttributes, error) {
+	return filestorage.NewFileAttributesFromUpdatable(attrs), nil
 }
 
 // Attributes returns the attributes of the file
 // Always returns an empty struct as no attributes are kept for this FS
-func (s *Noop) Attributes(filepath string) (*FileAttributes, error) {
-	return &FileAttributes{}, nil
+func (s *Noop) Attributes(filepath string) (*filestorage.FileAttributes, error) {
+	return &filestorage.FileAttributes{}, nil
 }
 
 // URL returns the URL of the file

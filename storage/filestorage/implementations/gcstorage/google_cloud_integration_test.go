@@ -1,11 +1,12 @@
-package filestorage_test
+package gcstorage_test
 
 import (
 	"context"
 	"os"
 	"testing"
 
-	"github.com/Nivl/go-rest-tools/storage/filestorage"
+	"github.com/Nivl/go-rest-tools/storage/filestorage/implementations/gcstorage"
+	"github.com/Nivl/go-rest-tools/storage/filestorage/testfilestorage"
 )
 
 func TestGCStorageUploadHappyPath(t *testing.T) {
@@ -17,11 +18,11 @@ func TestGCStorageUploadHappyPath(t *testing.T) {
 	bucket := os.Getenv("GCP_BUCKET")
 
 	ctx := context.Background()
-	storage, err := filestorage.NewGCStorage(ctx, apiKey)
+	storage, err := gcstorage.New(ctx, apiKey)
 	if err != nil {
 		t.Fatal(err)
 	}
 	storage.SetBucket(bucket)
-	storageHappyPathTest(t, storage, nil)
-	storageUnexistingReadTest(t, storage)
+	testfilestorage.StorageHappyPathTest(t, storage, nil)
+	testfilestorage.StorageUnexistingReadTest(t, storage)
 }

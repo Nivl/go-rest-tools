@@ -1,4 +1,4 @@
-package filestorage_test
+package testfilestorage
 
 import (
 	"bytes"
@@ -12,19 +12,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// storageHappyPathTestCallbacks is a structure to overide/skip certain test
+// StorageHappyPathTestCallbacks is a structure to overide/skip certain test
 // It's useful when a specific provider react differently than the expected
 // behavior (like deleted file on Cloudinary that are still available for
 // a few hours)
-type storageHappyPathTestCallbacks struct {
+type StorageHappyPathTestCallbacks struct {
 	ValidateURL              func(*testing.T, string)
 	StillExistsAfterDeletion func(*testing.T, string)
 }
 
-// storageHappyPathTest is a helper to test the happy path of FileStorage
-func storageHappyPathTest(t *testing.T, storage filestorage.FileStorage, callbacks *storageHappyPathTestCallbacks) {
+// StorageHappyPathTest is a helper to test the happy path of FileStorage
+func StorageHappyPathTest(t *testing.T, storage filestorage.FileStorage, callbacks *StorageHappyPathTestCallbacks) {
 	if callbacks == nil {
-		callbacks = &storageHappyPathTestCallbacks{}
+		callbacks = &StorageHappyPathTestCallbacks{}
 	}
 
 	testCases := []struct {
@@ -105,8 +105,8 @@ func storageHappyPathTest(t *testing.T, storage filestorage.FileStorage, callbac
 	}
 }
 
-// storageUnexistingReadTest tests that
-func storageUnexistingReadTest(t *testing.T, storage filestorage.FileStorage) {
+// StorageUnexistingReadTest tests that
+func StorageUnexistingReadTest(t *testing.T, storage filestorage.FileStorage) {
 	testCases := []struct {
 		description string
 		filename    string
