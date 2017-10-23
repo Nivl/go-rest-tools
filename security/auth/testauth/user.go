@@ -7,13 +7,15 @@ import (
 	"github.com/satori/go.uuid"
 
 	"github.com/Nivl/go-rest-tools/security/auth"
+	"github.com/Nivl/go-rest-tools/security/hasher/bcrypt"
 	"github.com/Nivl/go-rest-tools/storage/db"
 	"github.com/dchest/uniuri"
 )
 
 // NewUser returns a non-persisted user with "fake" as password
 func NewUser() *auth.User {
-	password, _ := auth.CryptPassword("fake")
+	hashr := bcrypt.Bcrypt{}
+	password, _ := hashr.Hash("fake")
 
 	return &auth.User{
 		ID:       uuid.NewV4().String(),
@@ -32,6 +34,7 @@ func NewAdmin() *auth.User {
 
 // NewPersistedUser creates and persists a new user with "fake" as password
 func NewPersistedUser(t *testing.T, q db.Queryable, u *auth.User) *auth.User {
+	hashr := bcrypt.Bcrypt{}
 	if u == nil {
 		u = &auth.User{}
 	}
@@ -46,7 +49,7 @@ func NewPersistedUser(t *testing.T, q db.Queryable, u *auth.User) *auth.User {
 
 	if u.Password == "" {
 		var err error
-		u.Password, err = auth.CryptPassword("fake")
+		u.Password, err = hashr.Hash("fake")
 		if err != nil {
 			t.Fatalf("failed to create password: %s", err)
 		}
