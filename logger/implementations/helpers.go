@@ -1,9 +1,10 @@
-package logger
+package implementations
 
 import "fmt"
 import "strings"
 
-func formatError(staticData []string, msg string) string {
+// FormatError is an helper to format the output of an error
+func FormatError(staticData []string, msg string) string {
 	static := strings.Join(staticData, ", ")
 	if static != "" {
 		static = ", " + static
