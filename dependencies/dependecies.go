@@ -18,43 +18,32 @@ type Dependencies interface {
 	// DB returns the current SQL connection
 	DB() db.Connection
 
-	// SetLogentries creates a connection to logentries
-	SetLogentries(token string) error
+	// SetLoggerCreator sets a logger creator used to generate new loggers
+	SetLoggerCreator(logger.Creator)
 
-	// Logger returns the default logger following this order:
-	// Logentries
-	// BasicLogger
-	Logger() logger.Logger
+	// NewLogger creates a new logger using the provided logger creator
+	NewLogger() (logger.Logger, error)
 
-	// SetSendgrid creates a mailer using sendgrid
-	SetSendgrid(apiKey, from, to, stacktraceUUID string) error
+	// DefaultLogger return a app-wide logger created using the provided
+	// logger creator
+	DefaultLogger() (logger.Logger, error)
 
-	// Mailer returns the default mailer following this order:
-	// Sendgrid
-	// Noop
-	Mailer() mailer.Mailer
+	// SetMailer sets the mailer to be used to send emails
+	SetMailer(mailer.Mailer)
 
-	// SetGCP sets up Google Cloud Platform
-	SetGCP(apiKey, projectName, bucket string) error
+	// Mailer returns the mailer set with SetMailer
+	Mailer() (mailer.Mailer, error)
 
-	// SetCloudinary setups Cloudinary as Storage provider
-	SetCloudinary(apiKey, secret, bucket string) error
+	// SetReporterCreator sets a reporter creator used to generate new reporters
+	SetReporterCreator(reporter.Creator)
 
-	// FileStorage returns the default filestorage following this order
-	// GCP
-	// Cloudinary
-	// Filesystem
-	FileStorage(ctx context.Context) (filestorage.FileStorage, error)
+	// NewReporter creates a new reporter using the provided reporter Creator
+	NewReporter() (reporter.Reporter, error)
 
-	// SetSentry creates a reporter using Sentry
-	SetSentry(con string) error
+	// SetFileStorageCreator sets a filestorage creator used to generate new
+	// filestorage
+	SetFileStorageCreator(filestorage.Creator)
 
-	// EnableEmailReporting sets the current mailer as reporter
-	EnableEmailReporting(con string) error
-
-	// Reporter returns the default reporter creator following this order:
-	// Sentry
-	// Email
-	// Noop
-	Reporter() reporter.Creator
+	// NewFileStorage creates a new filestorage using the provided reporter Creator
+	NewFileStorage(context.Context) (filestorage.FileStorage, error)
 }
