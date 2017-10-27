@@ -5,16 +5,12 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/Nivl/go-rest-tools/dependencies/gcp"
 	"github.com/Nivl/go-rest-tools/logger"
 	"github.com/Nivl/go-rest-tools/notifiers/mailer"
 	"github.com/Nivl/go-rest-tools/notifiers/reporter"
 	"github.com/Nivl/go-rest-tools/storage/db"
 	"github.com/Nivl/go-rest-tools/storage/db/sqlx"
 	"github.com/Nivl/go-rest-tools/storage/filestorage"
-	"github.com/Nivl/go-rest-tools/storage/filestorage/implementations/cloudinary"
-	"github.com/Nivl/go-rest-tools/storage/filestorage/implementations/fsstorage"
-	"github.com/bsphere/le_go"
 )
 
 var _ Dependencies = (*APIDependencies)(nil)
@@ -23,15 +19,18 @@ var _ Dependencies = (*APIDependencies)(nil)
 type APIDependencies struct {
 	sync.Mutex
 
-	postgres   *sqlx.Connection
-	logentries *le_go.Logger
-	sendgrid   mailer.Mailer
-	gcp        gcp.GCP
-	cloudinary filestorage.FileStorage
+	// logentries *le_go.Logger
+	// sendgrid   mailer.Mailer
+	// gcp        gcp.GCP
+	// cloudinary filestorage.FileStorage
 
-	logger   logger.Logger
-	mailer   mailer.Mailer
-	reporter reporter.Creator
+	defaultSQLCon *sqlx.Connection
+	defaultLogger logger.Logger
+	defaultMailer mailer.Mailer
+
+	reporterCreator    reporter.Creator
+	loggerCreator      logger.Creator
+	filestorageCreator filestorage.Creator
 }
 
 // SetDB creates a connection to a SQL database
@@ -40,137 +39,79 @@ func (deps *APIDependencies) SetDB(uri string) error {
 	defer deps.Unlock()
 
 	var err error
-	deps.postgres, err = sqlx.New(uri)
+	deps.defaultSQLCon, err = sqlx.New(uri)
 	return err
 }
 
 // DB returns the current SQL connection
 func (deps *APIDependencies) DB() db.Connection {
-	return deps.postgres
+	return deps.defaultSQLCon
 }
 
-// SetLogentries creates a connection to logentries
-func (deps *APIDependencies) SetLogentries(token string) error {
+// SetLoggerCreator sets a logger creator used to generate new loggers
+func (deps *APIDependencies) SetLoggerCreator(creator logger.Creator) {
+	deps.loggerCreator = creator
+}
+
+// DefaultLogger returns the default logger to use app wide
+func (deps *APIDependencies) DefaultLogger() (logger.Logger, error) {
 	deps.Lock()
 	defer deps.Unlock()
 
-	var err error
-	deps.logentries, err = le_go.Connect(token)
-	return err
-}
-
-// Logger returns the default logger following this order:
-// Logentries
-// BasicLogger
-func (deps *APIDependencies) Logger() logger.Logger {
-	deps.Lock()
-	defer deps.Unlock()
-
-	if deps.logger == nil {
-		if deps.logentries != nil {
-			deps.logger = logger.NewLogEntries(deps.logentries)
-		} else {
-			deps.logger = logger.NewBasicLogger()
-		}
+	if deps.loggerCreator == nil {
+		return nil, errors.New("no logger creator has been set")
 	}
-	return deps.logger
-}
-
-// SetSendgrid creates a mailer using sendgrid
-func (deps *APIDependencies) SetSendgrid(apiKey, from, to, stacktraceUUID string) error {
-	deps.Lock()
-	defer deps.Unlock()
-
-	deps.sendgrid = mailer.NewSendgrid(apiKey, from, to, stacktraceUUID)
-	return nil
-}
-
-// Mailer returns the default mailer following this order:
-// Sendgrid
-// Noop
-func (deps *APIDependencies) Mailer() mailer.Mailer {
-	deps.Lock()
-	defer deps.Unlock()
-
-	if deps.mailer == nil {
-		if deps.sendgrid != nil {
-			deps.mailer = deps.sendgrid
-		} else {
-			deps.mailer = &mailer.Noop{}
-		}
+	if deps.defaultLogger == nil {
+		var err error
+		deps.defaultLogger, err = deps.loggerCreator.New()
+		return deps.defaultLogger, err
 	}
-	return deps.mailer
+	return deps.defaultLogger, nil
 }
 
-// SetGCP sets up Google Cloud Platform
-func (deps *APIDependencies) SetGCP(apiKey, projectName, bucket string) error {
-	deps.Lock()
-	defer deps.Unlock()
-
-	deps.gcp = gcp.New(apiKey, projectName, bucket)
-	return nil
-}
-
-// SetCloudinary setups Cloudinary as Storage provider
-func (deps *APIDependencies) SetCloudinary(apiKey, secret, bucket string) error {
-	deps.Lock()
-	defer deps.Unlock()
-
-	deps.cloudinary = cloudinary.New(apiKey, secret)
-	deps.cloudinary.SetBucket(bucket)
-	return nil
-}
-
-// FileStorage returns the default filestorage following this order
-// GCP
-// Cloudinary
-// Filesystem
-func (deps *APIDependencies) FileStorage(ctx context.Context) (filestorage.FileStorage, error) {
-	deps.Lock()
-	defer deps.Unlock()
-
-	if deps.gcp != nil {
-		return deps.gcp.Storage(ctx)
+// NewLogger returns a new logger using the logger Creator
+func (deps *APIDependencies) NewLogger() (logger.Logger, error) {
+	if deps.loggerCreator == nil {
+		return nil, errors.New("no logger creator has been set")
 	}
-	if deps.cloudinary != nil {
-		return deps.cloudinary, nil
-	}
-	return fsstorage.New()
+	return deps.loggerCreator.New()
 }
 
-// SetSentry creates a reporter using Sentry
-func (deps *APIDependencies) SetSentry(con string) error {
-	deps.Lock()
-	defer deps.Unlock()
-
-	var err error
-	deps.reporter, err = reporter.NewSentryCreator(con)
-	return err
+// SetMailer sets the mailer to be used to send emails
+func (deps *APIDependencies) SetMailer(m mailer.Mailer) {
+	deps.defaultMailer = m
 }
 
-// EnableEmailReporting sets the current mailer as reporter
-func (deps *APIDependencies) EnableEmailReporting(con string) error {
-	deps.Lock()
-	defer deps.Unlock()
-
-	if deps.mailer == nil {
-		return errors.New("no mailer set")
+// Mailer returns the mailer set with SetMailer
+func (deps *APIDependencies) Mailer() (mailer.Mailer, error) {
+	if deps.defaultMailer == nil {
+		return nil, errors.New("no mailer has been set")
 	}
-	var err error
-	deps.reporter, err = reporter.NewMailerCreator(deps.mailer)
-	return err
+	return deps.defaultMailer, nil
 }
 
-// Reporter returns the default reporter creator following this order:
-// Sentry
-// Email
-// Noop
-func (deps *APIDependencies) Reporter() reporter.Creator {
-	deps.Lock()
-	defer deps.Unlock()
+// SetReporterCreator sets a reporter creator used to generate new reporters
+func (deps *APIDependencies) SetReporterCreator(creator reporter.Creator) {
+	deps.reporterCreator = creator
+}
 
-	if deps.reporter == nil {
-		deps.reporter, _ = reporter.NewNoopCreator()
+// NewReporter creates a new reporter using the provided reporter Creator
+func (deps *APIDependencies) NewReporter() (reporter.Reporter, error) {
+	if deps.reporterCreator == nil {
+		return nil, errors.New("no reporter creator has been set")
 	}
-	return deps.reporter
+	return deps.reporterCreator.New()
+}
+
+// SetFileStorageCreator returns the default filestorage following this order
+func (deps *APIDependencies) SetFileStorageCreator(creator filestorage.Creator) {
+	deps.filestorageCreator = creator
+}
+
+// NewFileStorage creates a new filestorage using the provided reporter Creator
+func (deps *APIDependencies) NewFileStorage(ctx context.Context) (filestorage.FileStorage, error) {
+	if deps.reporterCreator == nil {
+		return nil, errors.New("no filestorage creator has been set")
+	}
+	return deps.filestorageCreator.New(ctx)
 }

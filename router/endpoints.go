@@ -31,19 +31,21 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 	HTTPHandler := func(resWriter http.ResponseWriter, req *http.Request) {
 		// the following errors will be checked later on. we first init
 		// the request, then we will use that request to return (and log) the error
-		fileStorage, storageErr := apiDeps.FileStorage(req.Context())
-		reporter, reporterErr := apiDeps.Reporter().New()
+		fileStorage, storageErr := apiDeps.NewFileStorage(req.Context())
+		reporter, reporterErr := apiDeps.NewReporter()
+		mailer, mailerErr := apiDeps.Mailer()
+		logger, loggerErr := apiDeps.NewLogger()
 
 		handlerDeps := &Dependencies{
 			DB:      apiDeps.DB(),
 			Storage: fileStorage,
-			Mailer:  apiDeps.Mailer(),
+			Mailer:  mailer,
 		}
 		request := &Request{
 			id:       uuid.NewV4().String()[:8],
 			http:     req,
 			res:      NewResponse(resWriter, handlerDeps),
-			logger:   apiDeps.Logger(),
+			logger:   logger,
 			reporter: reporter,
 		}
 		defer request.handlePanic()
@@ -51,9 +53,21 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 		// We set some response data
 		request.res.Header().Set("X-Request-Id", request.id)
 
-		// if the reporter failed to be created we return an error
+		// if a dep failed to be created, we return an error
+		if loggerErr != nil {
+			request.res.Error(loggerErr, request)
+			return
+		}
 		if reporterErr != nil {
+			request.res.Error(reporterErr, request)
+			return
+		}
+		if storageErr != nil {
 			request.res.Error(storageErr, request)
+			return
+		}
+		if mailerErr != nil {
+			request.res.Error(mailerErr, request)
 			return
 		}
 
