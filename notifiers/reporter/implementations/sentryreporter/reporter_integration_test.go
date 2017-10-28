@@ -1,4 +1,4 @@
-package reporter_test
+package sentryreporter_test
 
 import (
 	"fmt"
@@ -13,7 +13,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/Nivl/go-rest-tools/notifiers/reporter"
+	"github.com/Nivl/go-rest-tools/notifiers/reporter/implementations/sentryreporter"
 )
 
 func TestSentryHappyPath(t *testing.T) {
@@ -22,8 +22,8 @@ func TestSentryHappyPath(t *testing.T) {
 		t.Skip("sentry not set")
 	}
 
-	creator, err := reporter.NewSentryCreator(sentryDSN)
-	require.NoError(t, err, "NewSentryCreator() should not have failed")
+	creator, err := sentryreporter.NewCreator(sentryDSN)
+	require.NoError(t, err, "NewCreator() should not have failed")
 
 	r, err := creator.New()
 	require.NoError(t, err, "creator.New() should not have failed")
@@ -43,8 +43,8 @@ func TestSentryNilUser(t *testing.T) {
 		t.Skip("sentry not set")
 	}
 
-	creator, err := reporter.NewSentryCreator(sentryDSN)
-	require.NoError(t, err, "NewSentryCreator() should not have failed")
+	creator, err := sentryreporter.NewCreator(sentryDSN)
+	require.NoError(t, err, "NewCreator() should not have failed")
 
 	r, err := creator.New()
 	require.NoError(t, err, "creator.New() should not have failed")

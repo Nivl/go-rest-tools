@@ -2,12 +2,8 @@ package reporter
 
 import "github.com/Nivl/go-rest-tools/security/auth"
 
-// Creator describes a struct used to create reporters
-type Creator interface {
-	New() (Reporter, error)
-}
-
 // Reporter describes a struct used to report errors
+//go:generate mockgen -destination implementations/mockreporter/reporter.go -package mockreporter github.com/Nivl/go-rest-tools/notifiers/reporter Reporter
 type Reporter interface {
 	SetUser(u *auth.User)
 	AddTag(key, value string)
