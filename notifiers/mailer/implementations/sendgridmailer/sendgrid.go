@@ -1,16 +1,17 @@
-package mailer
+package sendgridmailer
 
 import (
 	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/Nivl/go-rest-tools/notifiers/mailer"
 	sendgrid "github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
 // Makes sure Sendgrid implements Mailer
-var _ Mailer = (*Sendgrid)(nil)
+var _ mailer.Mailer = (*Sendgrid)(nil)
 
 // Sendgrid is an object used to send email through sendgrid
 type Sendgrid struct {
@@ -26,7 +27,7 @@ func (s *Sendgrid) SendStackTrace(trace []byte, message string, context map[stri
 		return errors.New("StacktraceTemplateID not set")
 	}
 
-	msg := NewMessage(s.StacktraceTemplateID)
+	msg := mailer.NewMessage(s.StacktraceTemplateID)
 	stacktrace := string(trace[:])
 
 	msg.Body = strings.Replace(stacktrace, "\n", "<br>", -1)
@@ -40,7 +41,7 @@ func (s *Sendgrid) SendStackTrace(trace []byte, message string, context map[stri
 }
 
 // Send is used to send an email
-func (s *Sendgrid) Send(msg *Message) error {
+func (s *Sendgrid) Send(msg *mailer.Message) error {
 	from := mail.NewEmail("No Reply", msg.From)
 	if msg.From == "" {
 		from = mail.NewEmail("No Reply", s.DefaultFrom)
@@ -66,8 +67,8 @@ func (s *Sendgrid) Send(msg *Message) error {
 	return err
 }
 
-// NewSendgrid creates and returns a new sendgrid instance
-func NewSendgrid(APIKey, defaultFrom, defaultTo, stacktraceUUID string) *Sendgrid {
+// New creates and returns a new mailer using sendgrid
+func New(APIKey, defaultFrom, defaultTo, stacktraceUUID string) *Sendgrid {
 	return &Sendgrid{
 		APIKey:               APIKey,
 		DefaultFrom:          defaultFrom,

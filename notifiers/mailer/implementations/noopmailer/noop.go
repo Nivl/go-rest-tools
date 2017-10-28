@@ -1,11 +1,13 @@
-package mailer
+package noopmailer
 
 import (
 	"fmt"
+
+	"github.com/Nivl/go-rest-tools/notifiers/mailer"
 )
 
 // Makes sure Noop implements Mailer
-var _ Mailer = (*Noop)(nil)
+var _ mailer.Mailer = (*Noop)(nil)
 
 // Noop is a mailer that just print emails
 type Noop struct {
@@ -18,7 +20,7 @@ func (m *Noop) SendStackTrace(trace []byte, message string, context map[string]s
 }
 
 // Send is used to send an email
-func (m *Noop) Send(msg *Message) error {
+func (m *Noop) Send(msg *mailer.Message) error {
 	fmt.Printf("FROM: %s\nTO: %s\nSUBJECT: %s\n%s\n", msg.From, msg.To, msg.Subject, msg.Body)
 	return nil
 }
