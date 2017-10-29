@@ -13,7 +13,7 @@ import (
 // Dependencies represents the dependency of the api
 type Dependencies interface {
 	// SetDB creates a connection to a SQL database
-	SetDB(uri string) error
+	SetDB(db db.Connection)
 
 	// DB returns the current SQL connection
 	DB() db.Connection

@@ -9,22 +9,16 @@ import (
 	"github.com/Nivl/go-rest-tools/notifiers/mailer"
 	"github.com/Nivl/go-rest-tools/notifiers/reporter"
 	"github.com/Nivl/go-rest-tools/storage/db"
-	"github.com/Nivl/go-rest-tools/storage/db/sqlx"
 	"github.com/Nivl/go-rest-tools/storage/filestorage"
 )
 
-var _ Dependencies = (*APIDependencies)(nil)
+var _ Dependencies = (*AppDependencies)(nil)
 
-// APIDependencies is a structure implementing the Dependencies interface
-type APIDependencies struct {
+// AppDependencies is a structure implementing the Dependencies interface
+type AppDependencies struct {
 	sync.Mutex
 
-	// logentries *le_go.Logger
-	// sendgrid   mailer.Mailer
-	// gcp        gcp.GCP
-	// cloudinary filestorage.FileStorage
-
-	defaultSQLCon *sqlx.Connection
+	defaultSQLCon db.Connection
 	defaultLogger logger.Logger
 	defaultMailer mailer.Mailer
 
@@ -34,27 +28,22 @@ type APIDependencies struct {
 }
 
 // SetDB creates a connection to a SQL database
-func (deps *APIDependencies) SetDB(uri string) error {
-	deps.Lock()
-	defer deps.Unlock()
-
-	var err error
-	deps.defaultSQLCon, err = sqlx.New(uri)
-	return err
+func (deps *AppDependencies) SetDB(con db.Connection) {
+	deps.defaultSQLCon = con
 }
 
 // DB returns the current SQL connection
-func (deps *APIDependencies) DB() db.Connection {
+func (deps *AppDependencies) DB() db.Connection {
 	return deps.defaultSQLCon
 }
 
 // SetLoggerCreator sets a logger creator used to generate new loggers
-func (deps *APIDependencies) SetLoggerCreator(creator logger.Creator) {
+func (deps *AppDependencies) SetLoggerCreator(creator logger.Creator) {
 	deps.loggerCreator = creator
 }
 
 // DefaultLogger returns the default logger to use app wide
-func (deps *APIDependencies) DefaultLogger() (logger.Logger, error) {
+func (deps *AppDependencies) DefaultLogger() (logger.Logger, error) {
 	deps.Lock()
 	defer deps.Unlock()
 
@@ -70,7 +59,7 @@ func (deps *APIDependencies) DefaultLogger() (logger.Logger, error) {
 }
 
 // NewLogger returns a new logger using the logger Creator
-func (deps *APIDependencies) NewLogger() (logger.Logger, error) {
+func (deps *AppDependencies) NewLogger() (logger.Logger, error) {
 	if deps.loggerCreator == nil {
 		return nil, errors.New("no logger creator has been set")
 	}
@@ -78,12 +67,12 @@ func (deps *APIDependencies) NewLogger() (logger.Logger, error) {
 }
 
 // SetMailer sets the mailer to be used to send emails
-func (deps *APIDependencies) SetMailer(m mailer.Mailer) {
+func (deps *AppDependencies) SetMailer(m mailer.Mailer) {
 	deps.defaultMailer = m
 }
 
 // Mailer returns the mailer set with SetMailer
-func (deps *APIDependencies) Mailer() (mailer.Mailer, error) {
+func (deps *AppDependencies) Mailer() (mailer.Mailer, error) {
 	if deps.defaultMailer == nil {
 		return nil, errors.New("no mailer has been set")
 	}
@@ -91,12 +80,12 @@ func (deps *APIDependencies) Mailer() (mailer.Mailer, error) {
 }
 
 // SetReporterCreator sets a reporter creator used to generate new reporters
-func (deps *APIDependencies) SetReporterCreator(creator reporter.Creator) {
+func (deps *AppDependencies) SetReporterCreator(creator reporter.Creator) {
 	deps.reporterCreator = creator
 }
 
 // NewReporter creates a new reporter using the provided reporter Creator
-func (deps *APIDependencies) NewReporter() (reporter.Reporter, error) {
+func (deps *AppDependencies) NewReporter() (reporter.Reporter, error) {
 	if deps.reporterCreator == nil {
 		return nil, errors.New("no reporter creator has been set")
 	}
@@ -104,12 +93,12 @@ func (deps *APIDependencies) NewReporter() (reporter.Reporter, error) {
 }
 
 // SetFileStorageCreator returns the default filestorage following this order
-func (deps *APIDependencies) SetFileStorageCreator(creator filestorage.Creator) {
+func (deps *AppDependencies) SetFileStorageCreator(creator filestorage.Creator) {
 	deps.filestorageCreator = creator
 }
 
 // NewFileStorage creates a new filestorage using the provided reporter Creator
-func (deps *APIDependencies) NewFileStorage(ctx context.Context) (filestorage.FileStorage, error) {
+func (deps *AppDependencies) NewFileStorage(ctx context.Context) (filestorage.FileStorage, error) {
 	if deps.reporterCreator == nil {
 		return nil, errors.New("no filestorage creator has been set")
 	}

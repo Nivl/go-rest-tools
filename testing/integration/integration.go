@@ -6,6 +6,7 @@ import (
 
 	"github.com/Nivl/go-rest-tools/dependencies"
 	"github.com/Nivl/go-rest-tools/storage/db"
+	"github.com/Nivl/go-rest-tools/storage/db/sqlx"
 	"github.com/pkg/errors"
 	"github.com/pressly/goose"
 	uuid "github.com/satori/go.uuid"
@@ -50,9 +51,11 @@ func New(deps dependencies.Dependencies, migrationFolder string) (*Wrapper, erro
 	// get the DSN of the current connection and swap the table name by
 	// the new one
 	tmpDBDSN := strings.Replace(it.masterDB.DSN(), masterDbName, it.tmpDBName, -1)
-	if err := it.Deps.SetDB(tmpDBDSN); err != nil {
+	tmpDB, err := sqlx.New(tmpDBDSN)
+	if err != nil {
 		return nil, errors.Wrap(err, "could not connect to the tmp table")
 	}
+	it.Deps.SetDB(tmpDB)
 
 	// We apply the migration to the newly created database
 	if err := goose.Up(it.Deps.DB().SQL(), migrationFolder); err != nil {
