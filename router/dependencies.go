@@ -3,7 +3,7 @@ package router
 import (
 	mailer "github.com/Nivl/go-mailer"
 	"github.com/Nivl/go-rest-tools/storage/db"
-	"github.com/Nivl/go-rest-tools/storage/filestorage"
+	filestorage "github.com/Nivl/go-filestorage"
 )
 
 // Dependencies represents all the dependencies of the API

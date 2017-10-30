@@ -1,10 +1,12 @@
+// Package gcstorage is an implementation of filestorage for Google Cloud
 package gcstorage
 
 import (
 	"context"
 	"io"
 
-	"github.com/Nivl/go-rest-tools/storage/filestorage"
+	"github.com/Nivl/go-filestorage"
+	"github.com/Nivl/go-filestorage/implementations"
 	"google.golang.org/api/option"
 
 	"fmt"
@@ -87,11 +89,7 @@ func (s *GCStorage) Write(src io.Reader, destPath string) error {
 	}
 
 	// Send the changes to GCP
-	if err := dest.Close(); err != nil {
-		return err
-	}
-
-	return nil
+	return dest.Close()
 }
 
 // SetAttributes sets the attributes of the file
@@ -143,5 +141,5 @@ func (s *GCStorage) Delete(filepath string) error {
 //   - A URL to the uploaded file
 //   - An error if something went wrong
 func (s *GCStorage) WriteIfNotExist(src io.Reader, destPath string) (new bool, url string, err error) {
-	return filestorage.WriteIfNotExist(s, src, destPath)
+	return implementations.WriteIfNotExist(s, src, destPath)
 }

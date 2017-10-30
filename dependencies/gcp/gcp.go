@@ -3,7 +3,7 @@ package gcp
 import (
 	"context"
 
-	"github.com/Nivl/go-rest-tools/storage/filestorage"
+	filestorage "github.com/Nivl/go-filestorage"
 )
 
 // GCP represents a Google Cloud Platform service

@@ -9,6 +9,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/Nivl/go-filestorage"
+  packages = [".","implementations","implementations/gcstorage"]
+  revision = "de59ba08f87d5963c79434ba3a97a4ca6b2341ee"
+
+[[projects]]
+  branch = "master"
   name = "github.com/Nivl/go-hasher"
   packages = [".","implementations/bcrypt"]
   revision = "d84ff056614c63ff1ae0069fd4fd84a60f79bc3b"
@@ -54,12 +60,6 @@
   name = "github.com/dchest/uniuri"
   packages = ["."]
   revision = "8902c56451e9b58ff940bbe5fec35d5f9c04584a"
-
-[[projects]]
-  name = "github.com/golang/mock"
-  packages = ["gomock"]
-  revision = "13f360950a79f5864a972c786a10a50e44b69541"
-  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -184,6 +184,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c2e605c6348f0a36bcb9c86d9ada96fbfd1929d247cadf883ce3a2a9158faac7"
+  inputs-digest = "f9f468877213966494eafae3c2966c2ffcf38fe8c5231270c92c235ac7b7805d"
   solver-name = "gps-cdcl"
   solver-version = 1
