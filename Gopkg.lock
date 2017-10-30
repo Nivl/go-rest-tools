@@ -27,15 +27,15 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/Nivl/go-reporter"
+  packages = ["."]
+  revision = "b5225f7490d1174c640d49b3dffc1a32a84c4021"
+
+[[projects]]
+  branch = "master"
   name = "github.com/Nivl/go-types"
   packages = ["datetime","filetype","ptrs","slices","strngs"]
   revision = "62b6de9222662d94e0706c917eeab5178cc72b99"
-
-[[projects]]
-  name = "github.com/certifi/gocertifi"
-  packages = ["."]
-  revision = "3fd9e1adb12b72d2f3f82191d49be9b93c69f67c"
-  version = "2017.07.27"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -48,12 +48,6 @@
   name = "github.com/dchest/uniuri"
   packages = ["."]
   revision = "8902c56451e9b58ff940bbe5fec35d5f9c04584a"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/getsentry/raven-go"
-  packages = ["."]
-  revision = "1452f6376ddb15c546b6d7567e1d9518765391b5"
 
 [[projects]]
   name = "github.com/golang/mock"
@@ -196,6 +190,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d4cf3f943ad631fb1c8f0d8074b8dd71935bbc83bf5058c80fb3ac6349af4358"
+  inputs-digest = "aa10418a8e2e4b5b7aa8da1b137222d93af242652e6699a60a2652769e653483"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	logger "github.com/Nivl/go-logger"
-	"github.com/Nivl/go-rest-tools/notifiers/reporter"
+	reporter "github.com/Nivl/go-reporter"
 	"github.com/Nivl/go-rest-tools/security/auth"
 	"github.com/gorilla/mux"
 )
