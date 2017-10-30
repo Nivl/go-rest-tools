@@ -5,7 +5,7 @@ import context "context"
 import db "github.com/Nivl/go-rest-tools/storage/db"
 
 import filestorage "github.com/Nivl/go-rest-tools/storage/filestorage"
-import logger "github.com/Nivl/go-rest-tools/logger"
+import logger "github.com/Nivl/go-logger"
 import mailer "github.com/Nivl/go-rest-tools/notifiers/mailer"
 import mock "github.com/stretchr/testify/mock"
 import reporter "github.com/Nivl/go-rest-tools/notifiers/reporter"

@@ -9,6 +9,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/Nivl/go-logger"
+  packages = ["."]
+  revision = "1d25d5fcf26a03d3f08d9dd6c7feae5b5ee110fe"
+
+[[projects]]
+  branch = "master"
   name = "github.com/Nivl/go-params"
   packages = [".","formfile","formfile/testformfile","perror"]
   revision = "3ddf35a4c334c958749c267606d6eb9b28cfd3cb"
@@ -18,12 +24,6 @@
   name = "github.com/Nivl/go-types"
   packages = ["datetime","filetype","ptrs","slices","strngs"]
   revision = "62b6de9222662d94e0706c917eeab5178cc72b99"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/bsphere/le_go"
-  packages = ["."]
-  revision = "7a984a84b5492ae539b79b62fb4a10afc63c7bcf"
 
 [[projects]]
   name = "github.com/certifi/gocertifi"
@@ -48,6 +48,12 @@
   name = "github.com/getsentry/raven-go"
   packages = ["."]
   revision = "1452f6376ddb15c546b6d7567e1d9518765391b5"
+
+[[projects]]
+  name = "github.com/golang/mock"
+  packages = ["gomock"]
+  revision = "13f360950a79f5864a972c786a10a50e44b69541"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -184,6 +190,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bb66ec0d839f0cfd1472a855e281c54b1cf60ab607bf692351d5fba6ab592ed9"
+  inputs-digest = "44db2da39a1d8dcf6bfb9ef777d47f8d3189762f078ca9659c7d617949e9bc1e"
   solver-name = "gps-cdcl"
   solver-version = 1

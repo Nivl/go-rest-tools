@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Nivl/go-rest-tools/logger"
+	logger "github.com/Nivl/go-logger"
 	"github.com/Nivl/go-rest-tools/notifiers/reporter"
 	"github.com/Nivl/go-rest-tools/security/auth"
 	"github.com/gorilla/mux"

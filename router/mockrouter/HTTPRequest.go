@@ -2,7 +2,7 @@
 package mockrouter
 
 import auth "github.com/Nivl/go-rest-tools/security/auth"
-import logger "github.com/Nivl/go-rest-tools/logger"
+import logger "github.com/Nivl/go-logger"
 import mock "github.com/stretchr/testify/mock"
 import reporter "github.com/Nivl/go-rest-tools/notifiers/reporter"
 import router "github.com/Nivl/go-rest-tools/router"
