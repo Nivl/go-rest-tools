@@ -1,7 +1,8 @@
+// Package bcrypt is an implementation of the hasher interface for bcrypt.
 package bcrypt
 
 import (
-	"github.com/Nivl/go-rest-tools/security/hasher"
+	hasher "github.com/Nivl/go-hasher"
 	"golang.org/x/crypto/bcrypt"
 )
 

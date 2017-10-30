@@ -9,6 +9,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/Nivl/go-hasher"
+  packages = [".","implementations/bcrypt"]
+  revision = "d84ff056614c63ff1ae0069fd4fd84a60f79bc3b"
+
+[[projects]]
+  branch = "master"
   name = "github.com/Nivl/go-logger"
   packages = ["."]
   revision = "1d25d5fcf26a03d3f08d9dd6c7feae5b5ee110fe"
@@ -190,6 +196,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "44db2da39a1d8dcf6bfb9ef777d47f8d3189762f078ca9659c7d617949e9bc1e"
+  inputs-digest = "d4cf3f943ad631fb1c8f0d8074b8dd71935bbc83bf5058c80fb3ac6349af4358"
   solver-name = "gps-cdcl"
   solver-version = 1

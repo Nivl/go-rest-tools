@@ -1,7 +1,8 @@
 package hasher
 
+//go:generate mockgen -destination implementations/mockhasher/hasher.go -package mockhasher github.com/Nivl/go-hasher Hasher
+
 // Hasher hashes and validate strings
-//go:generate mockgen -destination mockhasher/hasher.go -package mockhasher github.com/Nivl/go-rest-tools/security/hasher Hasher
 type Hasher interface {
 	// Hash returns a hash for the provided string
 	Hash(raw string) (string, error)
