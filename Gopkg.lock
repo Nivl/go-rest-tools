@@ -21,6 +21,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/Nivl/go-mailer"
+  packages = ["."]
+  revision = "9b37797fc5e303752bd29daf5b7d3c901a3a0084"
+
+[[projects]]
+  branch = "master"
   name = "github.com/Nivl/go-params"
   packages = [".","formfile","formfile/testformfile","perror"]
   revision = "3ddf35a4c334c958749c267606d6eb9b28cfd3cb"
@@ -116,18 +122,6 @@
   version = "v1.1.0"
 
 [[projects]]
-  name = "github.com/sendgrid/rest"
-  packages = ["."]
-  revision = "80b39aaf5a30edab5bf2f99d56052abe01a0d41d"
-  version = "v2.4.0"
-
-[[projects]]
-  name = "github.com/sendgrid/sendgrid-go"
-  packages = [".","helpers/mail"]
-  revision = "8caf17aa96b4a98bae8bd216878dd50ff12897b5"
-  version = "v3.4.1"
-
-[[projects]]
   branch = "master"
   name = "github.com/stretchr/objx"
   packages = ["."]
@@ -190,6 +184,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "aa10418a8e2e4b5b7aa8da1b137222d93af242652e6699a60a2652769e653483"
+  inputs-digest = "c2e605c6348f0a36bcb9c86d9ada96fbfd1929d247cadf883ce3a2a9158faac7"
   solver-name = "gps-cdcl"
   solver-version = 1
