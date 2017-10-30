@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	reporter "github.com/Nivl/go-reporter"
 	"github.com/Nivl/go-rest-tools/dependencies"
 	"github.com/Nivl/go-rest-tools/network/http/basicauth"
 	"github.com/Nivl/go-rest-tools/security/auth"
@@ -32,7 +33,7 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 		// the following errors will be checked later on. we first init
 		// the request, then we will use that request to return (and log) the error
 		fileStorage, storageErr := apiDeps.NewFileStorage(req.Context())
-		reporter, reporterErr := apiDeps.NewReporter()
+		rep, reporterErr := apiDeps.NewReporter()
 		mailer, mailerErr := apiDeps.Mailer()
 		logger, loggerErr := apiDeps.NewLogger()
 
@@ -46,7 +47,7 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 			http:     req,
 			res:      NewResponse(resWriter, handlerDeps),
 			logger:   logger,
-			reporter: reporter,
+			reporter: rep,
 		}
 		defer request.handlePanic()
 
@@ -114,7 +115,11 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 				}
 			}
 		}
-		request.Reporter().SetUser(request.user)
+		request.Reporter().SetUser(&reporter.User{
+			ID:       request.user.ID,
+			Email:    request.user.Email,
+			Username: request.user.Name,
+		})
 
 		// Make sure the user has access to the handler
 		if allowed, err := e.Guard.HasAccess(request.user); !allowed {

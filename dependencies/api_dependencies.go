@@ -7,7 +7,7 @@ import (
 
 	logger "github.com/Nivl/go-logger"
 	"github.com/Nivl/go-rest-tools/notifiers/mailer"
-	"github.com/Nivl/go-rest-tools/notifiers/reporter"
+	reporter "github.com/Nivl/go-reporter"
 	"github.com/Nivl/go-rest-tools/storage/db"
 	"github.com/Nivl/go-rest-tools/storage/filestorage"
 )
