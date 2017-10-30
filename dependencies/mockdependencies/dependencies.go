@@ -4,7 +4,7 @@ package mockdependencies
 import context "context"
 import db "github.com/Nivl/go-rest-tools/storage/db"
 
-import filestorage "github.com/Nivl/go-rest-tools/storage/filestorage"
+import filestorage "github.com/Nivl/go-filestorage"
 import logger "github.com/Nivl/go-logger"
 import mailer "github.com/Nivl/go-mailer"
 import mock "github.com/stretchr/testify/mock"

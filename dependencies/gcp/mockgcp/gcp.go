@@ -2,7 +2,7 @@
 package mockgcp
 
 import context "context"
-import filestorage "github.com/Nivl/go-rest-tools/storage/filestorage"
+import filestorage "github.com/Nivl/go-filestorage"
 
 import mock "github.com/stretchr/testify/mock"
 

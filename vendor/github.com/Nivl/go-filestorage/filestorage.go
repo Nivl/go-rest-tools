@@ -1,3 +1,4 @@
+// Package filestorage describes interfaces to deal with filestorage
 package filestorage
 
 import (
@@ -5,7 +6,7 @@ import (
 )
 
 // FileStorage is a interface to store and retrieve files
-//go:generate mockgen -destination implementations/mockfilestorage/filestorage.go -package mockfilestorage github.com/Nivl/go-rest-tools/storage/filestorage FileStorage
+//go:generate mockgen -destination implementations/mockfilestorage/filestorage.go -package mockfilestorage github.com/Nivl/go-filestorage FileStorage
 type FileStorage interface {
 	// ID returns the unique identifier of the storage provider
 	ID() string

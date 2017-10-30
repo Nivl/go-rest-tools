@@ -3,8 +3,8 @@ package gcp
 import (
 	"context"
 
-	"github.com/Nivl/go-rest-tools/storage/filestorage"
-	"github.com/Nivl/go-rest-tools/storage/filestorage/implementations/gcstorage"
+	filestorage "github.com/Nivl/go-filestorage"
+	"github.com/Nivl/go-filestorage/implementations/gcstorage"
 )
 
 var _ GCP = (*Service)(nil)
