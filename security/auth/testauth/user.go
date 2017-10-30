@@ -6,8 +6,8 @@ import (
 
 	"github.com/satori/go.uuid"
 
+	"github.com/Nivl/go-hasher/implementations/bcrypt"
 	"github.com/Nivl/go-rest-tools/security/auth"
-	"github.com/Nivl/go-rest-tools/security/hasher/bcrypt"
 	"github.com/Nivl/go-rest-tools/storage/db"
 	"github.com/dchest/uniuri"
 )
