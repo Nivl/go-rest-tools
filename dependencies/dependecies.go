@@ -3,7 +3,7 @@ package dependencies
 import (
 	"context"
 
-	"github.com/Nivl/go-rest-tools/logger"
+	logger "github.com/Nivl/go-logger"
 	"github.com/Nivl/go-rest-tools/notifiers/mailer"
 	"github.com/Nivl/go-rest-tools/notifiers/reporter"
 	"github.com/Nivl/go-rest-tools/storage/db"
