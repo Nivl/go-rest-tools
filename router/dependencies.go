@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/Nivl/go-rest-tools/notifiers/mailer"
+	mailer "github.com/Nivl/go-mailer"
 	"github.com/Nivl/go-rest-tools/storage/db"
 	"github.com/Nivl/go-rest-tools/storage/filestorage"
 )
