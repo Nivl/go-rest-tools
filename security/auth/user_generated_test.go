@@ -28,6 +28,30 @@ func TestJoinUserSQL(t *testing.T) {
 	assert.True(t, strings.HasSuffix(output, "\""), "JoinSQL() output should end with a \"")
 }
 
+func TestGetUserByID(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	expectedID := "4408d5e1-b510-42cb-8ff8-788948a246dd"
+	mockDB := mocksqldb.NewMockQueryable(mockCtrl)
+	mockDB.EXPECT().GetID(&User{}, expectedID, nil)
+
+	_, err := GetUserByID(mockDB, expectedID)
+	assert.NoError(t, err, "GetUserByID() should not have failed")
+}
+
+func TestGetAnyUserByID(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	expectedID := "4408d5e1-b510-42cb-8ff8-788948a246dd"
+	mockDB := mocksqldb.NewMockQueryable(mockCtrl)
+	mockDB.EXPECT().GetID(&User{}, expectedID, nil)
+
+	_, err := GetUserByID(mockDB, expectedID)
+	assert.NoError(t, err, "GetUserByID() should not have failed")
+}
+
 func TestUserSaveNew(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
