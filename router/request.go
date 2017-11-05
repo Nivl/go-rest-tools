@@ -186,7 +186,7 @@ func (req *Request) httpParamsBySource() (map[string]url.Values, error) {
 			return nil, err
 		}
 		params["form"] = form
-	} else if req.contentType() == ContentTypeJSON || req.contentType() == ContentTypeMultipartForm {
+	} else if req.contentType() == ContentTypeForm || req.contentType() == ContentTypeMultipartForm {
 		if err := req.http.ParseForm(); err != nil {
 			return nil, err
 		}
