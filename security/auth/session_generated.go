@@ -4,11 +4,11 @@ package auth
 
 import (
 	"errors"
-
+	
 
 	"github.com/Nivl/go-rest-tools/types/apierror"
 	"github.com/Nivl/go-types/datetime"
-	"github.com/Nivl/go-rest-tools/storage/db"
+	"github.com/Nivl/go-sqldb"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -24,7 +24,7 @@ import (
 
 
 // doCreate persists a session in the database using a Node
-func (s *Session) doCreate(q db.Queryable) error {
+func (s *Session) doCreate(q sqldb.Queryable) error {
 	s.ID = uuid.NewV4().String()
 	s.UpdatedAt = datetime.Now()
 	if s.CreatedAt == nil {
@@ -42,7 +42,7 @@ func (s *Session) doCreate(q db.Queryable) error {
 
 
 // Delete removes a session from the database
-func (s *Session) Delete(q db.Queryable) error {
+func (s *Session) Delete(q sqldb.Queryable) error {
 	if s.ID == "" {
 		return errors.New("session has not been saved")
 	}

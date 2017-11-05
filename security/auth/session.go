@@ -3,7 +3,7 @@ package auth
 import (
 	"fmt"
 
-	"github.com/Nivl/go-rest-tools/storage/db"
+	db "github.com/Nivl/go-sqldb"
 	"github.com/Nivl/go-rest-tools/types/apierror"
 	"github.com/Nivl/go-types/datetime"
 )

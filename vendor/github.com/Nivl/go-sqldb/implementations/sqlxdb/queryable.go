@@ -1,9 +1,9 @@
-package sqlx
+package sqlxdb
 
 import (
 	"database/sql"
 
-	"github.com/Nivl/go-rest-tools/storage/db"
+	sqldb "github.com/Nivl/go-sqldb"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -16,7 +16,7 @@ type sqlxQueryable interface {
 	Exec(query string, args ...interface{}) (sql.Result, error)
 }
 
-var _ db.Queryable = (*Queryable)(nil)
+var _ sqldb.Queryable = (*Queryable)(nil)
 
 // NewQueryable creates a new Queryable
 func NewQueryable(con sqlxQueryable) *Queryable {

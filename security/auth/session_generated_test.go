@@ -3,13 +3,18 @@ package auth
 // Code generated; DO NOT EDIT.
 
 import (
+	
+
+	"errors"
 	"testing"
 
-		"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 
-		"github.com/satori/go.uuid"
+	"github.com/satori/go.uuid"
 
-		"github.com/Nivl/go-rest-tools/storage/db/mockdb"
+	"github.com/Nivl/go-sqldb/implementations/mocksqldb"
+
+	gomock "github.com/golang/mock/gomock"
 
 	"github.com/Nivl/go-types/datetime"
 )
@@ -19,44 +24,51 @@ import (
 
 
 
+
 func TestSessionDoCreate(t *testing.T) {
-	mockDB := &mockdb.Queryable{}
-	mockDB.ExpectInsert("*auth.Session")
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockDB := mocksqldb.NewMockQueryable(mockCtrl)
+	mockDB.EXPECT().InsertSuccess(&Session{})
 
 	s := &Session{}
 	err := s.doCreate(mockDB)
 
 	assert.NoError(t, err, "doCreate() should not have fail")
-	mockDB.AssertExpectations(t)
 	assert.NotEmpty(t, s.ID, "ID should have been set")
 	assert.NotNil(t, s.CreatedAt, "CreatedAt should have been set")
 	assert.NotNil(t, s.UpdatedAt, "UpdatedAt should have been set")
 }
 
 func TestSessionDoCreateWithDate(t *testing.T) {
-	mockDB := &mockdb.Queryable{}
-	mockDB.ExpectInsert("*auth.Session")
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockDB := mocksqldb.NewMockQueryable(mockCtrl)
+	mockDB.EXPECT().InsertSuccess(&Session{})
 
 	createdAt := datetime.Now().AddDate(0, 0, 1)
 	s := &Session{CreatedAt: createdAt}
 	err := s.doCreate(mockDB)
 
 	assert.NoError(t, err, "doCreate() should not have fail")
-	mockDB.AssertExpectations(t)
 	assert.NotEmpty(t, s.ID, "ID should have been set")
 	assert.True(t, s.CreatedAt.Equal(createdAt), "CreatedAt should not have been updated")
 	assert.NotNil(t, s.UpdatedAt, "UpdatedAt should have been set")
 }
 
 func TestSessionDoCreateFail(t *testing.T) {
-	mockDB := &mockdb.Queryable{}
-	mockDB.ExpectInsertError("*auth.Session")
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockDB := mocksqldb.NewMockQueryable(mockCtrl)
+	mockDB.EXPECT().InsertError(&Session{}, errors.New("sql error"))
 
 	s := &Session{}
 	err := s.doCreate(mockDB)
 
 	assert.Error(t, err, "doCreate() should have fail")
-	mockDB.AssertExpectations(t)
 }
 
 
@@ -66,36 +78,42 @@ func TestSessionDoCreateFail(t *testing.T) {
 
 
 func TestSessionDelete(t *testing.T) {
-	mockDB := &mockdb.Queryable{}
-	mockDB.ExpectDeletion()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockDB := mocksqldb.NewMockQueryable(mockCtrl)
+	mockDB.EXPECT().DeletionSuccess()
 
 	s := &Session{}
 	s.ID = uuid.NewV4().String()
 	err := s.Delete(mockDB)
 
 	assert.NoError(t, err, "Delete() should not have fail")
-	mockDB.AssertExpectations(t)
 }
 
 func TestSessionDeleteWithoutID(t *testing.T) {
-	mockDB := &mockdb.Queryable{}
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockDB := mocksqldb.NewMockQueryable(mockCtrl)
 	s := &Session{}
 	err := s.Delete(mockDB)
 
 	assert.Error(t, err, "Delete() should have fail")
-	mockDB.AssertExpectations(t)
 }
 
 func TestSessionDeleteError(t *testing.T) {
-	mockDB := &mockdb.Queryable{}
-	mockDB.ExpectDeletionError()
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockDB := mocksqldb.NewMockQueryable(mockCtrl)
+	mockDB.EXPECT().DeletionError(errors.New("sql error"))
 
 	s := &Session{}
 	s.ID = uuid.NewV4().String()
 	err := s.Delete(mockDB)
 
 	assert.Error(t, err, "Delete() should have fail")
-	mockDB.AssertExpectations(t)
 }
 
 func TestSessionGetID(t *testing.T) {

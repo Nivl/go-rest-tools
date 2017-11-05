@@ -1,11 +1,11 @@
-package sqlx
+package sqlxdb
 
 import (
-	"github.com/Nivl/go-rest-tools/storage/db"
+	sqldb "github.com/Nivl/go-sqldb"
 	"github.com/jmoiron/sqlx"
 )
 
-var _ db.Tx = (*Tx)(nil)
+var _ sqldb.Tx = (*Tx)(nil)
 
 // NewTx create a new transaction
 func NewTx(con *sqlx.DB) (*Tx, error) {

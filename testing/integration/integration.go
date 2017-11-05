@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/Nivl/go-rest-tools/dependencies"
-	"github.com/Nivl/go-rest-tools/storage/db"
-	"github.com/Nivl/go-rest-tools/storage/db/sqlx"
+	db "github.com/Nivl/go-sqldb"
+	sqlx "github.com/Nivl/go-sqldb/implementations/sqlxdb"
 	"github.com/pkg/errors"
 	"github.com/pressly/goose"
 	uuid "github.com/satori/go.uuid"
