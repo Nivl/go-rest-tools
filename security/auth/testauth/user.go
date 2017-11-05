@@ -8,7 +8,7 @@ import (
 
 	"github.com/Nivl/go-hasher/implementations/bcrypt"
 	"github.com/Nivl/go-rest-tools/security/auth"
-	"github.com/Nivl/go-rest-tools/storage/db"
+	db "github.com/Nivl/go-sqldb"
 	"github.com/dchest/uniuri"
 )
 

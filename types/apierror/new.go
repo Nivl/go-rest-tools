@@ -1,6 +1,7 @@
 package apierror
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
@@ -8,21 +9,25 @@ import (
 
 	"github.com/Nivl/go-params/perror"
 
-	"github.com/Nivl/go-rest-tools/storage/db"
 	"github.com/lib/pq"
+)
+
+const (
+	// ErrDup contains the errcode of a unique constraint violation
+	ErrDup = "23505"
 )
 
 // NewFromSQL returns an http error based on a pq.Error
 // the provided error will be returned if it's not a pq.Error instance,
 // or if the error cannot be matched to
 func NewFromSQL(err error) error {
-	if db.IsNotFound(err) {
+	if err != nil && err == sql.ErrNoRows {
 		return NewNotFound()
 	}
 
 	if pqErr, ok := err.(*pq.Error); ok {
 		switch pqErr.Code {
-		case db.ErrDup:
+		case ErrDup:
 			// because it's a constraint issue, the column name won't be stored in
 			// pqErr.Column. Fortunately we can find it in detail.
 			// Example of detail: "Key (name)=(Google) already exists."

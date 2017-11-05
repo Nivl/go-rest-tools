@@ -1,6 +1,12 @@
-package db
+// Package sqldb contains interfaces and strutures to deal with SQL database
+package sqldb
 
 import "database/sql"
+
+// Only the Queryable is generated. Connection and Tx both extend the generated
+// Queryable struct in order to be able to write helpers that works with the
+// 3 classes
+//go:generate mockgen -destination implementations/mocksqldb/queryable.go -package mocksqldb github.com/Nivl/go-sqldb Queryable
 
 // Connection is an interface representing a database connection
 type Connection interface {
@@ -44,6 +50,10 @@ type Queryable interface {
 // Tx is an interface representing a transaction
 type Tx interface {
 	Queryable
+
+	// Commit commits the transaction
 	Commit() error
+
+	// Rollback rollbacks the transaction
 	Rollback() error
 }

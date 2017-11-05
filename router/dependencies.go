@@ -2,7 +2,7 @@ package router
 
 import (
 	mailer "github.com/Nivl/go-mailer"
-	"github.com/Nivl/go-rest-tools/storage/db"
+	db "github.com/Nivl/go-sqldb"
 	filestorage "github.com/Nivl/go-filestorage"
 )
 

@@ -1,17 +1,40 @@
 package testrouter
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/Nivl/go-rest-tools/router"
 	"github.com/Nivl/go-rest-tools/router/mockrouter"
-	"github.com/Nivl/go-rest-tools/storage/db"
-	"github.com/Nivl/go-rest-tools/storage/db/mockdb"
 	"github.com/Nivl/go-rest-tools/types/apierror"
+	mockdb "github.com/Nivl/go-sqldb/implementations/mocksqldb"
+	"github.com/golang/mock/gomock"
+	"github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 )
+
+const (
+	// ErrDup contains the errcode of a unique constraint violation
+	ErrDup = "23505"
+)
+
+var (
+	// serverError represents a database connection error
+	serverError = &pq.Error{
+		Code:    "08006",
+		Message: "error: connection failure",
+		Detail:  "the connection to the database failed",
+	}
+)
+
+func newConflictError(fieldName string) *pq.Error {
+	return &pq.Error{
+		Code:    ErrDup,
+		Message: "error: duplicate field",
+		Detail:  fmt.Sprintf("Key (%s)=(Google) already exists.", fieldName),
+	}
+}
 
 // ConflictTestParams represents the params needed by ConflictTest
 type ConflictTestParams struct {
@@ -23,9 +46,12 @@ type ConflictTestParams struct {
 
 // ConflictInsertTest test an handler and expects a 409 on an insert statement
 func ConflictInsertTest(t *testing.T, p *ConflictTestParams) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
 	// Mock the database & add expectations
-	mockDB := &mockdb.Connection{}
-	mockDB.ExpectInsertConflict(p.StructConflicting, p.FieldConflicting)
+	mockDB := mockdb.NewMockConnection(mockCtrl)
+	mockDB.QEXPECT().InsertError(p.StructConflicting, newConflictError(p.FieldConflicting))
 
 	// Mock the request & add expectations
 	req := &mockrouter.HTTPRequest{}
@@ -36,7 +62,6 @@ func ConflictInsertTest(t *testing.T, p *ConflictTestParams) {
 
 	// Assert everything
 	assert.Error(t, err)
-	mockDB.AssertExpectations(t)
 	req.AssertExpectations(t)
 
 	apiError := apierror.Convert(err)
@@ -46,13 +71,13 @@ func ConflictInsertTest(t *testing.T, p *ConflictTestParams) {
 
 // ConflictUpdateTest test am handler and expects a 409 on an update statement
 func ConflictUpdateTest(t *testing.T, p *ConflictTestParams) {
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
 	// Mock the database & add expectations
-	mockDB := &mockdb.Connection{}
-	mockDB.ExpectGet(p.StructConflicting, func(args mock.Arguments) {
-		obj := args.Get(0).(db.Model)
-		obj.SetID("e9b51718-383b-42be-8720-0c8d7a99e978")
-	})
-	mockDB.ExpectUpdateConflict(p.StructConflicting, p.FieldConflicting)
+	mockDB := mockdb.NewMockConnection(mockCtrl)
+	mockDB.QEXPECT().GetSuccess(p.StructConflicting, nil)
+	mockDB.QEXPECT().UpdateError(p.StructConflicting, newConflictError(p.FieldConflicting))
 
 	// Mock the request & add expectations
 	req := new(mockrouter.HTTPRequest)
@@ -63,7 +88,6 @@ func ConflictUpdateTest(t *testing.T, p *ConflictTestParams) {
 
 	// Assert everything
 	assert.Error(t, err)
-	mockDB.AssertExpectations(t)
 	req.AssertExpectations(t)
 
 	apiError := apierror.Convert(err)

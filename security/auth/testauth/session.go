@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/Nivl/go-rest-tools/security/auth"
-	"github.com/Nivl/go-rest-tools/storage/db"
+	db "github.com/Nivl/go-sqldb"
 )
 
 // NewAuth creates a non-persisted user and their session

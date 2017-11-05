@@ -1,13 +1,14 @@
-package sqlx
+// Package sqlxdb contains an sqlx implementation of the sqldb package
+package sqlxdb
 
 import (
 	"database/sql"
 
-	"github.com/Nivl/go-rest-tools/storage/db"
+	sqldb "github.com/Nivl/go-sqldb"
 	"github.com/jmoiron/sqlx"
 )
 
-var _ db.Connection = (*Connection)(nil)
+var _ sqldb.Connection = (*Connection)(nil)
 
 // New returns a new SQLX connection
 func New(dsn string) (*Connection, error) {
@@ -27,7 +28,7 @@ func New(dsn string) (*Connection, error) {
 	}, nil
 }
 
-// Connection represents the sqlx inplementation of the DB interface
+// Connection represents the sqlx implementation of the sqldb.Connection interface
 type Connection struct {
 	*Queryable
 	con *sqlx.DB
@@ -35,7 +36,7 @@ type Connection struct {
 }
 
 // Beginx is an Exec that accepts named params (ex where id=:user_id)
-func (db *Connection) Beginx() (db.Tx, error) {
+func (db *Connection) Beginx() (sqldb.Tx, error) {
 	return NewTx(db.con)
 }
 
@@ -49,7 +50,7 @@ func (db *Connection) SQL() *sql.DB {
 	return db.con.DB
 }
 
-// SQL returns the sql.DB object
+// DSN returns the DSN used to create the connection
 func (db *Connection) DSN() string {
 	return db.dsn
 }

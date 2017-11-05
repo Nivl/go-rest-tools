@@ -8,7 +8,7 @@ import (
 	logger "github.com/Nivl/go-logger"
 	mailer "github.com/Nivl/go-mailer"
 	reporter "github.com/Nivl/go-reporter"
-	"github.com/Nivl/go-rest-tools/storage/db"
+	db "github.com/Nivl/go-sqldb"
 	filestorage "github.com/Nivl/go-filestorage"
 )
 
