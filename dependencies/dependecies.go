@@ -3,14 +3,15 @@ package dependencies
 import (
 	"context"
 
+	filestorage "github.com/Nivl/go-filestorage"
 	logger "github.com/Nivl/go-logger"
 	mailer "github.com/Nivl/go-mailer"
 	reporter "github.com/Nivl/go-reporter"
 	db "github.com/Nivl/go-sqldb"
-	filestorage "github.com/Nivl/go-filestorage"
 )
 
 // Dependencies represents the dependency of the api
+//go:generate mockgen -destination mockdependencies/dependencies.go -package mockdependencies github.com/Nivl/go-rest-tools/dependencies Dependencies
 type Dependencies interface {
 	// SetDB creates a connection to a SQL database
 	SetDB(db db.Connection)
