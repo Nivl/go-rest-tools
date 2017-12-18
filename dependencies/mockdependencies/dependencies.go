@@ -8,11 +8,11 @@ import (
 	context "context"
 	reflect "reflect"
 
-	go_filestorage "github.com/Nivl/go-rest-tools/vendor/github.com/Nivl/go-filestorage"
-	go_logger "github.com/Nivl/go-rest-tools/vendor/github.com/Nivl/go-logger"
-	go_mailer "github.com/Nivl/go-rest-tools/vendor/github.com/Nivl/go-mailer"
-	go_reporter "github.com/Nivl/go-rest-tools/vendor/github.com/Nivl/go-reporter"
-	go_sqldb "github.com/Nivl/go-rest-tools/vendor/github.com/Nivl/go-sqldb"
+	go_filestorage "github.com/Nivl/go-filestorage"
+	go_logger "github.com/Nivl/go-logger"
+	go_mailer "github.com/Nivl/go-mailer"
+	go_reporter "github.com/Nivl/go-reporter"
+	go_sqldb "github.com/Nivl/go-sqldb"
 	gomock "github.com/golang/mock/gomock"
 )
 
