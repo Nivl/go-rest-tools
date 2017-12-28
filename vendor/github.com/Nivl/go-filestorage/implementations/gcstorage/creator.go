@@ -21,6 +21,8 @@ func NewCreator(apiKey string, defaultBucket string) (*Creator, error) {
 // NewCreatorWithContext returns a filestorage creator that will
 // use the provided context and key to create a new google storage
 // client that will be reused for every new gcstorage instance
+// The provided context will be used as default context for all new FileStorage
+// instance
 func NewCreatorWithContext(ctx context.Context, apiKey string, defaultBucket string) (*Creator, error) {
 	client, err := storage.NewClient(ctx, option.WithAPIKey(apiKey))
 	if err != nil {
@@ -43,6 +45,15 @@ type Creator struct {
 // New returns a new le client
 func (c *Creator) New() (filestorage.FileStorage, error) {
 	fs := NewWithClient(c.defaultCtx, c.client)
+	err := fs.SetBucket(c.defaultBucket)
+	return fs, err
+}
+
+// NewWithContext returns a new gc storage client using the provided context as
+// default context instead of the one provided during the creation of the
+// Creator
+func (c *Creator) NewWithContext(ctx context.Context) (filestorage.FileStorage, error) {
+	fs := NewWithClient(ctx, c.client)
 	err := fs.SetBucket(c.defaultBucket)
 	return fs, err
 }

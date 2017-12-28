@@ -29,7 +29,7 @@ type Service struct {
 
 // Storage returns a new storage instance
 func (service *Service) Storage(ctx context.Context) (filestorage.FileStorage, error) {
-	storage, err := gcstorage.New(ctx, service.apiKey)
+	storage, err := gcstorage.NewWithContext(ctx, service.apiKey)
 	if err != nil {
 		return nil, err
 	}

@@ -46,5 +46,5 @@ type Dependencies interface {
 	SetFileStorageCreator(filestorage.Creator)
 
 	// NewFileStorage creates a new filestorage using the provided reporter Creator
-	NewFileStorage(context.Context) (filestorage.FileStorage, error)
+	NewFileStorage(ctx context.Context) (filestorage.FileStorage, error)
 }

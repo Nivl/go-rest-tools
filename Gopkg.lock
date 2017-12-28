@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/Nivl/go-filestorage"
   packages = [".","implementations","implementations/gcstorage"]
-  revision = "d37b911bb47c6edadec3bfee0991fec5958f7aa3"
+  revision = "4cce5891ef87fd064c41a2caab873181903b9a30"
 
 [[projects]]
   branch = "master"
