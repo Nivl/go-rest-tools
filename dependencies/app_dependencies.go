@@ -5,11 +5,11 @@ import (
 	"errors"
 	"sync"
 
+	filestorage "github.com/Nivl/go-filestorage"
 	logger "github.com/Nivl/go-logger"
 	mailer "github.com/Nivl/go-mailer"
 	reporter "github.com/Nivl/go-reporter"
 	db "github.com/Nivl/go-sqldb"
-	filestorage "github.com/Nivl/go-filestorage"
 )
 
 var _ Dependencies = (*AppDependencies)(nil)
@@ -102,5 +102,5 @@ func (deps *AppDependencies) NewFileStorage(ctx context.Context) (filestorage.Fi
 	if deps.reporterCreator == nil {
 		return nil, errors.New("no filestorage creator has been set")
 	}
-	return deps.filestorageCreator.New(ctx)
+	return deps.filestorageCreator.NewWithContext(ctx)
 }
