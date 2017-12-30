@@ -114,12 +114,13 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 					return
 				}
 			}
+
+			request.Reporter().SetUser(&reporter.User{
+				ID:       request.user.ID,
+				Email:    request.user.Email,
+				Username: request.user.Name,
+			})
 		}
-		request.Reporter().SetUser(&reporter.User{
-			ID:       request.user.ID,
-			Email:    request.user.Email,
-			Username: request.user.Name,
-		})
 
 		// Make sure the user has access to the handler
 		if allowed, err := e.Guard.HasAccess(request.user); !allowed {
