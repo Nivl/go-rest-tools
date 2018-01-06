@@ -15,6 +15,7 @@ type ResponseError struct {
 }
 
 // HTTPResponse represents an http response
+//go:generate mockgen -destination mockrouter/response.go -package mockrouter github.com/Nivl/go-rest-tools/router HTTPResponse
 type HTTPResponse interface {
 	// Header returns the header map that will be sent by WriteHeader
 	Header() http.Header

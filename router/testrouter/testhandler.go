@@ -54,15 +54,14 @@ func ConflictInsertTest(t *testing.T, p *ConflictTestParams) {
 	mockDB.QEXPECT().InsertError(p.StructConflicting, newConflictError(p.FieldConflicting))
 
 	// Mock the request & add expectations
-	req := &mockrouter.HTTPRequest{}
-	req.On("Params").Return(p.HandlerParams)
+	req := mockrouter.NewMockHTTPRequest(mockCtrl)
+	req.EXPECT().Params().Return(p.HandlerParams)
 
 	// call the handler
 	err := p.Handler(req, &router.Dependencies{DB: mockDB})
 
 	// Assert everything
 	assert.Error(t, err)
-	req.AssertExpectations(t)
 
 	apiError := apierror.Convert(err)
 	assert.Equal(t, http.StatusConflict, apiError.HTTPStatus())
@@ -80,15 +79,14 @@ func ConflictUpdateTest(t *testing.T, p *ConflictTestParams) {
 	mockDB.QEXPECT().UpdateError(p.StructConflicting, newConflictError(p.FieldConflicting))
 
 	// Mock the request & add expectations
-	req := new(mockrouter.HTTPRequest)
-	req.On("Params").Return(p.HandlerParams)
+	req := mockrouter.NewMockHTTPRequest(mockCtrl)
+	req.EXPECT().Params().Return(p.HandlerParams)
 
 	// call the handler
 	err := p.Handler(req, &router.Dependencies{DB: mockDB})
 
 	// Assert everything
 	assert.Error(t, err)
-	req.AssertExpectations(t)
 
 	apiError := apierror.Convert(err)
 	assert.Equal(t, http.StatusConflict, apiError.HTTPStatus())
