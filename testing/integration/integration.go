@@ -50,7 +50,9 @@ func New(deps dependencies.Dependencies, migrationFolder string) (*Wrapper, erro
 	// We set this new database as the new current one, to do that we
 	// get the DSN of the current connection and swap the table name by
 	// the new one
-	tmpDBDSN := strings.Replace(it.masterDB.DSN(), masterDbName, it.tmpDBName, -1)
+	masterDBString := fmt.Sprintf("dbname=%s", masterDbName)
+	tmpDBString := fmt.Sprintf("dbname=%s", it.tmpDBName)
+	tmpDBDSN := strings.Replace(it.masterDB.DSN(), masterDBString, tmpDBString, -1)
 	tmpDB, err := sqlx.New(tmpDBDSN)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not connect to the tmp table")
