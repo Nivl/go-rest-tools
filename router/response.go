@@ -84,7 +84,9 @@ func (res *Response) Error(e error, req HTTPRequest) {
 	if err.Field() != "" {
 		field = fmt.Sprintf(`, field: "%s"`, err.Field())
 	}
-	req.Logger().Errorf(`code: "%d"%s, message: "%s", %s`, err.HTTPStatus(), field, err.Error(), req)
+	if req.Logger() != nil {
+		req.Logger().Errorf(`code: "%d"%s, message: "%s", %s`, err.HTTPStatus(), field, err.Error(), req)
+	}
 
 	// We send a report for all server errors
 	if err.HTTPStatus() == http.StatusInternalServerError {
