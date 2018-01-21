@@ -41,6 +41,7 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 			DB:      apiDeps.DB(),
 			Storage: fileStorage,
 			Mailer:  mailer,
+			Hasher:  apiDeps.Hasher(),
 		}
 		request := &Request{
 			id:       uuid.NewV4().String()[:8],

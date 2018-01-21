@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	go_filestorage "github.com/Nivl/go-filestorage"
+	go_hasher "github.com/Nivl/go-hasher"
 	go_logger "github.com/Nivl/go-logger"
 	go_mailer "github.com/Nivl/go-mailer"
 	go_reporter "github.com/Nivl/go-reporter"
@@ -62,6 +63,18 @@ func (m *MockDependencies) DefaultLogger() (go_logger.Logger, error) {
 // DefaultLogger indicates an expected call of DefaultLogger
 func (mr *MockDependenciesMockRecorder) DefaultLogger() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DefaultLogger", reflect.TypeOf((*MockDependencies)(nil).DefaultLogger))
+}
+
+// Hasher mocks base method
+func (m *MockDependencies) Hasher() go_hasher.Hasher {
+	ret := m.ctrl.Call(m, "Hasher")
+	ret0, _ := ret[0].(go_hasher.Hasher)
+	return ret0
+}
+
+// Hasher indicates an expected call of Hasher
+func (mr *MockDependenciesMockRecorder) Hasher() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Hasher", reflect.TypeOf((*MockDependencies)(nil).Hasher))
 }
 
 // Mailer mocks base method
@@ -134,6 +147,16 @@ func (m *MockDependencies) SetFileStorageCreator(arg0 go_filestorage.Creator) {
 // SetFileStorageCreator indicates an expected call of SetFileStorageCreator
 func (mr *MockDependenciesMockRecorder) SetFileStorageCreator(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetFileStorageCreator", reflect.TypeOf((*MockDependencies)(nil).SetFileStorageCreator), arg0)
+}
+
+// SetHasher mocks base method
+func (m *MockDependencies) SetHasher(arg0 go_hasher.Hasher) {
+	m.ctrl.Call(m, "SetHasher", arg0)
+}
+
+// SetHasher indicates an expected call of SetHasher
+func (mr *MockDependenciesMockRecorder) SetHasher(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetHasher", reflect.TypeOf((*MockDependencies)(nil).SetHasher), arg0)
 }
 
 // SetLoggerCreator mocks base method
