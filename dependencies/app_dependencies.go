@@ -6,6 +6,8 @@ import (
 	"sync"
 
 	filestorage "github.com/Nivl/go-filestorage"
+	hasher "github.com/Nivl/go-hasher"
+	"github.com/Nivl/go-hasher/implementations/bcrypt"
 	logger "github.com/Nivl/go-logger"
 	mailer "github.com/Nivl/go-mailer"
 	reporter "github.com/Nivl/go-reporter"
@@ -21,6 +23,7 @@ type AppDependencies struct {
 	defaultSQLCon db.Connection
 	defaultLogger logger.Logger
 	defaultMailer mailer.Mailer
+	defaultHasher hasher.Hasher
 
 	reporterCreator    reporter.Creator
 	loggerCreator      logger.Creator
@@ -103,4 +106,21 @@ func (deps *AppDependencies) NewFileStorage(ctx context.Context) (filestorage.Fi
 		return nil, errors.New("no filestorage creator has been set")
 	}
 	return deps.filestorageCreator.NewWithContext(ctx)
+}
+
+// SetHasher sets the hasher to be used to hash data like passwords
+func (deps *AppDependencies) SetHasher(h hasher.Hasher) {
+	deps.defaultHasher = h
+}
+
+// Hasher returns the hasher set with SetHasher
+// If no hasher has been set, it returns a bcrypt hasher
+func (deps *AppDependencies) Hasher() hasher.Hasher {
+	deps.Lock()
+	defer deps.Unlock()
+
+	if deps.defaultHasher == nil {
+		deps.defaultHasher = &bcrypt.Bcrypt{}
+	}
+	return deps.defaultHasher
 }

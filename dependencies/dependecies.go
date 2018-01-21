@@ -4,6 +4,7 @@ import (
 	"context"
 
 	filestorage "github.com/Nivl/go-filestorage"
+	hasher "github.com/Nivl/go-hasher"
 	logger "github.com/Nivl/go-logger"
 	mailer "github.com/Nivl/go-mailer"
 	reporter "github.com/Nivl/go-reporter"
@@ -47,4 +48,11 @@ type Dependencies interface {
 
 	// NewFileStorage creates a new filestorage using the provided reporter Creator
 	NewFileStorage(ctx context.Context) (filestorage.FileStorage, error)
+
+	// SetHasher sets the hasher to be used to hash data like passwords
+	SetHasher(hasher.Hasher)
+
+	// Mailer returns the hasher set with SetHasher
+	// If no hasher has been set, it returns a bcrypt hasher
+	Hasher() hasher.Hasher
 }
