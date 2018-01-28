@@ -7,7 +7,7 @@ import (
 
 	"github.com/Nivl/go-rest-tools/router"
 	"github.com/Nivl/go-rest-tools/router/mockrouter"
-	"github.com/Nivl/go-rest-tools/types/apierror"
+	"github.com/Nivl/go-rest-tools/types/apperror"
 	mockdb "github.com/Nivl/go-sqldb/implementations/mocksqldb"
 	"github.com/golang/mock/gomock"
 	"github.com/lib/pq"
@@ -63,9 +63,9 @@ func ConflictInsertTest(t *testing.T, p *ConflictTestParams) {
 	// Assert everything
 	assert.Error(t, err)
 
-	apiError := apierror.Convert(err)
-	assert.Equal(t, http.StatusConflict, apiError.HTTPStatus())
-	assert.Equal(t, p.FieldConflicting, apiError.Field())
+	appError := apperror.Convert(err)
+	assert.Equal(t, http.StatusConflict, appError.StatusCode())
+	assert.Equal(t, p.FieldConflicting, appError.Field())
 }
 
 // ConflictUpdateTest test am handler and expects a 409 on an update statement
@@ -88,7 +88,7 @@ func ConflictUpdateTest(t *testing.T, p *ConflictTestParams) {
 	// Assert everything
 	assert.Error(t, err)
 
-	apiError := apierror.Convert(err)
-	assert.Equal(t, http.StatusConflict, apiError.HTTPStatus())
-	assert.Equal(t, p.FieldConflicting, apiError.Field())
+	appError := apperror.Convert(err)
+	assert.Equal(t, http.StatusConflict, appError.StatusCode())
+	assert.Equal(t, p.FieldConflicting, appError.Field())
 }

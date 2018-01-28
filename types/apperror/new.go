@@ -1,10 +1,9 @@
-package apierror
+package apperror
 
 import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"net/http"
 	"regexp"
 
 	"github.com/Nivl/go-params/perror"
@@ -17,7 +16,7 @@ const (
 	ErrDup = "23505"
 )
 
-// NewFromSQL returns an http error based on a pq.Error
+// NewFromSQL returns an error based on a pq.Error
 // the provided error will be returned if it's not a pq.Error instance,
 // or if the error cannot be matched to
 func NewFromSQL(err error) error {
@@ -54,81 +53,80 @@ func NewFromError(err error) error {
 	case perror.Error:
 		return NewBadRequest(e.Field(), e.Error())
 	}
-
 	return err
 }
 
 // NewError returns an error with an associated code
-func NewError(code int, field string, message string, args ...interface{}) *APIError {
+func NewError(code Code, field string, message string, args ...interface{}) *AppError {
 	fullMessage := fmt.Sprintf(message, args...)
-	return &APIError{errors.New(fullMessage), code, field, nil}
+	return &AppError{errors.New(fullMessage), code, field, nil}
 }
 
 // NewServerError returns an Internal Error.
-func NewServerError(message string, args ...interface{}) *APIError {
-	return NewError(http.StatusInternalServerError, "", message, args...)
+func NewServerError(message string, args ...interface{}) *AppError {
+	return NewError(Internal, "", message, args...)
 }
 
 // NewBadRequest returns an error caused by a user. Example: A missing param
-func NewBadRequest(field string, message string, args ...interface{}) *APIError {
-	return NewError(http.StatusBadRequest, field, message, args...)
+func NewBadRequest(field string, message string, args ...interface{}) *AppError {
+	return NewError(InvalidArgument, field, message, args...)
 }
 
 // NewInvalidParam is an alias for NewBadRequest
-func NewInvalidParam(field string, message string, args ...interface{}) *APIError {
+func NewInvalidParam(field string, message string, args ...interface{}) *AppError {
 	return NewBadRequest(field, message, args)
 }
 
 // NewConflict returns an error caused by a conflict with the current state
 // of the app. Example: A duplicate slug
-func NewConflict(field string) *APIError {
-	return NewError(http.StatusConflict, field, "already exists")
+func NewConflict(field string) *AppError {
+	return NewError(AlreadyExists, field, "already exists")
 }
 
 // NewConflictR returns an error caused by a conflict with the current state
 // of the app. A reason is sent back to the user.
-func NewConflictR(field string, message string, args ...interface{}) *APIError {
-	return NewError(http.StatusConflict, field, message, args...)
+func NewConflictR(field string, message string, args ...interface{}) *AppError {
+	return NewError(AlreadyExists, field, message, args...)
 }
 
 // NewUnauthorized returns an error caused by a anonymous user trying to access
 // a protected resource
-func NewUnauthorized() *APIError {
-	return NewUnauthorizedR(http.StatusText(http.StatusUnauthorized))
+func NewUnauthorized() *AppError {
+	return NewUnauthorizedR(StatusText(Unauthenticated))
 }
 
 // NewUnauthorizedR returns an error caused by a anonymous user trying to access
 // a protected resource. A reason is sent back to the user.
-func NewUnauthorizedR(reason string) *APIError {
-	return NewError(http.StatusUnauthorized, "", reason)
+func NewUnauthorizedR(reason string) *AppError {
+	return NewError(Unauthenticated, "", reason)
 }
 
 // NewForbidden returns an error caused by a user trying to access
 // a protected resource.
-func NewForbidden() *APIError {
-	return NewForbiddenR(http.StatusText(http.StatusForbidden))
+func NewForbidden() *AppError {
+	return NewForbiddenR(StatusText(PermissionDenied))
 }
 
 // NewForbiddenR returns an error caused by a user trying to access
 // a protected resource. A reason is sent back to the user.
-func NewForbiddenR(reason string) *APIError {
-	return NewError(http.StatusForbidden, "", reason)
+func NewForbiddenR(reason string) *AppError {
+	return NewError(PermissionDenied, "", reason)
 }
 
 // NewNotFound returns an error caused by a user trying to access
 // a resource that does not exists
-func NewNotFound() *APIError {
-	return NewNotFoundR(http.StatusText(http.StatusNotFound))
+func NewNotFound() *AppError {
+	return NewNotFoundR(StatusText(NotFound))
 }
 
 // NewNotFoundR returns an error caused by a user trying to access
 // a resource that does not exists. A reason is sent back to the user.
-func NewNotFoundR(reason string) *APIError {
-	return NewError(http.StatusNotFound, "", reason)
+func NewNotFoundR(reason string) *AppError {
+	return NewError(NotFound, "", reason)
 }
 
 // NewNotFoundField returns an error caused by a user trying to access
 // a resource that does not exists. A reason is sent back to the user.
-func NewNotFoundField(field string, reason string) *APIError {
-	return NewError(http.StatusNotFound, field, reason)
+func NewNotFoundField(field string, reason string) *AppError {
+	return NewError(NotFound, field, reason)
 }

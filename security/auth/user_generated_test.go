@@ -48,7 +48,7 @@ func TestGetAnyUserByID(t *testing.T) {
 	mockDB := mocksqldb.NewMockQueryable(mockCtrl)
 	mockDB.EXPECT().GetID(&User{}, expectedID, nil)
 
-	_, err := GetUserByID(mockDB, expectedID)
+	_, err := GetAnyUserByID(mockDB, expectedID)
 	assert.NoError(t, err, "GetUserByID() should not have failed")
 }
 
@@ -90,6 +90,7 @@ func TestUserCreate(t *testing.T) {
 	mockDB.EXPECT().InsertSuccess(&User{})
 
 	u := &User{}
+	
 	err := u.Create(mockDB)
 
 	assert.NoError(t, err, "Create() should not have fail")
@@ -97,6 +98,8 @@ func TestUserCreate(t *testing.T) {
 	assert.NotNil(t, u.CreatedAt, "CreatedAt should have been set")
 	assert.NotNil(t, u.UpdatedAt, "UpdatedAt should have been set")
 }
+
+
 
 func TestUserCreateWithID(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
@@ -119,6 +122,7 @@ func TestUserDoCreate(t *testing.T) {
 	mockDB.EXPECT().InsertSuccess(&User{})
 
 	u := &User{}
+	
 	err := u.doCreate(mockDB)
 
 	assert.NoError(t, err, "doCreate() should not have fail")
@@ -136,6 +140,7 @@ func TestUserDoCreateWithDate(t *testing.T) {
 
 	createdAt := datetime.Now().AddDate(0, 0, 1)
 	u := &User{CreatedAt: createdAt}
+	
 	err := u.doCreate(mockDB)
 
 	assert.NoError(t, err, "doCreate() should not have fail")
@@ -170,7 +175,6 @@ func TestUserUpdate(t *testing.T) {
 	err := u.Update(mockDB)
 
 	assert.NoError(t, err, "Update() should not have fail")
-	assert.NotEmpty(t, u.ID, "ID should have been set")
 	assert.NotNil(t, u.UpdatedAt, "UpdatedAt should have been set")
 }
 
@@ -264,18 +268,6 @@ func TestUserDeleteError(t *testing.T) {
 	err := u.Delete(mockDB)
 
 	assert.Error(t, err, "Delete() should have fail")
-}
-
-func TestUserGetID(t *testing.T) {
-	u := &User{}
-	u.ID = uuid.NewV4().String()
-	assert.Equal(t, u.ID, u.GetID(), "GetID() did not return the right ID")
-}
-
-func TestUserSetID(t *testing.T) {
-	u := &User{}
-	u.SetID(uuid.NewV4().String())
-	assert.NotEmpty(t, u.ID, "SetID() did not set the ID")
 }
 
 func TestUserIsZero(t *testing.T) {
