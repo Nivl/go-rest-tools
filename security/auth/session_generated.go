@@ -6,7 +6,7 @@ import (
 	"errors"
 	
 
-	"github.com/Nivl/go-rest-tools/types/apierror"
+	"github.com/Nivl/go-rest-tools/types/apperror"
 	"github.com/Nivl/go-types/datetime"
 	"github.com/Nivl/go-sqldb"
 	uuid "github.com/satori/go.uuid"
@@ -34,7 +34,7 @@ func (s *Session) doCreate(q sqldb.Queryable) error {
 	stmt := "INSERT INTO sessions (id, created_at, updated_at, deleted_at, user_id) VALUES (:id, :created_at, :updated_at, :deleted_at, :user_id)"
 	_, err := q.NamedExec(stmt, s)
 
-  return apierror.NewFromSQL(err)
+  return apperror.NewFromSQL(err)
 }
 
 
@@ -51,16 +51,6 @@ func (s *Session) Delete(q sqldb.Queryable) error {
 	_, err := q.Exec(stmt, s.ID)
 
 	return err
-}
-
-// GetID returns the ID field
-func (s *Session) GetID() string {
-	return s.ID
-}
-
-// SetID sets the ID field
-func (s *Session) SetID(id string) {
-	s.ID = id
 }
 
 // IsZero checks if the object is either nil or don't have an ID

@@ -37,6 +37,7 @@ func TestSessionDoCreate(t *testing.T) {
 	mockDB.EXPECT().InsertSuccess(&Session{})
 
 	s := &Session{}
+	
 	err := s.doCreate(mockDB)
 
 	assert.NoError(t, err, "doCreate() should not have fail")
@@ -54,6 +55,7 @@ func TestSessionDoCreateWithDate(t *testing.T) {
 
 	createdAt := datetime.Now().AddDate(0, 0, 1)
 	s := &Session{CreatedAt: createdAt}
+	
 	err := s.doCreate(mockDB)
 
 	assert.NoError(t, err, "doCreate() should not have fail")
@@ -118,18 +120,6 @@ func TestSessionDeleteError(t *testing.T) {
 	err := s.Delete(mockDB)
 
 	assert.Error(t, err, "Delete() should have fail")
-}
-
-func TestSessionGetID(t *testing.T) {
-	s := &Session{}
-	s.ID = uuid.NewV4().String()
-	assert.Equal(t, s.ID, s.GetID(), "GetID() did not return the right ID")
-}
-
-func TestSessionSetID(t *testing.T) {
-	s := &Session{}
-	s.SetID(uuid.NewV4().String())
-	assert.NotEmpty(t, s.ID, "SetID() did not set the ID")
 }
 
 func TestSessionIsZero(t *testing.T) {

@@ -3,8 +3,8 @@ package auth
 import (
 	"fmt"
 
+	"github.com/Nivl/go-rest-tools/types/apperror"
 	db "github.com/Nivl/go-sqldb"
-	"github.com/Nivl/go-rest-tools/types/apierror"
 	"github.com/Nivl/go-types/datetime"
 )
 
@@ -22,11 +22,11 @@ type Session struct {
 // Exists check if a session exists in the database
 func (s *Session) Exists(q db.Queryable) (bool, error) {
 	if s == nil {
-		return false, apierror.NewServerError("session is nil")
+		return false, apperror.NewServerError("session is nil")
 	}
 
 	if s.UserID == "" {
-		return false, apierror.NewServerError("user id required")
+		return false, apperror.NewServerError("user id required")
 	}
 
 	// Deleted sessions should be explicitly checked
@@ -64,7 +64,7 @@ func SessionJoinSQL(prefix string) string {
 // Save is an alias for Create since sessions are not updatable
 func (s *Session) Save(q db.Queryable) error {
 	if s == nil {
-		return apierror.NewServerError("session is nil")
+		return apperror.NewServerError("session is nil")
 	}
 
 	return s.Create(q)
@@ -73,15 +73,15 @@ func (s *Session) Save(q db.Queryable) error {
 // Create persists a session in the database
 func (s *Session) Create(q db.Queryable) error {
 	if s == nil {
-		return apierror.NewServerError("session is nil")
+		return apperror.NewServerError("session is nil")
 	}
 
 	if s.ID != "" {
-		return apierror.NewServerError("sessions cannot be updated")
+		return apperror.NewServerError("sessions cannot be updated")
 	}
 
 	if s.UserID == "" {
-		return apierror.NewServerError("cannot save a session with no user id")
+		return apperror.NewServerError("cannot save a session with no user id")
 	}
 
 	return s.doCreate(q)

@@ -9,7 +9,7 @@ import (
 	"github.com/Nivl/go-rest-tools/dependencies"
 	"github.com/Nivl/go-rest-tools/network/http/basicauth"
 	"github.com/Nivl/go-rest-tools/security/auth"
-	"github.com/Nivl/go-rest-tools/types/apierror"
+	"github.com/Nivl/go-rest-tools/types/apperror"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 )
@@ -90,7 +90,7 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 
 			userID, sessionID, err := basicauth.ParseAuthHeader(headers, "basic", "")
 			if err != nil {
-				request.res.Error(apierror.NewBadRequest("Authorization", "invalid format"), request)
+				request.res.Error(apperror.NewBadRequest("Authorization", "invalid format"), request)
 			}
 			session := &auth.Session{ID: sessionID, UserID: userID}
 
@@ -101,15 +101,15 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 					return
 				}
 				if !exists {
-					request.res.Error(apierror.NewNotFoundField("Authorization", "session not found"), request)
+					request.res.Error(apperror.NewNotFoundField("Authorization", "session not found"), request)
 					return
 				}
 				request.session = session
 				// we get the user and make sure it (still) exists
 				request.user, err = auth.GetUserByID(handlerDeps.DB, session.UserID)
 				if err != nil {
-					if apierror.IsNotFound(err) {
-						err = apierror.NewNotFoundField("Authorization", "session not found")
+					if apperror.IsNotFound(err) {
+						err = apperror.NewNotFoundField("Authorization", "session not found")
 					}
 					request.res.Error(err, request)
 					return

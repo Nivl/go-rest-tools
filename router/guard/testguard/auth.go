@@ -25,7 +25,7 @@ func AccessTest(t *testing.T, g *guard.Guard, testCases []AccessTestCase) {
 			_, err := g.HasAccess(tc.User)
 			if tc.ErrCode > 0 {
 				assert.Error(t, err)
-				assert.Equal(t, tc.ErrCode, err.HTTPStatus())
+				assert.Equal(t, tc.ErrCode, err.StatusCode())
 			} else {
 				assert.NoError(t, err)
 			}

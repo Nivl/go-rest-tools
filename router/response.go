@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Nivl/go-rest-tools/types/apierror"
+	"github.com/Nivl/go-rest-tools/types/apperror"
 )
 
 // ResponseError represents the data sent the client when an error occurs
@@ -76,7 +76,7 @@ func (res *Response) renderJSON(code int, obj interface{}) error {
 // If the error is an instance of HTTPError, the returned code will
 // match HTTPError.HTTPStatus(). It returns a 500 if no code has been set.
 func (res *Response) Error(e error, req HTTPRequest) {
-	err := apierror.Convert(e)
+	err := apperror.Convert(e)
 	res.errorJSON(err)
 
 	// if the error has a field attached we log it
@@ -85,11 +85,11 @@ func (res *Response) Error(e error, req HTTPRequest) {
 		field = fmt.Sprintf(`, field: "%s"`, err.Field())
 	}
 	if req.Logger() != nil {
-		req.Logger().Errorf(`code: "%d"%s, message: "%s", %s`, err.HTTPStatus(), field, err.Error(), req)
+		req.Logger().Errorf(`code: "%d", httpcode: "%d"%s, message: "%s", %s`, err.StatusCode(), apperror.HTTPStatusCode(err.StatusCode()), field, err.Error(), req)
 	}
 
 	// We send a report for all server errors
-	if err.HTTPStatus() == http.StatusInternalServerError {
+	if apperror.IsInternalServerError(err) {
 		if req.Reporter() != nil {
 			req.Reporter().ReportError(err)
 		}
@@ -98,9 +98,10 @@ func (res *Response) Error(e error, req HTTPRequest) {
 
 // errorJSON set the request content to the specified error message and HTTP code.
 // The error message should be valid json.
-func (res *Response) errorJSON(err apierror.Error) {
+func (res *Response) errorJSON(err apperror.Error) {
+	httpStatusCode := apperror.HTTPStatusCode(err.StatusCode())
 	if err.Error() == "" {
-		res.writer.WriteHeader(err.HTTPStatus())
+		res.writer.WriteHeader(httpStatusCode)
 		return
 	}
 	resError := &ResponseError{
@@ -108,11 +109,11 @@ func (res *Response) errorJSON(err apierror.Error) {
 		Field: err.Field(),
 	}
 
-	if err.HTTPStatus() == http.StatusInternalServerError {
+	if apperror.IsInternalServerError(err) {
 		resError.Error = "Something went wrong"
 		resError.Field = ""
 	}
-	res.renderJSON(err.HTTPStatus(), resError)
+	res.renderJSON(httpStatusCode, resError)
 }
 
 // setJSON set the response to JSON and with the specify HTTP code.

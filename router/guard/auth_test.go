@@ -1,12 +1,13 @@
 package guard_test
 
 import (
-	"net/http"
 	"testing"
 
-	"github.com/Nivl/go-types/ptrs"
+	"github.com/Nivl/go-rest-tools/types/apperror"
+
 	"github.com/Nivl/go-rest-tools/router/guard"
 	"github.com/Nivl/go-rest-tools/security/auth"
+	"github.com/Nivl/go-types/ptrs"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,12 +20,12 @@ func TestLoggedUserAccess(t *testing.T) {
 		{
 			"Anonymous user",
 			nil,
-			ptrs.NewInt(http.StatusUnauthorized),
+			ptrs.NewInt(apperror.Unauthenticated),
 		},
 		{
 			"Invalid user object",
 			&auth.User{},
-			ptrs.NewInt(http.StatusUnauthorized),
+			ptrs.NewInt(apperror.Unauthenticated),
 		},
 		{
 			"Logged In user",
@@ -42,7 +43,7 @@ func TestLoggedUserAccess(t *testing.T) {
 			if tc.expectedError == nil {
 				assert.Nil(t, err, "access should have not been denied: %s", err)
 			} else {
-				assert.Equal(t, *tc.expectedError, err.HTTPStatus(), "the auth failed with the wrong error code")
+				assert.Equal(t, *tc.expectedError, int(err.StatusCode()), "the auth failed with the wrong error code")
 			}
 		})
 	}
@@ -57,12 +58,12 @@ func TestAdminAccess(t *testing.T) {
 		{
 			"Anonymous user",
 			nil,
-			ptrs.NewInt(http.StatusUnauthorized),
+			ptrs.NewInt(apperror.Unauthenticated),
 		},
 		{
 			"Logged In user",
 			&auth.User{ID: "xxx"},
-			ptrs.NewInt(http.StatusForbidden),
+			ptrs.NewInt(apperror.PermissionDenied),
 		},
 		{
 			"Admin",
@@ -80,7 +81,7 @@ func TestAdminAccess(t *testing.T) {
 			if tc.expectedError == nil {
 				assert.Nil(t, err, "access should have not been denied: %s", err)
 			} else {
-				assert.Equal(t, *tc.expectedError, err.HTTPStatus(), "the auth failed with the wrong error code")
+				assert.Equal(t, *tc.expectedError, int(err.StatusCode()), "the auth failed with the wrong error code")
 			}
 		})
 	}
