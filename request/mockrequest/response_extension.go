@@ -1,4 +1,4 @@
-package mockrouter
+package mockrequest
 
 import (
 	matcher "github.com/Nivl/gomock-type-matcher"
@@ -6,7 +6,7 @@ import (
 )
 
 // CreatedSuccess is a helper that expects a valid Created response
-func (mr *MockHTTPResponseMockRecorder) CreatedSuccess(typ interface{}, runnable interface{}) *gomock.Call {
+func (mr *MockResponseMockRecorder) CreatedSuccess(typ interface{}, runnable interface{}) *gomock.Call {
 	createdCall := mr.Created(matcher.Interface(typ))
 	createdCall.Return(nil)
 	if runnable != nil {
@@ -16,7 +16,7 @@ func (mr *MockHTTPResponseMockRecorder) CreatedSuccess(typ interface{}, runnable
 }
 
 // OkSuccess is a helper that expects a valid Created response
-func (mr *MockHTTPResponseMockRecorder) OkSuccess(typ interface{}, runnable interface{}) *gomock.Call {
+func (mr *MockResponseMockRecorder) OkSuccess(typ interface{}, runnable interface{}) *gomock.Call {
 	createdCall := mr.Ok(matcher.Interface(typ))
 	createdCall.Return(nil)
 	if runnable != nil {

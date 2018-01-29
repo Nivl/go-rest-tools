@@ -10,6 +10,7 @@ import (
 
 	logger "github.com/Nivl/go-logger"
 	reporter "github.com/Nivl/go-reporter"
+	"github.com/Nivl/go-rest-tools/request"
 	"github.com/Nivl/go-rest-tools/security/auth"
 	"github.com/gorilla/mux"
 )
@@ -23,41 +24,12 @@ const (
 	ContentTypeForm = "application/x-www-form-urlencoded"
 )
 
-// HTTPRequest represents an http request
-//go:generate mockgen -destination mockrouter/request.go -package mockrouter github.com/Nivl/go-rest-tools/router HTTPRequest
-type HTTPRequest interface {
-	String() string
+var _ request.Request = (*HTTPRequest)(nil)
 
-	// Logger returns the logger used by the request
-	Logger() logger.Logger
-
-	// Reporter returns the reporter used by the request
-	Reporter() reporter.Reporter
-
-	// Signature returns the signature of the request
-	// Ex. POST /users
-	Signature() string
-
-	// ID returns the ID of the request
-	ID() string
-
-	// Response returns the response of the request
-	Response() HTTPResponse
-
-	// Params returns the params needed by the endpoint
-	Params() interface{}
-
-	// User returns the user that made the request
-	User() *auth.User
-
-	// Session returns the session used to make the request
-	Session() *auth.Session
-}
-
-// Request represent a client request
-type Request struct {
+// HTTPRequest represent a client request
+type HTTPRequest struct {
 	id           string
-	res          *Response
+	res          *HTTPResponse
 	http         *http.Request
 	params       interface{}
 	user         *auth.User
@@ -68,42 +40,42 @@ type Request struct {
 }
 
 // User returns the user that made the request
-func (req *Request) User() *auth.User {
+func (req *HTTPRequest) User() *auth.User {
 	return req.user
 }
 
 // Session returns the session used to make the request
-func (req *Request) Session() *auth.Session {
+func (req *HTTPRequest) Session() *auth.Session {
 	return req.session
 }
 
 // ID returns the ID of the request
-func (req *Request) ID() string {
+func (req *HTTPRequest) ID() string {
 	return req.id
 }
 
 // Signature returns the signature of the request
 // Ex. POST /users
-func (req *Request) Signature() string {
+func (req *HTTPRequest) Signature() string {
 	return fmt.Sprintf("%s %s", req.http.Method, req.http.RequestURI)
 }
 
 // Response returns the response of the request
-func (req *Request) Response() HTTPResponse {
+func (req *HTTPRequest) Response() request.Response {
 	return req.res
 }
 
 // Logger returns the logger used by the request
-func (req *Request) Logger() logger.Logger {
+func (req *HTTPRequest) Logger() logger.Logger {
 	return req.logger
 }
 
 // Reporter returns the reporter used by the request
-func (req *Request) Reporter() reporter.Reporter {
+func (req *HTTPRequest) Reporter() reporter.Reporter {
 	return req.reporter
 }
 
-func (req *Request) String() string {
+func (req *HTTPRequest) String() string {
 	user := "anonymous"
 	userID := "0"
 	if req.user != nil {
@@ -116,12 +88,12 @@ func (req *Request) String() string {
 }
 
 // Params returns the params needed by the endpoint
-func (req *Request) Params() interface{} {
+func (req *HTTPRequest) Params() interface{} {
 	return req.params
 }
 
 // muxVariables returns the URL variables associated to the request
-func (req *Request) muxVariables() url.Values {
+func (req *HTTPRequest) muxVariables() url.Values {
 	output := url.Values{}
 
 	if req == nil {
@@ -137,7 +109,7 @@ func (req *Request) muxVariables() url.Values {
 }
 
 // contentType returns the content type of the current request
-func (req *Request) contentType() string {
+func (req *HTTPRequest) contentType() string {
 	if req == nil {
 		return ""
 	}
@@ -154,7 +126,7 @@ func (req *Request) contentType() string {
 }
 
 // parseJSONBody parses and returns the body of the request
-func (req *Request) parseJSONBody() (url.Values, error) {
+func (req *HTTPRequest) parseJSONBody() (url.Values, error) {
 	output := url.Values{}
 
 	if req.contentType() != ContentTypeJSON {
@@ -174,7 +146,7 @@ func (req *Request) parseJSONBody() (url.Values, error) {
 }
 
 // httpParamsBySource returns a map of all http params ordered by their source (url, query, form, ...)
-func (req *Request) httpParamsBySource() (map[string]url.Values, error) {
+func (req *HTTPRequest) httpParamsBySource() (map[string]url.Values, error) {
 	params := map[string]url.Values{
 		"url":   req.muxVariables(),
 		"query": req.http.URL.Query(),
@@ -198,7 +170,7 @@ func (req *Request) httpParamsBySource() (map[string]url.Values, error) {
 }
 
 // handlePanic will recover a panic an log what happen
-func (req *Request) handlePanic() {
+func (req *HTTPRequest) handlePanic() {
 	if rec := recover(); rec != nil {
 		// The recovered panic may not be an error
 		var err error

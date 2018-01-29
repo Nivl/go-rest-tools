@@ -43,7 +43,7 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 			Mailer:  mailer,
 			Hasher:  apiDeps.Hasher(),
 		}
-		request := &Request{
+		request := &HTTPRequest{
 			id:       uuid.NewV4().String()[:8],
 			http:     req,
 			res:      NewResponse(resWriter, handlerDeps),

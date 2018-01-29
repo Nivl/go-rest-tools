@@ -1,9 +1,12 @@
 package router
 
-import "github.com/Nivl/go-rest-tools/router/guard"
+import (
+	"github.com/Nivl/go-rest-tools/request"
+	"github.com/Nivl/go-rest-tools/router/guard"
+)
 
 // RouteHandler is the function signature we nee
-type RouteHandler func(HTTPRequest, *Dependencies) error
+type RouteHandler func(request.Request, *Dependencies) error
 
 // Endpoint represents an HTTP endpoint
 type Endpoint struct {
