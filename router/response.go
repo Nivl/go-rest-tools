@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Nivl/go-rest-tools/request"
 	"github.com/Nivl/go-rest-tools/types/apperror"
 )
 
@@ -14,56 +15,44 @@ type ResponseError struct {
 	Field string `json:"field,omitempty"`
 }
 
-// HTTPResponse represents an http response
-//go:generate mockgen -destination mockrouter/response.go -package mockrouter github.com/Nivl/go-rest-tools/router HTTPResponse
-type HTTPResponse interface {
-	// Header returns the header map that will be sent by WriteHeader
-	Header() http.Header
+var _ request.Response = (*HTTPResponse)(nil)
 
-	// NoContent sends a http.StatusNoContent response
-	NoContent()
-
-	// Created sends a http.StatusCreated response with a JSON object attached
-	Created(obj interface{}) error
-	Ok(obj interface{}) error
-}
-
-// Response is a basic implementation of the HTTPResponse that uses a ResponseWriter
-type Response struct {
+// HTTPResponse is a basic implementation of the HTTPResponse that uses a ResponseWriter
+type HTTPResponse struct {
 	writer http.ResponseWriter
 	deps   *Dependencies
 }
 
 // NewResponse creates a new response
-func NewResponse(writer http.ResponseWriter, deps *Dependencies) *Response {
-	return &Response{
+func NewResponse(writer http.ResponseWriter, deps *Dependencies) *HTTPResponse {
+	return &HTTPResponse{
 		writer: writer,
 		deps:   deps,
 	}
 }
 
 // Header returns the header object of the response
-func (res *Response) Header() http.Header {
+func (res *HTTPResponse) Header() http.Header {
 	return res.writer.Header()
 }
 
 // NoContent sends a http.StatusNoContent response
-func (res *Response) NoContent() {
+func (res *HTTPResponse) NoContent() {
 	res.writer.WriteHeader(http.StatusNoContent)
 }
 
 // Created sends a http.StatusCreated response with a JSON object attached
-func (res *Response) Created(obj interface{}) error {
+func (res *HTTPResponse) Created(obj interface{}) error {
 	return res.renderJSON(http.StatusCreated, obj)
 }
 
 // Ok sends a http.StatusOK response with a JSON object attached
-func (res *Response) Ok(obj interface{}) error {
+func (res *HTTPResponse) Ok(obj interface{}) error {
 	return res.renderJSON(http.StatusOK, obj)
 }
 
 // renderJSON attaches a json object to the response
-func (res *Response) renderJSON(code int, obj interface{}) error {
+func (res *HTTPResponse) renderJSON(code int, obj interface{}) error {
 	res.setJSON(code)
 
 	if obj != nil {
@@ -75,7 +64,7 @@ func (res *Response) renderJSON(code int, obj interface{}) error {
 // Error sends an error to the client
 // If the error is an instance of HTTPError, the returned code will
 // match HTTPError.HTTPStatus(). It returns a 500 if no code has been set.
-func (res *Response) Error(e error, req HTTPRequest) {
+func (res *HTTPResponse) Error(e error, req request.Request) {
 	err := apperror.Convert(e)
 	res.errorJSON(err)
 
@@ -98,7 +87,7 @@ func (res *Response) Error(e error, req HTTPRequest) {
 
 // errorJSON set the request content to the specified error message and HTTP code.
 // The error message should be valid json.
-func (res *Response) errorJSON(err apperror.Error) {
+func (res *HTTPResponse) errorJSON(err apperror.Error) {
 	httpStatusCode := apperror.HTTPStatusCode(err.StatusCode())
 	if err.Error() == "" {
 		res.writer.WriteHeader(httpStatusCode)
@@ -117,7 +106,7 @@ func (res *Response) errorJSON(err apperror.Error) {
 }
 
 // setJSON set the response to JSON and with the specify HTTP code.
-func (res *Response) setJSON(code int) {
+func (res *HTTPResponse) setJSON(code int) {
 	res.writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 	res.writer.Header().Set("X-Content-Type-Options", "nosniff")
 	res.writer.WriteHeader(code)

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/Nivl/go-rest-tools/request/mockrequest"
 	"github.com/Nivl/go-rest-tools/router"
-	"github.com/Nivl/go-rest-tools/router/mockrouter"
 	"github.com/Nivl/go-rest-tools/types/apperror"
 	mockdb "github.com/Nivl/go-sqldb/implementations/mocksqldb"
 	"github.com/golang/mock/gomock"
@@ -54,7 +54,7 @@ func ConflictInsertTest(t *testing.T, p *ConflictTestParams) {
 	mockDB.QEXPECT().InsertError(p.StructConflicting, newConflictError(p.FieldConflicting))
 
 	// Mock the request & add expectations
-	req := mockrouter.NewMockHTTPRequest(mockCtrl)
+	req := mockrequest.NewMockRequest(mockCtrl)
 	req.EXPECT().Params().Return(p.HandlerParams)
 
 	// call the handler
@@ -79,7 +79,7 @@ func ConflictUpdateTest(t *testing.T, p *ConflictTestParams) {
 	mockDB.QEXPECT().UpdateError(p.StructConflicting, newConflictError(p.FieldConflicting))
 
 	// Mock the request & add expectations
-	req := mockrouter.NewMockHTTPRequest(mockCtrl)
+	req := mockrequest.NewMockRequest(mockCtrl)
 	req.EXPECT().Params().Return(p.HandlerParams)
 
 	// call the handler
