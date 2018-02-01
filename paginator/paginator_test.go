@@ -163,7 +163,7 @@ func TestHandlerParams(t *testing.T) {
 				require.Error(t, err, "Parse() should have failed")
 
 				e := apperror.Convert(err)
-				assert.Equal(t, apperror.InvalidArgument, int(e.StatusCode()), "It should have failed with a 400")
+				assert.Equal(t, apperror.InvalidArgument, e.StatusCode(), "It should have failed with a 400")
 				assert.Equal(t, tc.expectedErrorField, e.Field(), "Failed on the wrong field")
 				assert.True(t, strings.Contains(err.Error(), tc.expectedErrorMsg),
 					"the error \"%s\" should contain the string \"%s\"", err.Error(), tc.expectedErrorMsg)

@@ -11,7 +11,7 @@ type Code uint
 
 const (
 	// InvalidArgument is returned when a user provided data is invalid
-	InvalidArgument = 100
+	InvalidArgument Code = 100
 
 	// NotFound indicates a requested entity was not found
 	NotFound = 101
