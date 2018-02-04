@@ -20,18 +20,10 @@
 #  name = "github.com/x/y"
 #  version = "2.4.0"
 
-
-[[constraint]]
-  name = "cloud.google.com/go"
-  version = "0.10.0"
-
-[[constraint]]
-  name = "github.com/DATA-DOG/go-sqlmock"
-  version = "1.2.0"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/bsphere/le_go"
+[prune]
+  non-go = true
+  go-tests = true
+  unused-packages = true
 
 [[constraint]]
   branch = "master"
@@ -43,10 +35,6 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/jmoiron/sqlx"
-
-[[constraint]]
-  branch = "master"
   name = "github.com/lib/pq"
 
 [[constraint]]
@@ -54,17 +42,6 @@
   version = "1.1.0"
 
 [[constraint]]
-  name = "github.com/sendgrid/sendgrid-go"
-  version = "3.4.1"
-
-[[constraint]]
   name = "github.com/stretchr/testify"
   version = "1.1.4"
 
-[[constraint]]
-  branch = "master"
-  name = "golang.org/x/crypto"
-
-[[constraint]]
-  branch = "master"
-  name = "google.golang.org/api"
