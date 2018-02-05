@@ -20,7 +20,7 @@ type Wrapper struct {
 }
 
 // New creates a new Wrapper
-func New(deps dependencies.Dependencies, migrationFolder string) (*Wrapper, error) {
+func New(deps dependencies.Dependencies) (*Wrapper, error) {
 	it := &Wrapper{
 		Deps: deps,
 
