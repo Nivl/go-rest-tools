@@ -8,7 +8,6 @@ import (
 	db "github.com/Nivl/go-sqldb"
 	sqlx "github.com/Nivl/go-sqldb/implementations/sqlxdb"
 	"github.com/pkg/errors"
-	"github.com/pressly/goose"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -42,7 +41,7 @@ func New(deps dependencies.Dependencies, migrationFolder string) (*Wrapper, erro
 	}
 
 	// We create a new Database to avoid races between tests
-	stmt := fmt.Sprintf(`CREATE DATABASE "%s";`, it.tmpDBName)
+	stmt := fmt.Sprintf(`CREATE DATABASE "%s" TEMPLATE "%s";`, it.tmpDBName, masterDbName)
 	if _, err := it.masterDB.Exec(stmt); err != nil {
 		return nil, errors.Wrap(err, "failed creating tmp database")
 	}
@@ -58,11 +57,6 @@ func New(deps dependencies.Dependencies, migrationFolder string) (*Wrapper, erro
 		return nil, errors.Wrap(err, "could not connect to the tmp table")
 	}
 	it.Deps.SetDB(tmpDB)
-
-	// We apply the migration to the newly created database
-	if err := goose.Up(it.Deps.DB().SQL(), migrationFolder); err != nil {
-		return nil, errors.Wrap(err, "could not execute the migrations")
-	}
 
 	return it, nil
 }
