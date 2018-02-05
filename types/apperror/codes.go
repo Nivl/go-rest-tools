@@ -10,8 +10,12 @@ import (
 type Code uint
 
 const (
+	// NoError is a "zero value" representation of an error.
+	// Useful in tests
+	NoError Code = 0
+
 	// InvalidArgument is returned when a user provided data is invalid
-	InvalidArgument Code = 100
+	InvalidArgument = 100
 
 	// NotFound indicates a requested entity was not found
 	NotFound = 101
