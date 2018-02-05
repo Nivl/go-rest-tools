@@ -15,25 +15,25 @@ const (
 	NoError Code = 0
 
 	// InvalidArgument is returned when a user provided data is invalid
-	InvalidArgument = 100
+	InvalidArgument Code = 100
 
 	// NotFound indicates a requested entity was not found
-	NotFound = 101
+	NotFound Code = 101
 
 	// AlreadyExists indicates an attempt to create an entity failed because
 	// it already exists
-	AlreadyExists = 102
+	AlreadyExists Code = 102
 
 	// Unauthenticated indicates the request does not have a valid
 	// authentication credentials
-	Unauthenticated = 103
+	Unauthenticated Code = 103
 
 	// PermissionDenied indicates the requester does not have the right
 	// permissions to execute the request
-	PermissionDenied = 104
+	PermissionDenied Code = 104
 
 	// Internal indicates something the service is internally broken
-	Internal = 1000
+	Internal Code = 1000
 )
 
 var statusText = map[Code]string{

@@ -20,12 +20,12 @@ func TestLoggedUserAccess(t *testing.T) {
 		{
 			"Anonymous user",
 			nil,
-			ptrs.NewInt(apperror.Unauthenticated),
+			ptrs.NewInt(int(apperror.Unauthenticated)),
 		},
 		{
 			"Invalid user object",
 			&auth.User{},
-			ptrs.NewInt(apperror.Unauthenticated),
+			ptrs.NewInt(int(apperror.Unauthenticated)),
 		},
 		{
 			"Logged In user",
@@ -58,12 +58,12 @@ func TestAdminAccess(t *testing.T) {
 		{
 			"Anonymous user",
 			nil,
-			ptrs.NewInt(apperror.Unauthenticated),
+			ptrs.NewInt(int(apperror.Unauthenticated)),
 		},
 		{
 			"Logged In user",
 			&auth.User{ID: "xxx"},
-			ptrs.NewInt(apperror.PermissionDenied),
+			ptrs.NewInt(int(apperror.PermissionDenied)),
 		},
 		{
 			"Admin",
