@@ -5,6 +5,7 @@ import (
 
 	"github.com/Nivl/go-rest-tools/security/auth"
 	db "github.com/Nivl/go-sqldb"
+	uuid "github.com/satori/go.uuid"
 )
 
 // NewAuth creates a non-persisted user and their session
@@ -38,6 +39,7 @@ func NewPersistedAdminAuth(t *testing.T, q db.Queryable) (*auth.User, *auth.Sess
 // NewSession creates a non-persisted session for the given user
 func NewSession(user *auth.User) *auth.Session {
 	return &auth.Session{
+		ID:     uuid.NewV4().String(),
 		UserID: user.ID,
 	}
 }
