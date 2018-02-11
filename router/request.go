@@ -44,9 +44,19 @@ func (req *HTTPRequest) User() *auth.User {
 	return req.user
 }
 
+// SetUser sets the user object that made the request
+func (req *HTTPRequest) SetUser(u *auth.User) {
+	req.user = u
+}
+
 // Session returns the session used to make the request
 func (req *HTTPRequest) Session() *auth.Session {
 	return req.session
+}
+
+// SetSession sets the session object that was used to make the request
+func (req *HTTPRequest) SetSession(s *auth.Session) {
+	req.session = s
 }
 
 // ID returns the ID of the request

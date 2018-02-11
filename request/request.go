@@ -33,6 +33,12 @@ type Request interface {
 	// User returns the user that made the request
 	User() *auth.User
 
+	// SetUser sets the user object that made the request
+	SetUser(*auth.User)
+
 	// Session returns the session used to make the request
 	Session() *auth.Session
+
+	// SetSession sets the session object that was used to make the request
+	SetSession(*auth.Session)
 }

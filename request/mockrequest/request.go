@@ -109,6 +109,26 @@ func (mr *MockRequestMockRecorder) Session() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Session", reflect.TypeOf((*MockRequest)(nil).Session))
 }
 
+// SetSession mocks base method
+func (m *MockRequest) SetSession(arg0 *auth.Session) {
+	m.ctrl.Call(m, "SetSession", arg0)
+}
+
+// SetSession indicates an expected call of SetSession
+func (mr *MockRequestMockRecorder) SetSession(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetSession", reflect.TypeOf((*MockRequest)(nil).SetSession), arg0)
+}
+
+// SetUser mocks base method
+func (m *MockRequest) SetUser(arg0 *auth.User) {
+	m.ctrl.Call(m, "SetUser", arg0)
+}
+
+// SetUser indicates an expected call of SetUser
+func (mr *MockRequestMockRecorder) SetUser(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetUser", reflect.TypeOf((*MockRequest)(nil).SetUser), arg0)
+}
+
 // Signature mocks base method
 func (m *MockRequest) Signature() string {
 	ret := m.ctrl.Call(m, "Signature")
