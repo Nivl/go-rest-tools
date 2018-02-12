@@ -3,24 +3,77 @@ package integration
 import (
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/Nivl/go-rest-tools/dependencies"
 	db "github.com/Nivl/go-sqldb"
 	sqlx "github.com/Nivl/go-sqldb/implementations/sqlxdb"
 	"github.com/pkg/errors"
+	"github.com/pressly/goose"
 	uuid "github.com/satori/go.uuid"
 )
 
-// Wrapper is an helper to simplify the encapsulation of integration
-// tests
-type Wrapper struct {
-	Deps      dependencies.Dependencies
-	masterDB  db.Connection
-	tmpDBName string
+var (
+	// dbLock is used to prevent concurent create/update on the temporary table
+	dbLock sync.Mutex
+
+	// templateDBCreated is used to check if the template database has already
+	// been created
+	templateDBCreated = false
+
+	// masterDbName holds the name of the default database
+	masterDbName = ""
+)
+
+func createTemplateDatabase(con db.Connection, templateName, migrationFolder string) error {
+	if templateDBCreated {
+		return nil
+	}
+
+	// We get the current database name
+	if err := con.Get(&masterDbName, "SELECT current_database();"); err != nil {
+		return fmt.Errorf("failed getting master database name: %s", err.Error())
+	}
+
+	// We drop whatever exists
+	stmt := fmt.Sprintf(`DROP DATABASE IF EXISTS "%s";`, templateName)
+	if _, err := con.Exec(stmt); err != nil {
+		return err
+	}
+
+	// We create the template
+	stmt = fmt.Sprintf(`CREATE DATABASE "%s";`, templateName)
+	if _, err := con.Exec(stmt); err != nil {
+		return err
+	}
+
+	// We now need to connect to this database to create all the table. We
+	// get the DSN of the current connection and swap the table name by
+	// the new one
+	masterDBString := fmt.Sprintf("dbname=%s", masterDbName)
+	tplDBString := fmt.Sprintf("dbname=%s", templateName)
+	tplDBDSN := strings.Replace(con.DSN(), masterDBString, tplDBString, -1)
+	tplDB, err := sqlx.New(tplDBDSN)
+	if err != nil {
+		return fmt.Errorf("could not connect to the tmp table: %s", err.Error())
+	}
+	defer tplDB.Close()
+
+	// We apply the migration to the newly created database
+	return goose.Up(tplDB.SQL(), migrationFolder)
 }
 
 // New creates a new Wrapper
-func New(deps dependencies.Dependencies) (*Wrapper, error) {
+func New(deps dependencies.Dependencies, migrationFolder string) (*Wrapper, error) {
+	dbLock.Lock()
+
+	templateName := "test_template"
+	if err := createTemplateDatabase(deps.DB(), templateName, migrationFolder); err != nil {
+		dbLock.Unlock()
+		return nil, err
+	}
+	dbLock.Unlock()
+
 	it := &Wrapper{
 		Deps: deps,
 
@@ -34,14 +87,8 @@ func New(deps dependencies.Dependencies) (*Wrapper, error) {
 		tmpDBName: strings.Replace(uuid.NewV4().String(), "-", "", -1),
 	}
 
-	// We get the current database name
-	masterDbName := ""
-	if err := it.masterDB.Get(&masterDbName, "SELECT current_database();"); err != nil {
-		return nil, errors.Wrap(err, "failed getting master database name")
-	}
-
 	// We create a new Database to avoid races between tests
-	stmt := fmt.Sprintf(`CREATE DATABASE "%s" TEMPLATE "%s";`, it.tmpDBName, masterDbName)
+	stmt := fmt.Sprintf(`CREATE DATABASE "%s" TEMPLATE "%s";`, it.tmpDBName, templateName)
 	if _, err := it.masterDB.Exec(stmt); err != nil {
 		return nil, errors.Wrap(err, "failed creating tmp database")
 	}
@@ -59,6 +106,14 @@ func New(deps dependencies.Dependencies) (*Wrapper, error) {
 	it.Deps.SetDB(tmpDB)
 
 	return it, nil
+}
+
+// Wrapper is an helper to simplify the encapsulation of integration
+// tests
+type Wrapper struct {
+	Deps      dependencies.Dependencies
+	masterDB  db.Connection
+	tmpDBName string
 }
 
 // Close cleans up the tests by deleting the database
