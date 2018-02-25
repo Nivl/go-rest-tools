@@ -60,7 +60,12 @@ func createTemplateDatabase(con db.Connection, templateName, migrationFolder str
 	defer tplDB.Close()
 
 	// We apply the migration to the newly created database
-	return goose.Up(tplDB.SQL(), migrationFolder)
+	if err := goose.Up(tplDB.SQL(), migrationFolder); err != nil {
+		return err
+	}
+
+	templateDBCreated = true
+	return nil
 }
 
 // New creates a new Wrapper
