@@ -31,7 +31,7 @@ func (s *Session) doCreate(q sqldb.Queryable) error {
 		s.CreatedAt = datetime.Now()
 	}
 
-	stmt := "INSERT INTO sessions (id, created_at, updated_at, deleted_at, user_id) VALUES (:id, :created_at, :updated_at, :deleted_at, :user_id)"
+	stmt := "INSERT INTO user_sessions (id, created_at, updated_at, deleted_at, user_id) VALUES (:id, :created_at, :updated_at, :deleted_at, :user_id)"
 	_, err := q.NamedExec(stmt, s)
 
   return apperror.NewFromSQL(err)
@@ -47,7 +47,7 @@ func (s *Session) Delete(q sqldb.Queryable) error {
 		return errors.New("session has not been saved")
 	}
 
-	stmt := "DELETE FROM sessions WHERE id=$1"
+	stmt := "DELETE FROM user_sessions WHERE id=$1"
 	_, err := q.Exec(stmt, s.ID)
 
 	return err

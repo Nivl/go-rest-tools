@@ -9,7 +9,7 @@ import (
 )
 
 // Session is a structure representing a session that can be saved in the database
-//go:generate api-cli generate model Session -t sessions -e Save,Create,Update,doUpdate,JoinSQL,Get,GetAny,Exists --single=false
+//go:generate api-cli generate model Session -t user_sessions -e Save,Create,Update,doUpdate,JoinSQL,Get,GetAny,Exists --single=false
 type Session struct {
 	ID        string             `db:"id"`
 	CreatedAt *datetime.DateTime `db:"created_at"`
@@ -36,7 +36,7 @@ func (s *Session) Exists(q db.Queryable) (bool, error) {
 
 	var count int
 	stmt := `SELECT count(1)
-					FROM sessions
+					FROM user_sessions
 					WHERE deleted_at IS NULL
 						AND id = $1
 						AND user_id = $2`
