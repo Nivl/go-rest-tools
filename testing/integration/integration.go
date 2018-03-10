@@ -2,8 +2,10 @@ package integration
 
 import (
 	"fmt"
+	"runtime"
 	"strings"
 	"sync"
+	"testing"
 
 	"github.com/Nivl/go-rest-tools/dependencies"
 	db "github.com/Nivl/go-sqldb"
@@ -133,9 +135,13 @@ func (it *Wrapper) Close() error {
 	return it.masterDB.Close()
 }
 
-// RecoverPanic prevents a panic from not calling the defer in the othr goroutines
-func (it *Wrapper) RecoverPanic() {
-	recover()
+// RecoverPanic prevents a panic from not calling the defer in the other goroutines
+func (it *Wrapper) RecoverPanic(t *testing.T) {
+	if rec := recover(); rec != nil {
+		buf := make([]byte, 1<<16)
+		stackSize := runtime.Stack(buf, false)
+		t.Fatalf("%v\n%s", rec, string(buf[0:stackSize]))
+	}
 }
 
 // CloseOnPanic cleans up the tests and re-panic
