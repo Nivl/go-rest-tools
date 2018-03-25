@@ -74,7 +74,8 @@ func createTemplateDatabase(con db.Connection, templateName, migrationFolder str
 	return nil
 }
 
-// New creates a new Wrapper
+// New creates a new database, sets it as the current database and returns
+// a Wrapper object used to handle panics and clean up databases
 func New(manager dbManager, migrationFolder string) (*Wrapper, error) {
 	dbLock.Lock()
 
