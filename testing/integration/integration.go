@@ -16,7 +16,7 @@ import (
 
 type dbManager interface {
 	DB() db.Connection
-	SetDB(db.Connection) error
+	SetDB(db.Connection)
 }
 
 var (
