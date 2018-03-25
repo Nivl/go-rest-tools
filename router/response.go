@@ -20,14 +20,12 @@ var _ request.Response = (*HTTPResponse)(nil)
 // HTTPResponse is a basic implementation of the HTTPResponse that uses a ResponseWriter
 type HTTPResponse struct {
 	writer http.ResponseWriter
-	deps   *Dependencies
 }
 
 // NewResponse creates a new response
-func NewResponse(writer http.ResponseWriter, deps *Dependencies) *HTTPResponse {
+func NewResponse(writer http.ResponseWriter) *HTTPResponse {
 	return &HTTPResponse{
 		writer: writer,
-		deps:   deps,
 	}
 }
 

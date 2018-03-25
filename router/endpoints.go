@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	reporter "github.com/Nivl/go-reporter"
-	"github.com/Nivl/go-rest-tools/dependencies"
 	"github.com/Nivl/go-rest-tools/network/http/basicauth"
 	"github.com/Nivl/go-rest-tools/security/auth"
 	"github.com/Nivl/go-rest-tools/types/apperror"
@@ -18,35 +17,26 @@ import (
 type Endpoints []*Endpoint
 
 // Activate adds the endpoints to the router
-func (endpoints Endpoints) Activate(router *mux.Router, apiDeps dependencies.Dependencies) {
+func (endpoints Endpoints) Activate(router *mux.Router, deps Dependencies) {
 	for _, endpoint := range endpoints {
 		router.
 			Methods(endpoint.Verb).
 			Path(endpoint.Path).
-			Handler(Handler(endpoint, apiDeps))
+			Handler(Handler(endpoint, deps))
 	}
 }
 
 // Handler makes it possible to use a RouteHandler where a http.Handler is required
-func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
+func Handler(e *Endpoint, deps Dependencies) http.Handler {
 	HTTPHandler := func(resWriter http.ResponseWriter, req *http.Request) {
 		// the following errors will be checked later on. we first init
 		// the request, then we will use that request to return (and log) the error
-		fileStorage, storageErr := apiDeps.NewFileStorage(req.Context())
-		rep, reporterErr := apiDeps.NewReporter()
-		mailer, mailerErr := apiDeps.Mailer()
-		logger, loggerErr := apiDeps.NewLogger()
-
-		handlerDeps := &Dependencies{
-			DB:      apiDeps.DB(),
-			Storage: fileStorage,
-			Mailer:  mailer,
-			Hasher:  apiDeps.Hasher(),
-		}
+		logger, loggerErr := deps.NewLogger()
+		rep, reporterErr := deps.NewReporter()
 		request := &HTTPRequest{
 			id:       uuid.NewV4().String()[:8],
 			http:     req,
-			res:      NewResponse(resWriter, handlerDeps),
+			res:      NewResponse(resWriter),
 			logger:   logger,
 			reporter: rep,
 		}
@@ -64,24 +54,10 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 			request.res.Error(reporterErr, request)
 			return
 		}
-		if storageErr != nil {
-			request.res.Error(storageErr, request)
-			return
-		}
-		if mailerErr != nil {
-			request.res.Error(mailerErr, request)
-			return
-		}
 
 		// We setup all the basic tag in the reporter
 		request.Reporter().AddTag("Req ID", request.id)
 		request.Reporter().AddTag("Endpoint", e.Path)
-
-		// if we failed getting the dependencies, we return a 500
-		if storageErr != nil {
-			request.res.Error(storageErr, request)
-			return
-		}
 
 		// We fetch the user session if a token is provided
 		headers, found := req.Header["Authorization"]
@@ -95,7 +71,7 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 			session := &auth.Session{ID: sessionID, UserID: userID}
 
 			if session.ID != "" && session.UserID != "" {
-				exists, err := session.Exists(handlerDeps.DB)
+				exists, err := session.Exists(deps.DB())
 				if err != nil {
 					request.res.Error(err, request)
 					return
@@ -106,7 +82,7 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 				}
 				request.session = session
 				// we get the user and make sure it (still) exists
-				request.user, err = auth.GetUserByID(handlerDeps.DB, session.UserID)
+				request.user, err = auth.GetUserByID(deps.DB(), session.UserID)
 				if err != nil {
 					if apperror.IsNotFound(err) {
 						err = apperror.NewNotFoundField("Authorization", "session not found")
@@ -147,7 +123,7 @@ func Handler(e *Endpoint, apiDeps dependencies.Dependencies) http.Handler {
 		}
 
 		// Execute the actual route handler
-		err := e.Handler(request, handlerDeps)
+		err := e.Handler(request)
 		if err != nil {
 			request.res.Error(err, request)
 		}
