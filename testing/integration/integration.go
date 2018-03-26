@@ -108,6 +108,7 @@ func New(manager dbManager, migrationFolder string) (*Wrapper, error) {
 		return nil, errors.Wrap(err, "could not connect to the tmp table")
 	}
 	manager.SetDB(tmpDB)
+	it.newDb = manager.DB()
 
 	return it, nil
 }
@@ -115,7 +116,7 @@ func New(manager dbManager, migrationFolder string) (*Wrapper, error) {
 // Wrapper is an helper to simplify the encapsulation of integration
 // tests
 type Wrapper struct {
-	newDb dbManager
+	newDb db.Connection
 	// masterDB contains a DB connection to the default database.
 	// this is needed because postgres won't allow us to drop the
 	// current database, so we use the default one to drop the
@@ -127,7 +128,7 @@ type Wrapper struct {
 
 // Close cleans up the tests by deleting the database
 func (it *Wrapper) Close() error {
-	if err := it.newDb.DB().Close(); err != nil {
+	if err := it.newDb.Close(); err != nil {
 		return err
 	}
 	stmt := fmt.Sprintf(`DROP DATABASE "%s";`, it.tmpDBName)
