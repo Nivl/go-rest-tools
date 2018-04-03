@@ -7,13 +7,17 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/Nivl/go-rest-tools/dependencies"
 	db "github.com/Nivl/go-sqldb"
 	sqlx "github.com/Nivl/go-sqldb/implementations/sqlxdb"
 	"github.com/pkg/errors"
 	"github.com/pressly/goose"
 	uuid "github.com/satori/go.uuid"
 )
+
+type dbManager interface {
+	DB() db.Connection
+	SetDB(db.Connection)
+}
 
 var (
 	// dbLock is used to prevent concurent create/update on the temporary table
@@ -70,27 +74,20 @@ func createTemplateDatabase(con db.Connection, templateName, migrationFolder str
 	return nil
 }
 
-// New creates a new Wrapper
-func New(deps dependencies.Dependencies, migrationFolder string) (*Wrapper, error) {
+// New creates a new database, sets it as the current database and returns
+// a Wrapper object used to handle panics and clean up databases
+func New(manager dbManager, migrationFolder string) (*Wrapper, error) {
 	dbLock.Lock()
 
 	templateName := "test_template"
-	if err := createTemplateDatabase(deps.DB(), templateName, migrationFolder); err != nil {
+	if err := createTemplateDatabase(manager.DB(), templateName, migrationFolder); err != nil {
 		dbLock.Unlock()
 		return nil, err
 	}
 	dbLock.Unlock()
 
 	it := &Wrapper{
-		Deps: deps,
-
-		// masterDB contains a DB connection to the default database.
-		// this is needed because postgres won't allow us to drop the
-		// current database, so we use the default one to drop the
-		// temporary one
-		masterDB: deps.DB(),
-
-		// for the new table name we use a uuid without "-"
+		masterDB:  manager.DB(),
 		tmpDBName: strings.Replace(uuid.NewV4().String(), "-", "", -1),
 	}
 
@@ -110,7 +107,8 @@ func New(deps dependencies.Dependencies, migrationFolder string) (*Wrapper, erro
 	if err != nil {
 		return nil, errors.Wrap(err, "could not connect to the tmp table")
 	}
-	it.Deps.SetDB(tmpDB)
+	manager.SetDB(tmpDB)
+	it.newDb = manager.DB()
 
 	return it, nil
 }
@@ -118,14 +116,19 @@ func New(deps dependencies.Dependencies, migrationFolder string) (*Wrapper, erro
 // Wrapper is an helper to simplify the encapsulation of integration
 // tests
 type Wrapper struct {
-	Deps      dependencies.Dependencies
-	masterDB  db.Connection
+	newDb db.Connection
+	// masterDB contains a DB connection to the default database.
+	// this is needed because postgres won't allow us to drop the
+	// current database, so we use the default one to drop the
+	// temporary one
+	masterDB db.Connection
+	// for the new table name we use a uuid without "-"
 	tmpDBName string
 }
 
 // Close cleans up the tests by deleting the database
 func (it *Wrapper) Close() error {
-	if err := it.Deps.DB().Close(); err != nil {
+	if err := it.newDb.Close(); err != nil {
 		return err
 	}
 	stmt := fmt.Sprintf(`DROP DATABASE "%s";`, it.tmpDBName)

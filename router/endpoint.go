@@ -6,7 +6,7 @@ import (
 )
 
 // RouteHandler is the function signature we nee
-type RouteHandler func(request.Request, *Dependencies) error
+type RouteHandler func(request.Request) error
 
 // Endpoint represents an HTTP endpoint
 type Endpoint struct {
