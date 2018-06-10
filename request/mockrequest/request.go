@@ -5,6 +5,7 @@
 package mockrequest
 
 import (
+	context "context"
 	reflect "reflect"
 
 	go_logger "github.com/Nivl/go-logger"
@@ -35,6 +36,18 @@ func NewMockRequest(ctrl *gomock.Controller) *MockRequest {
 // EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockRequest) EXPECT() *MockRequestMockRecorder {
 	return m.recorder
+}
+
+// Context mocks base method
+func (m *MockRequest) Context() context.Context {
+	ret := m.ctrl.Call(m, "Context")
+	ret0, _ := ret[0].(context.Context)
+	return ret0
+}
+
+// Context indicates an expected call of Context
+func (mr *MockRequestMockRecorder) Context() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Context", reflect.TypeOf((*MockRequest)(nil).Context))
 }
 
 // ID mocks base method

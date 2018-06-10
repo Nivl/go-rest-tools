@@ -1,6 +1,8 @@
 package request
 
 import (
+	"context"
+
 	logger "github.com/Nivl/go-logger"
 	reporter "github.com/Nivl/go-reporter"
 	"github.com/Nivl/go-rest-tools/security/auth"
@@ -41,4 +43,7 @@ type Request interface {
 
 	// SetSession sets the session object that was used to make the request
 	SetSession(*auth.Session)
+
+	// Context returns the context of the request
+	Context() context.Context
 }

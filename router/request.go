@@ -1,6 +1,7 @@
 package router
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -37,6 +38,11 @@ type HTTPRequest struct {
 	_contentType string
 	logger       logger.Logger
 	reporter     reporter.Reporter
+}
+
+// Context returns the context of the request
+func (req *HTTPRequest) Context() context.Context {
+	return req.http.Context()
 }
 
 // User returns the user that made the request
