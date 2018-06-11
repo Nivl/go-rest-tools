@@ -1,3 +1,4 @@
+// Package ptrs contains methods to simplify a few pointer operations
 package ptrs
 
 // NewBool takes a bool and returns a pointer to a new bool of the same value

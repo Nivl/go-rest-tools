@@ -1,3 +1,5 @@
+// Package filetype contains methods and structs to deal with files (mime,
+// validation, sha, etc.)
 package filetype
 
 import (

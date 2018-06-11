@@ -1,3 +1,4 @@
+// Package datetime contains methods and structs to deal with ISO8601 encoded UTC datetime
 package datetime
 
 import (

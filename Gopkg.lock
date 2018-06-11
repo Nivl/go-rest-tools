@@ -25,7 +25,7 @@
     "formfile/testformfile",
     "perror"
   ]
-  revision = "7c179aab001bbf2d56acf2626cf3942cb9ba13fb"
+  revision = "227cccb10ba9e17f162f9ac5b485be0446c9e5e7"
 
 [[projects]]
   branch = "master"
@@ -53,7 +53,7 @@
     "slices",
     "strngs"
   ]
-  revision = "1091b3fe100d079327119ae5b22708afc5049bfe"
+  revision = "faa67689c52a0a6ae2b86080f39a05f639a81743"
 
 [[projects]]
   branch = "master"
