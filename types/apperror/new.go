@@ -74,7 +74,7 @@ func NewBadRequest(field string, message string, args ...interface{}) *AppError 
 
 // NewInvalidParam is an alias for NewBadRequest
 func NewInvalidParam(field string, message string, args ...interface{}) *AppError {
-	return NewBadRequest(field, message, args)
+	return NewBadRequest(field, message, args...)
 }
 
 // NewConflict returns an error caused by a conflict with the current state

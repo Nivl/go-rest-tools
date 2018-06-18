@@ -155,7 +155,14 @@ func (req *HTTPRequest) parseJSONBody() (url.Values, error) {
 	}
 
 	for k, v := range vars {
-		output.Set(k, fmt.Sprintf("%v", v))
+		switch array := v.(type) {
+		case []interface{}:
+			for _, elem := range array {
+				output.Add(k, fmt.Sprintf("%v", elem))
+			}
+		default:
+			output.Set(k, fmt.Sprintf("%v", v))
+		}
 	}
 
 	return output, nil
