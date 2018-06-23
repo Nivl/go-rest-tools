@@ -8,9 +8,9 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/Nivl/go-rest-tools/router"
-	"github.com/Nivl/go-params/formfile"
 	"github.com/Nivl/go-params"
+	"github.com/Nivl/go-params/formfile"
+	"github.com/Nivl/go-rest-tools/router"
 	"github.com/gorilla/mux"
 )
 
@@ -24,8 +24,8 @@ type RequestInfo struct {
 	Router *mux.Router
 
 	urlParams   map[string]string
-	bodyParams  map[string]string
-	queryParams map[string]string
+	bodyParams  map[string]interface{} // can be string or []string
+	queryParams map[string]interface{} // can be string or []string
 	fileParams  map[string]*formfile.FormFile
 }
 
@@ -33,8 +33,8 @@ type RequestInfo struct {
 // urlParams, bodyParams, and queryParams
 func (ri *RequestInfo) ParseParams() {
 	ri.urlParams = map[string]string{}
-	ri.bodyParams = map[string]string{}
-	ri.queryParams = map[string]string{}
+	ri.bodyParams = map[string]interface{}{}
+	ri.queryParams = map[string]interface{}{}
 
 	if ri.Params == nil {
 		return
@@ -49,9 +49,15 @@ func (ri *RequestInfo) ParseParams() {
 	}
 	for k, v := range sources["form"] {
 		ri.bodyParams[k] = v[0]
+		if len(v) > 1 {
+			ri.bodyParams[k] = v
+		}
 	}
 	for k, v := range sources["query"] {
 		ri.queryParams[k] = v[0]
+		if len(v) > 1 {
+			ri.queryParams[k] = v
+		}
 	}
 }
 
@@ -67,7 +73,11 @@ func (ri *RequestInfo) URL() string {
 // PopulateQuery populate the query string of a request
 func (ri *RequestInfo) PopulateQuery(qs url.Values) {
 	for key, value := range ri.queryParams {
-		qs.Add(key, value)
+		if slice, isSlice := value.([]string); isSlice {
+			qs[key] = slice
+		} else {
+			qs.Add(key, value.(string))
+		}
 	}
 }
 
@@ -116,8 +126,16 @@ func (ri *RequestInfo) BodyMultipart() (mime string, body io.Reader, err error) 
 
 	// We attach any other form params
 	for name, value := range ri.bodyParams {
-		if err = writer.WriteField(name, value); err != nil {
-			return "", nil, err
+		if slice, isSlice := value.([]string); isSlice {
+			for _, elem := range slice {
+				if err = writer.WriteField(name, elem); err != nil {
+					return "", nil, err
+				}
+			}
+		} else {
+			if err = writer.WriteField(name, value.(string)); err != nil {
+				return "", nil, err
+			}
 		}
 	}
 

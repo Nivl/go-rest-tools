@@ -45,11 +45,13 @@ func TestInfoURLParams(t *testing.T) {
 
 func TestInfoQueryParams(t *testing.T) {
 	p := struct {
-		Page    int `from:"query" json:"page"`
-		PerPage int `from:"query" json:"per_page"`
+		Page    int   `from:"query" json:"page"`
+		PerPage int   `from:"query" json:"per_page"`
+		Slice   []int `from:"query" json:"slice"`
 	}{
 		Page:    1,
 		PerPage: 30,
+		Slice:   []int{1, 2, 3},
 	}
 
 	ri := &httptests.RequestInfo{
@@ -67,17 +69,20 @@ func TestInfoQueryParams(t *testing.T) {
 
 	assert.Equal(t, strconv.Itoa(p.Page), qs.Get("page"))
 	assert.Equal(t, strconv.Itoa(p.PerPage), qs.Get("per_page"))
+	require.Len(t, qs["slice"], len(p.Slice), "wrong number of slice parsed")
 }
 
 func TestInfoJSONBody(t *testing.T) {
 	type structTest struct {
-		Name  string `from:"form" json:"name"`
-		Email string `from:"form" json:"email"`
+		Name  string   `from:"form" json:"name"`
+		Email string   `from:"form" json:"email"`
+		Slice []string `from:"form" json:"slice"`
 	}
 
 	p := &structTest{
 		Name:  "User Name",
 		Email: "email.domain.tld",
+		Slice: []string{"1", "2", "3"},
 	}
 
 	ri := &httptests.RequestInfo{
@@ -99,6 +104,7 @@ func TestInfoJSONBody(t *testing.T) {
 
 	assert.Equal(t, p.Name, pld.Name)
 	assert.Equal(t, p.Email, pld.Email)
+	assert.Equal(t, p.Slice, pld.Slice)
 }
 
 func TestInfoMultipartBody(t *testing.T) {
