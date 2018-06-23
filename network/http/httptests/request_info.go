@@ -90,6 +90,9 @@ func (ri *RequestInfo) Body() (mime string, body io.Reader, err error) {
 }
 
 // BodyJSON returns the body of the request encoded in JSON
+// FIXME(melvin): because the data are from a map of string, all the
+// 		JSON data will also be string. There's no way to use the output
+// 		to recreate a new JSON object containing non string value
 func (ri *RequestInfo) BodyJSON() (mime string, body io.Reader, err error) {
 	mime = "application/json; charset=utf-8"
 	body = bytes.NewBufferString("")
