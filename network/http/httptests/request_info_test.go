@@ -45,13 +45,17 @@ func TestInfoURLParams(t *testing.T) {
 
 func TestInfoQueryParams(t *testing.T) {
 	p := struct {
-		Page    int   `from:"query" json:"page"`
-		PerPage int   `from:"query" json:"per_page"`
-		Slice   []int `from:"query" json:"slice"`
+		Page       int   `from:"query" json:"page"`
+		PerPage    int   `from:"query" json:"per_page"`
+		Slice      []int `from:"query" json:"slice"`
+		EmptySlice []int `from:"query" json:"empty_slice"`
+		NilSlice   []int `from:"query" json:"nil_slice"`
 	}{
-		Page:    1,
-		PerPage: 30,
-		Slice:   []int{1, 2, 3},
+		Page:       1,
+		PerPage:    30,
+		Slice:      []int{1, 2, 3},
+		EmptySlice: []int{},
+		NilSlice:   nil,
 	}
 
 	ri := &httptests.RequestInfo{
@@ -70,19 +74,30 @@ func TestInfoQueryParams(t *testing.T) {
 	assert.Equal(t, strconv.Itoa(p.Page), qs.Get("page"))
 	assert.Equal(t, strconv.Itoa(p.PerPage), qs.Get("per_page"))
 	require.Len(t, qs["slice"], len(p.Slice), "wrong number of slice parsed")
+
+	require.Empty(t, qs["empty_slice"], "slice should be empty")
+	_, exists := qs["empty_slice"]
+	require.True(t, exists, "slice should not be set")
+
+	_, exists = qs["nil_slice"]
+	require.False(t, exists, "slice should not be set")
 }
 
 func TestInfoJSONBody(t *testing.T) {
 	type structTest struct {
-		Name  string   `from:"form" json:"name"`
-		Email string   `from:"form" json:"email"`
-		Slice []string `from:"form" json:"slice"`
+		Name       string   `from:"form" json:"name"`
+		Email      string   `from:"form" json:"email"`
+		Slice      []string `from:"form" json:"slice"`
+		EmptySlice []string `from:"form" json:"empty_slice"`
+		NilSlice   []string `from:"form" json:"nil_slice"`
 	}
 
 	p := &structTest{
-		Name:  "User Name",
-		Email: "email.domain.tld",
-		Slice: []string{"1", "2", "3"},
+		Name:       "User Name",
+		Email:      "email.domain.tld",
+		Slice:      []string{"1", "2", "3"},
+		EmptySlice: []string{},
+		NilSlice:   nil,
 	}
 
 	ri := &httptests.RequestInfo{
@@ -105,6 +120,8 @@ func TestInfoJSONBody(t *testing.T) {
 	assert.Equal(t, p.Name, pld.Name)
 	assert.Equal(t, p.Email, pld.Email)
 	assert.Equal(t, p.Slice, pld.Slice)
+	assert.Empty(t, p.EmptySlice)
+	assert.Nil(t, p.NilSlice)
 }
 
 func TestInfoMultipartBody(t *testing.T) {

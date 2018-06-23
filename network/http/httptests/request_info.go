@@ -48,14 +48,16 @@ func (ri *RequestInfo) ParseParams() {
 		ri.urlParams[k] = v[0]
 	}
 	for k, v := range sources["form"] {
-		ri.bodyParams[k] = v[0]
-		if len(v) > 1 {
+		if len(v) == 1 {
+			ri.bodyParams[k] = v[0]
+		} else {
 			ri.bodyParams[k] = v
 		}
 	}
 	for k, v := range sources["query"] {
-		ri.queryParams[k] = v[0]
-		if len(v) > 1 {
+		if len(v) == 1 {
+			ri.queryParams[k] = v[0]
+		} else {
 			ri.queryParams[k] = v
 		}
 	}

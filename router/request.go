@@ -157,6 +157,10 @@ func (req *HTTPRequest) parseJSONBody() (url.Values, error) {
 	for k, v := range vars {
 		switch array := v.(type) {
 		case []interface{}:
+			if len(array) == 0 {
+				output[k] = []string{}
+			}
+
 			for _, elem := range array {
 				output.Add(k, fmt.Sprintf("%v", elem))
 			}

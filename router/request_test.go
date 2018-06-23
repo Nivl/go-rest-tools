@@ -11,7 +11,7 @@ import (
 )
 
 func TestParseJSONBody(t *testing.T) {
-	body := `{"array":[1,2,3], "string": "value"}`
+	body := `{"array":[1,2,3], "string": "value", "empty_array":[]}`
 
 	req := &HTTPRequest{
 		http: &http.Request{
@@ -24,6 +24,7 @@ func TestParseJSONBody(t *testing.T) {
 
 	vals, err := req.parseJSONBody()
 	require.NoError(t, err, "parseJSONBody() should have succeed")
-	assert.Equal(t, vals["array"], []string{"1", "2", "3"}, "invalid values for 'array'")
+	assert.Equal(t, []string{"1", "2", "3"}, vals["array"], "invalid values for 'array'")
 	assert.Equal(t, []string{"value"}, vals["string"], "invalid value for 'string'")
+	assert.Equal(t, []string{}, vals["empty_array"], "invalid value for 'empty_array'")
 }
