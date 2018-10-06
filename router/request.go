@@ -13,6 +13,7 @@ import (
 	reporter "github.com/Nivl/go-reporter"
 	"github.com/Nivl/go-rest-tools/request"
 	"github.com/Nivl/go-rest-tools/security/auth"
+	"github.com/Nivl/go-rest-tools/types/apperror"
 	"github.com/gorilla/mux"
 )
 
@@ -24,6 +25,9 @@ const (
 	// ContentTypeForm represents the content type of a POST/PUT/PATCH request
 	ContentTypeForm = "application/x-www-form-urlencoded"
 )
+
+// ErrMsgInvalidJSONPayload is the message representing a invalid json payload
+var ErrMsgInvalidJSONPayload = "invalid JSON payload"
 
 var _ request.Request = (*HTTPRequest)(nil)
 
@@ -145,13 +149,9 @@ func (req *HTTPRequest) contentType() string {
 func (req *HTTPRequest) parseJSONBody() (url.Values, error) {
 	output := url.Values{}
 
-	if req.contentType() != ContentTypeJSON {
-		return output, nil
-	}
-
 	vars := map[string]interface{}{}
 	if err := json.NewDecoder(req.http.Body).Decode(&vars); err != nil && err != io.EOF {
-		return nil, err
+		return nil, apperror.NewBadRequest("", ErrMsgInvalidJSONPayload)
 	}
 
 	for k, v := range vars {
