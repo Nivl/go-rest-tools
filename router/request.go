@@ -130,19 +130,8 @@ func (req *HTTPRequest) muxVariables() url.Values {
 
 // contentType returns the content type of the current request
 func (req *HTTPRequest) contentType() string {
-	if req == nil {
-		return ""
-	}
-
-	if req._contentType == "" {
-		contentType := req.http.Header.Get("Content-Type")
-
-		if contentType != "" {
-			req._contentType = strings.ToLower(strings.TrimSpace(strings.Split(contentType, ";")[0]))
-		}
-	}
-
-	return req._contentType
+	contentType := req.http.Header.Get("Content-Type")
+	return strings.ToLower(strings.TrimSpace(strings.Split(contentType, ";")[0]))
 }
 
 // parseJSONBody parses and returns the body of the request

@@ -47,3 +47,44 @@ func TestParseJSONBody(t *testing.T) {
 		require.Equal(t, ErrMsgInvalidJSONPayload, err.Error(), "unexpected error returned")
 	})
 }
+
+func TestContentType(t *testing.T) {
+	t.Run("json utf8", func(t *testing.T) {
+		req := &HTTPRequest{
+			http: &http.Request{
+				Header: http.Header{
+					"Content-Type": []string{ContentTypeJSON + "; charset=utf-8"},
+				},
+			},
+		}
+
+		ct := req.contentType()
+		assert.Equal(t, ContentTypeJSON, ct, "invalid content type")
+	})
+
+	t.Run("basic json", func(t *testing.T) {
+		req := &HTTPRequest{
+			http: &http.Request{
+				Header: http.Header{
+					"Content-Type": []string{ContentTypeJSON},
+				},
+			},
+		}
+
+		ct := req.contentType()
+		assert.Equal(t, ContentTypeJSON, ct, "invalid content type")
+	})
+
+	t.Run("empty", func(t *testing.T) {
+		req := &HTTPRequest{
+			http: &http.Request{
+				Header: http.Header{
+					"Content-Type": []string{""},
+				},
+			},
+		}
+
+		ct := req.contentType()
+		assert.Empty(t, ct, "invalid content type")
+	})
+}
